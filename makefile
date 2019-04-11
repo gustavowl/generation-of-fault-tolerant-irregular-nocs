@@ -10,7 +10,7 @@ _OBJS = main.o file-manager.o
 OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 
 GCC = g++
-CFLAGS = -I$(INCDIR)
+CFLAGS = -I$(INCDIR) -Wall
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
 	$(GCC) -c -o $@ $< $(CFLAGS)
