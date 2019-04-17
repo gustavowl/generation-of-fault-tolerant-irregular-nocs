@@ -1,0 +1,296 @@
+graph: { label: "/home/koruja/Academic/ufrn/tcc/generation/task-graphs/descriptions/seed-73/single-start-node/weight-range-1-500/dimension-8x8/in-out-degrees-5-5.vcg"
+display_edge_labels: yes
+	node: { title: "t0_0" label: "t0_0 (18)"  color: lightgreen } 
+	node: { title: "t0_1" label: "t0_1 (7)"  color: white } 
+	node: { title: "t0_2" label: "t0_2 (18)"  color: white } 
+	node: { title: "t0_3" label: "t0_3 (8)"  color: white } 
+	node: { title: "t0_4" label: "t0_4 (19)"  color: white } 
+	node: { title: "t0_5" label: "t0_5 (10)"  color: white } 
+	node: { title: "t0_6" label: "t0_6 (5)"  color: white } 
+	node: { title: "t0_7" label: "t0_7 (8)"  color: white } 
+	node: { title: "t0_8" label: "t0_8 (6)"  color: white } 
+	node: { title: "t0_9" label: "t0_9 (12)"  color: white } 
+	node: { title: "t0_10" label: "t0_10 (11)"  color: white } 
+	node: { title: "t0_11" label: "t0_11 (3)"  color: white } 
+	node: { title: "t0_12" label: "t0_12 (19)"  color: white } 
+	node: { title: "t0_13" label: "t0_13 (5)"  color: white } 
+	node: { title: "t0_14" label: "t0_14 (8)"  color: white } 
+	node: { title: "t0_15" label: "t0_15 (2)"  color: white } 
+	node: { title: "t0_16" label: "t0_16 (14)"  color: white } 
+	node: { title: "t0_17" label: "t0_17 (5)"  color: white } 
+	node: { title: "t0_18" label: "t0_18 (7)"  color: white } 
+	node: { title: "t0_19" label: "t0_19 (4)"  color: white } 
+	node: { title: "t0_20" label: "t0_20 (16)"  color: white } 
+	node: { title: "t0_21" label: "t0_21 (2)"  color: lightred } 
+	node: { title: "t0_22" label: "t0_22 (12)"  color: lightred } 
+	node: { title: "t0_23" label: "t0_23 (13)"  color: white } 
+	node: { title: "t0_24" label: "t0_24 (16)"  color: white } 
+	node: { title: "t0_25" label: "t0_25 (7)"  color: lightred } 
+	node: { title: "t0_26" label: "t0_26 (1)"  color: white } 
+	node: { title: "t0_27" label: "t0_27 (11)"  color: lightred } 
+	node: { title: "t0_28" label: "t0_28 (2)"  color: lightred } 
+	node: { title: "t0_29" label: "t0_29 (9)"  color: lightred } 
+	node: { title: "t0_30" label: "t0_30 (9)"  color: white } 
+	node: { title: "t0_31" label: "t0_31 (11)"  color: white } 
+	node: { title: "t0_32" label: "t0_32 (3)"  color: white } 
+	node: { title: "t0_33" label: "t0_33 (18)"  color: white } 
+	node: { title: "t0_34" label: "t0_34 (14)"  color: white } 
+	node: { title: "t0_35" label: "t0_35 (7)"  color: lightred } 
+	node: { title: "t0_36" label: "t0_36 (10)"  color: lightred } 
+	node: { title: "t0_37" label: "t0_37 (4)"  color: white } 
+	node: { title: "t0_38" label: "t0_38 (10)"  color: lightred } 
+	node: { title: "t0_39" label: "t0_39 (5)"  color: white } 
+	node: { title: "t0_40" label: "t0_40 (0)"  color: lightred } 
+	node: { title: "t0_41" label: "t0_41 (1)"  color: white } 
+	node: { title: "t0_42" label: "t0_42 (4)"  color: white } 
+	node: { title: "t0_43" label: "t0_43 (11)"  color: white } 
+	node: { title: "t0_44" label: "t0_44 (11)"  color: lightred } 
+	node: { title: "t0_45" label: "t0_45 (3)"  color: lightred } 
+	node: { title: "t0_46" label: "t0_46 (16)"  color: white } 
+	node: { title: "t0_47" label: "t0_47 (15)"  color: white } 
+	node: { title: "t0_48" label: "t0_48 (17)"  color: lightred } 
+	node: { title: "t0_49" label: "t0_49 (11)"  color: lightred } 
+	node: { title: "t0_50" label: "t0_50 (1)"  color: lightred } 
+	node: { title: "t0_51" label: "t0_51 (6)"  color: lightred } 
+	node: { title: "t0_52" label: "t0_52 (16)"  color: lightred } 
+	node: { title: "t0_53" label: "t0_53 (10)"  color: lightred } 
+	node: { title: "t0_54" label: "t0_54 (8)"  color: lightred } 
+	node: { title: "t0_55" label: "t0_55 (7)"  color: lightred } 
+	node: { title: "t0_56" label: "t0_56 (9)"  color: lightred } 
+	node: { title: "t0_57" label: "t0_57 (6)"  color: lightred } 
+	node: { title: "t0_58" label: "t0_58 (7)"  color: lightred } 
+	node: { title: "t0_59" label: "t0_59 (2)"  color: lightred } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_1"  label: "(119)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_2"  label: "(156)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_3"  label: "(355)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_4"  label: "(292)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_4"  label: "(502)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_5"  label: "(61)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_5"  label: "(401)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_5"  label: "(171)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_5"  label: "(317)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_5"  label: "(257)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_6"  label: "(144)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_7"  label: "(435)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_8"  label: "(206)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_9"  label: "(427)" } 
+
+	edge: { thickness: 2 sourcename:"t0_8" targetname: "t0_10"  label: "(423)" } 
+
+	edge: { thickness: 2 sourcename:"t0_8" targetname: "t0_11"  label: "(158)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_11"  label: "(332)" } 
+
+	edge: { thickness: 2 sourcename:"t0_10" targetname: "t0_11"  label: "(176)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_11"  label: "(417)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_11"  label: "(194)" } 
+
+	edge: { thickness: 2 sourcename:"t0_6" targetname: "t0_12"  label: "(444)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_13"  label: "(454)" } 
+
+	edge: { thickness: 2 sourcename:"t0_9" targetname: "t0_13"  label: "(60)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_14"  label: "(440)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_14"  label: "(284)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_14"  label: "(488)" } 
+
+	edge: { thickness: 2 sourcename:"t0_12" targetname: "t0_14"  label: "(478)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_14"  label: "(288)" } 
+
+	edge: { thickness: 2 sourcename:"t0_6" targetname: "t0_15"  label: "(35)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_15"  label: "(102)" } 
+
+	edge: { thickness: 2 sourcename:"t0_11" targetname: "t0_16"  label: "(463)" } 
+
+	edge: { thickness: 2 sourcename:"t0_11" targetname: "t0_17"  label: "(76)" } 
+
+	edge: { thickness: 2 sourcename:"t0_14" targetname: "t0_18"  label: "(118)" } 
+
+	edge: { thickness: 2 sourcename:"t0_12" targetname: "t0_18"  label: "(411)" } 
+
+	edge: { thickness: 2 sourcename:"t0_17" targetname: "t0_18"  label: "(57)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_18"  label: "(373)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_19"  label: "(405)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_19"  label: "(22)" } 
+
+	edge: { thickness: 2 sourcename:"t0_10" targetname: "t0_19"  label: "(405)" } 
+
+	edge: { thickness: 2 sourcename:"t0_9" targetname: "t0_19"  label: "(78)" } 
+
+	edge: { thickness: 2 sourcename:"t0_8" targetname: "t0_19"  label: "(263)" } 
+
+	edge: { thickness: 2 sourcename:"t0_6" targetname: "t0_20"  label: "(137)" } 
+
+	edge: { thickness: 2 sourcename:"t0_19" targetname: "t0_20"  label: "(192)" } 
+
+	edge: { thickness: 2 sourcename:"t0_13" targetname: "t0_20"  label: "(419)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_20"  label: "(442)" } 
+
+	edge: { thickness: 2 sourcename:"t0_19" targetname: "t0_21"  label: "(329)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_21"  label: "(491)" } 
+
+	edge: { thickness: 2 sourcename:"t0_12" targetname: "t0_21"  label: "(202)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_21"  label: "(488)" } 
+
+	edge: { thickness: 2 sourcename:"t0_20" targetname: "t0_21"  label: "(444)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_22"  label: "(485)" } 
+
+	edge: { thickness: 2 sourcename:"t0_9" targetname: "t0_22"  label: "(35)" } 
+
+	edge: { thickness: 2 sourcename:"t0_17" targetname: "t0_22"  label: "(346)" } 
+
+	edge: { thickness: 2 sourcename:"t0_20" targetname: "t0_22"  label: "(113)" } 
+
+	edge: { thickness: 2 sourcename:"t0_16" targetname: "t0_22"  label: "(110)" } 
+
+	edge: { thickness: 2 sourcename:"t0_14" targetname: "t0_23"  label: "(285)" } 
+
+	edge: { thickness: 2 sourcename:"t0_9" targetname: "t0_23"  label: "(55)" } 
+
+	edge: { thickness: 2 sourcename:"t0_10" targetname: "t0_23"  label: "(248)" } 
+
+	edge: { thickness: 2 sourcename:"t0_19" targetname: "t0_23"  label: "(425)" } 
+
+	edge: { thickness: 2 sourcename:"t0_11" targetname: "t0_23"  label: "(413)" } 
+
+	edge: { thickness: 2 sourcename:"t0_15" targetname: "t0_24"  label: "(340)" } 
+
+	edge: { thickness: 2 sourcename:"t0_15" targetname: "t0_25"  label: "(392)" } 
+
+	edge: { thickness: 2 sourcename:"t0_15" targetname: "t0_26"  label: "(325)" } 
+
+	edge: { thickness: 2 sourcename:"t0_15" targetname: "t0_27"  label: "(46)" } 
+
+	edge: { thickness: 2 sourcename:"t0_10" targetname: "t0_28"  label: "(419)" } 
+
+	edge: { thickness: 2 sourcename:"t0_11" targetname: "t0_28"  label: "(377)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_28"  label: "(494)" } 
+
+	edge: { thickness: 2 sourcename:"t0_19" targetname: "t0_28"  label: "(74)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_29"  label: "(28)" } 
+
+	edge: { thickness: 2 sourcename:"t0_15" targetname: "t0_29"  label: "(21)" } 
+
+	edge: { thickness: 2 sourcename:"t0_10" targetname: "t0_29"  label: "(18)" } 
+
+	edge: { thickness: 2 sourcename:"t0_18" targetname: "t0_29"  label: "(262)" } 
+
+	edge: { thickness: 2 sourcename:"t0_20" targetname: "t0_30"  label: "(137)" } 
+
+	edge: { thickness: 2 sourcename:"t0_16" targetname: "t0_30"  label: "(265)" } 
+
+	edge: { thickness: 2 sourcename:"t0_11" targetname: "t0_31"  label: "(457)" } 
+
+	edge: { thickness: 2 sourcename:"t0_26" targetname: "t0_32"  label: "(299)" } 
+
+	edge: { thickness: 2 sourcename:"t0_26" targetname: "t0_33"  label: "(177)" } 
+
+	edge: { thickness: 2 sourcename:"t0_31" targetname: "t0_34"  label: "(248)" } 
+
+	edge: { thickness: 2 sourcename:"t0_31" targetname: "t0_35"  label: "(107)" } 
+
+	edge: { thickness: 2 sourcename:"t0_31" targetname: "t0_36"  label: "(267)" } 
+
+	edge: { thickness: 2 sourcename:"t0_30" targetname: "t0_37"  label: "(449)" } 
+
+	edge: { thickness: 2 sourcename:"t0_18" targetname: "t0_37"  label: "(394)" } 
+
+	edge: { thickness: 2 sourcename:"t0_24" targetname: "t0_37"  label: "(474)" } 
+
+	edge: { thickness: 2 sourcename:"t0_32" targetname: "t0_37"  label: "(479)" } 
+
+	edge: { thickness: 2 sourcename:"t0_20" targetname: "t0_37"  label: "(109)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_38"  label: "(100)" } 
+
+	edge: { thickness: 2 sourcename:"t0_17" targetname: "t0_38"  label: "(390)" } 
+
+	edge: { thickness: 2 sourcename:"t0_37" targetname: "t0_38"  label: "(388)" } 
+
+	edge: { thickness: 2 sourcename:"t0_37" targetname: "t0_39"  label: "(46)" } 
+
+	edge: { thickness: 2 sourcename:"t0_23" targetname: "t0_40"  label: "(272)" } 
+
+	edge: { thickness: 2 sourcename:"t0_23" targetname: "t0_41"  label: "(154)" } 
+
+	edge: { thickness: 2 sourcename:"t0_23" targetname: "t0_42"  label: "(160)" } 
+
+	edge: { thickness: 2 sourcename:"t0_23" targetname: "t0_43"  label: "(385)" } 
+
+	edge: { thickness: 2 sourcename:"t0_23" targetname: "t0_44"  label: "(226)" } 
+
+	edge: { thickness: 2 sourcename:"t0_42" targetname: "t0_45"  label: "(338)" } 
+
+	edge: { thickness: 2 sourcename:"t0_42" targetname: "t0_46"  label: "(134)" } 
+
+	edge: { thickness: 2 sourcename:"t0_42" targetname: "t0_47"  label: "(5)" } 
+
+	edge: { thickness: 2 sourcename:"t0_33" targetname: "t0_48"  label: "(443)" } 
+
+	edge: { thickness: 2 sourcename:"t0_31" targetname: "t0_48"  label: "(242)" } 
+
+	edge: { thickness: 2 sourcename:"t0_47" targetname: "t0_48"  label: "(46)" } 
+
+	edge: { thickness: 2 sourcename:"t0_43" targetname: "t0_48"  label: "(125)" } 
+
+	edge: { thickness: 2 sourcename:"t0_30" targetname: "t0_48"  label: "(103)" } 
+
+	edge: { thickness: 2 sourcename:"t0_46" targetname: "t0_49"  label: "(413)" } 
+
+	edge: { thickness: 2 sourcename:"t0_41" targetname: "t0_49"  label: "(478)" } 
+
+	edge: { thickness: 2 sourcename:"t0_34" targetname: "t0_50"  label: "(238)" } 
+
+	edge: { thickness: 2 sourcename:"t0_34" targetname: "t0_51"  label: "(231)" } 
+
+	edge: { thickness: 2 sourcename:"t0_34" targetname: "t0_52"  label: "(277)" } 
+
+	edge: { thickness: 2 sourcename:"t0_34" targetname: "t0_53"  label: "(205)" } 
+
+	edge: { thickness: 2 sourcename:"t0_34" targetname: "t0_54"  label: "(375)" } 
+
+	edge: { thickness: 2 sourcename:"t0_39" targetname: "t0_55"  label: "(502)" } 
+
+	edge: { thickness: 2 sourcename:"t0_39" targetname: "t0_56"  label: "(374)" } 
+
+	edge: { thickness: 2 sourcename:"t0_39" targetname: "t0_57"  label: "(232)" } 
+
+	edge: { thickness: 2 sourcename:"t0_39" targetname: "t0_58"  label: "(41)" } 
+
+	edge: { thickness: 2 sourcename:"t0_39" targetname: "t0_59"  label: "(266)" } 
+
+
+
+
+
+ } 

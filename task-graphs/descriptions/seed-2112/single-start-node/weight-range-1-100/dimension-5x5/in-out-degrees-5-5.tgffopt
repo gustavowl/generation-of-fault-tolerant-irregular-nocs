@@ -1,0 +1,15 @@
+seed 2112
+tg_cnt 1
+trans_type_cnt 125
+prob_multi_start_nodes 0
+start_node 2 1
+period_mul 5
+task_degree 5 5
+task_cnt 5 1
+table_cnt 1
+table_label COMMUN
+type_attrib cost 51 50} 0 1
+trans_write
+tg_write
+eps_write
+vcg_write

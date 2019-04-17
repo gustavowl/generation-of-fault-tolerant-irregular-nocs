@@ -1,0 +1,131 @@
+@HYPERPERIOD 700
+
+@COMMUN 0 {
+#    price
+   7.67379
+
+#------------------------------------------------------------------------------
+# type     cost
+      0      45
+      1      44
+      2      30
+      3      50
+      4      80
+      5      81
+      6      54
+      7      35
+      8      93
+      9      88
+     10      77
+     11      39
+     12      84
+     13      91
+     14      29
+     15      83
+     16      48
+     17      64
+     18      33
+     19      78
+     20      39
+     21      86
+     22      88
+     23      53
+     24      62
+     25      45
+     26      95
+     27      93
+     28      92
+     29      81
+     30      74
+     31      92
+     32      90
+     33      56
+     34      64
+     35      94
+     36      30
+     37      93
+     38      49
+     39      96
+     40      35
+     41      93
+     42      53
+     43      74
+     44      50
+     45      27
+     46      32
+     47      90
+     48      91
+     49      71
+     50      49
+     51      54
+     52      86
+     53      72
+     54      44
+     55      96
+     56      55
+     57      63
+     58      28
+     59      79
+     60      96
+     61      93
+     62      31
+     63      37
+}
+
+
+
+@TASK_GRAPH 0 {
+	PERIOD 700
+
+	TASK t0_0	TYPE 0 
+	TASK t0_1	TYPE 17 
+	TASK t0_2	TYPE 9 
+	TASK t0_3	TYPE 10 
+	TASK t0_4	TYPE 13 
+	TASK t0_5	TYPE 16 
+	TASK t0_6	TYPE 8 
+	TASK t0_7	TYPE 15 
+	TASK t0_8	TYPE 7 
+	TASK t0_9	TYPE 15 
+	TASK t0_10	TYPE 0 
+	TASK t0_11	TYPE 9 
+	TASK t0_12	TYPE 18 
+	TASK t0_13	TYPE 14 
+	TASK t0_14	TYPE 18 
+	TASK t0_15	TYPE 18 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 52
+	ARC a0_1 	FROM t0_0  TO  t0_2 TYPE 10
+	ARC a0_2 	FROM t0_0  TO  t0_3 TYPE 46
+	ARC a0_3 	FROM t0_1  TO  t0_4 TYPE 6
+	ARC a0_4 	FROM t0_3  TO  t0_4 TYPE 26
+	ARC a0_5 	FROM t0_4  TO  t0_5 TYPE 42
+	ARC a0_6 	FROM t0_3  TO  t0_5 TYPE 12
+	ARC a0_7 	FROM t0_0  TO  t0_5 TYPE 31
+	ARC a0_8 	FROM t0_2  TO  t0_5 TYPE 54
+	ARC a0_9 	FROM t0_5  TO  t0_6 TYPE 56
+	ARC a0_10 	FROM t0_5  TO  t0_7 TYPE 51
+	ARC a0_11 	FROM t0_5  TO  t0_8 TYPE 29
+	ARC a0_12 	FROM t0_7  TO  t0_9 TYPE 35
+	ARC a0_13 	FROM t0_8  TO  t0_10 TYPE 23
+	ARC a0_14 	FROM t0_2  TO  t0_10 TYPE 16
+	ARC a0_15 	FROM t0_3  TO  t0_10 TYPE 22
+	ARC a0_16 	FROM t0_4  TO  t0_10 TYPE 59
+	ARC a0_17 	FROM t0_5  TO  t0_11 TYPE 34
+	ARC a0_18 	FROM t0_9  TO  t0_12 TYPE 29
+	ARC a0_19 	FROM t0_6  TO  t0_13 TYPE 20
+	ARC a0_20 	FROM t0_6  TO  t0_14 TYPE 12
+	ARC a0_21 	FROM t0_6  TO  t0_15 TYPE 39
+
+	HARD_DEADLINE d0_0 ON t0_10 AT 600
+	HARD_DEADLINE d0_1 ON t0_11 AT 500
+	HARD_DEADLINE d0_2 ON t0_12 AT 700
+	HARD_DEADLINE d0_3 ON t0_13 AT 600
+	HARD_DEADLINE d0_4 ON t0_14 AT 600
+	HARD_DEADLINE d0_5 ON t0_15 AT 600
+}
+
+
+
+
+

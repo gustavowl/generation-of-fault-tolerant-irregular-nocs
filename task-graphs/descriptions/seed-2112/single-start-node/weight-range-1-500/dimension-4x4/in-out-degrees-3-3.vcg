@@ -1,0 +1,56 @@
+graph: { label: "/home/koruja/Academic/ufrn/tcc/generation/task-graphs/descriptions/seed-2112/single-start-node/weight-range-1-500/dimension-4x4/in-out-degrees-3-3.vcg"
+display_edge_labels: yes
+	node: { title: "t0_0" label: "t0_0 (13)"  color: lightgreen } 
+	node: { title: "t0_1" label: "t0_1 (4)"  color: white } 
+	node: { title: "t0_2" label: "t0_2 (3)"  color: white } 
+	node: { title: "t0_3" label: "t0_3 (4)"  color: white } 
+	node: { title: "t0_4" label: "t0_4 (8)"  color: white } 
+	node: { title: "t0_5" label: "t0_5 (16)"  color: white } 
+	node: { title: "t0_6" label: "t0_6 (8)"  color: white } 
+	node: { title: "t0_7" label: "t0_7 (5)"  color: white } 
+	node: { title: "t0_8" label: "t0_8 (6)"  color: lightred } 
+	node: { title: "t0_9" label: "t0_9 (6)"  color: lightred } 
+	node: { title: "t0_10" label: "t0_10 (13)"  color: lightred } 
+	node: { title: "t0_11" label: "t0_11 (13)"  color: lightred } 
+	node: { title: "t0_12" label: "t0_12 (6)"  color: lightred } 
+	node: { title: "t0_13" label: "t0_13 (13)"  color: lightred } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_1"  label: "(5)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_2"  label: "(49)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_3"  label: "(28)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_4"  label: "(14)" } 
+
+	edge: { thickness: 2 sourcename:"t0_2" targetname: "t0_5"  label: "(25)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_6"  label: "(55)" } 
+
+	edge: { thickness: 2 sourcename:"t0_0" targetname: "t0_6"  label: "(19)" } 
+
+	edge: { thickness: 2 sourcename:"t0_3" targetname: "t0_6"  label: "(16)" } 
+
+	edge: { thickness: 2 sourcename:"t0_6" targetname: "t0_7"  label: "(20)" } 
+
+	edge: { thickness: 2 sourcename:"t0_1" targetname: "t0_8"  label: "(11)" } 
+
+	edge: { thickness: 2 sourcename:"t0_6" targetname: "t0_8"  label: "(3)" } 
+
+	edge: { thickness: 2 sourcename:"t0_4" targetname: "t0_8"  label: "(36)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_9"  label: "(37)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_10"  label: "(0)" } 
+
+	edge: { thickness: 2 sourcename:"t0_7" targetname: "t0_11"  label: "(42)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_12"  label: "(20)" } 
+
+	edge: { thickness: 2 sourcename:"t0_5" targetname: "t0_13"  label: "(23)" } 
+
+
+
+
+
+ } 

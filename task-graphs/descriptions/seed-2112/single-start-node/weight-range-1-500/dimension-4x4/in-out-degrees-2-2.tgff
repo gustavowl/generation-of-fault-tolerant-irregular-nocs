@@ -1,0 +1,119 @@
+@HYPERPERIOD 600
+
+@COMMUN 0 {
+#    price
+   5.54853
+
+#------------------------------------------------------------------------------
+# type     cost
+      0      54
+      1     122
+      2     102
+      3     326
+      4     188
+      5     139
+      6      52
+      7     363
+      8     198
+      9     315
+     10      81
+     11      75
+     12     102
+     13     311
+     14      37
+     15      77
+     16      75
+     17     321
+     18      68
+     19     305
+     20     109
+     21     148
+     22      38
+     23      33
+     24     374
+     25      74
+     26      33
+     27     348
+     28     329
+     29     239
+     30     351
+     31     308
+     32     291
+     33     247
+     34     141
+     35      99
+     36     245
+     37     241
+     38     135
+     39     181
+     40     295
+     41      99
+     42     349
+     43     261
+     44      29
+     45     282
+     46     124
+     47      61
+     48     367
+     49     251
+     50     257
+     51     120
+     52     369
+     53     195
+     54      29
+     55     364
+     56     189
+     57     362
+     58     247
+     59     157
+     60     370
+     61     137
+     62     236
+     63     280
+}
+
+
+
+@TASK_GRAPH 0 {
+	PERIOD 600
+
+	TASK t0_0	TYPE 8 
+	TASK t0_1	TYPE 13 
+	TASK t0_2	TYPE 15 
+	TASK t0_3	TYPE 0 
+	TASK t0_4	TYPE 13 
+	TASK t0_5	TYPE 4 
+	TASK t0_6	TYPE 3 
+	TASK t0_7	TYPE 4 
+	TASK t0_8	TYPE 8 
+	TASK t0_9	TYPE 16 
+	TASK t0_10	TYPE 8 
+	TASK t0_11	TYPE 5 
+	TASK t0_12	TYPE 6 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 20
+	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 42
+	ARC a0_2 	FROM t0_1  TO  t0_3 TYPE 43
+	ARC a0_3 	FROM t0_2  TO  t0_4 TYPE 20
+	ARC a0_4 	FROM t0_0  TO  t0_4 TYPE 41
+	ARC a0_5 	FROM t0_4  TO  t0_5 TYPE 5
+	ARC a0_6 	FROM t0_4  TO  t0_6 TYPE 49
+	ARC a0_7 	FROM t0_3  TO  t0_7 TYPE 28
+	ARC a0_8 	FROM t0_3  TO  t0_8 TYPE 14
+	ARC a0_9 	FROM t0_6  TO  t0_9 TYPE 25
+	ARC a0_10 	FROM t0_6  TO  t0_10 TYPE 55
+	ARC a0_11 	FROM t0_8  TO  t0_11 TYPE 19
+	ARC a0_12 	FROM t0_8  TO  t0_12 TYPE 16
+
+	HARD_DEADLINE d0_0 ON t0_5 AT 500
+	HARD_DEADLINE d0_1 ON t0_7 AT 400
+	HARD_DEADLINE d0_2 ON t0_9 AT 600
+	HARD_DEADLINE d0_3 ON t0_10 AT 600
+	HARD_DEADLINE d0_4 ON t0_11 AT 500
+	HARD_DEADLINE d0_5 ON t0_12 AT 500
+}
+
+
+
+
+

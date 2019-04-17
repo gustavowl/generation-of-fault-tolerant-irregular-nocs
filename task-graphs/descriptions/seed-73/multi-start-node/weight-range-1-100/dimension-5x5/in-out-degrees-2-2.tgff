@@ -1,0 +1,202 @@
+@HYPERPERIOD 900
+
+@COMMUN 0 {
+#    price
+   10.6398
+
+#------------------------------------------------------------------------------
+# type     cost
+      0      45
+      1      44
+      2      30
+      3      50
+      4      80
+      5      81
+      6      54
+      7      35
+      8      93
+      9      88
+     10      77
+     11      39
+     12      84
+     13      91
+     14      29
+     15      83
+     16      48
+     17      64
+     18      33
+     19      78
+     20      39
+     21      86
+     22      88
+     23      53
+     24      62
+     25      45
+     26      95
+     27      93
+     28      92
+     29      81
+     30      74
+     31      92
+     32      90
+     33      56
+     34      64
+     35      94
+     36      30
+     37      93
+     38      49
+     39      96
+     40      35
+     41      93
+     42      53
+     43      74
+     44      50
+     45      27
+     46      32
+     47      90
+     48      91
+     49      71
+     50      49
+     51      54
+     52      86
+     53      72
+     54      44
+     55      96
+     56      55
+     57      63
+     58      28
+     59      79
+     60      96
+     61      93
+     62      31
+     63      37
+     64      28
+     65      57
+     66      69
+     67      76
+     68      29
+     69      93
+     70      79
+     71      80
+     72      62
+     73      53
+     74      89
+     75      76
+     76      76
+     77      52
+     78      77
+     79      39
+     80      89
+     81      35
+     82      96
+     83      65
+     84      36
+     85      89
+     86      51
+     87      56
+     88      46
+     89      63
+     90      87
+     91      51
+     92      78
+     93      53
+     94      30
+     95      93
+     96      66
+     97      73
+     98      81
+     99      90
+    100      63
+    101      87
+    102      61
+    103      88
+    104      27
+    105      67
+    106      94
+    107      84
+    108      95
+    109      95
+    110      90
+    111      39
+    112      85
+    113      34
+    114      62
+    115      82
+    116      41
+    117      70
+    118      92
+    119      93
+    120      89
+    121      67
+    122      74
+    123      58
+    124      48
+}
+
+
+
+@TASK_GRAPH 0 {
+	PERIOD 900
+
+	TASK t0_0	TYPE 17 
+	TASK t0_1	TYPE 8 
+	TASK t0_2	TYPE 12 
+	TASK t0_3	TYPE 11 
+	TASK t0_4	TYPE 16 
+	TASK t0_5	TYPE 18 
+	TASK t0_6	TYPE 0 
+	TASK t0_7	TYPE 13 
+	TASK t0_8	TYPE 11 
+	TASK t0_9	TYPE 10 
+	TASK t0_10	TYPE 4 
+	TASK t0_11	TYPE 19 
+	TASK t0_12	TYPE 10 
+	TASK t0_13	TYPE 19 
+	TASK t0_14	TYPE 8 
+	TASK t0_15	TYPE 6 
+	TASK t0_16	TYPE 9 
+	TASK t0_17	TYPE 6 
+	TASK t0_18	TYPE 4 
+	TASK t0_19	TYPE 6 
+	TASK t0_20	TYPE 11 
+	TASK t0_21	TYPE 4 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 99
+	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 88
+	ARC a0_2 	FROM t0_1  TO  t0_3 TYPE 105
+	ARC a0_3 	FROM t0_3  TO  t0_4 TYPE 102
+	ARC a0_4 	FROM t0_2  TO  t0_4 TYPE 86
+	ARC a0_5 	FROM t0_2  TO  t0_5 TYPE 89
+	ARC a0_6 	FROM t0_0  TO  t0_6 TYPE 26
+	ARC a0_7 	FROM t0_4  TO  t0_6 TYPE 107
+	ARC a0_8 	FROM t0_5  TO  t0_7 TYPE 99
+	ARC a0_9 	FROM t0_7  TO  t0_8 TYPE 77
+	ARC a0_10 	FROM t0_6  TO  t0_9 TYPE 119
+	ARC a0_11 	FROM t0_3  TO  t0_9 TYPE 37
+	ARC a0_12 	FROM t0_9  TO  t0_10 TYPE 40
+	ARC a0_13 	FROM t0_9  TO  t0_11 TYPE 13
+	ARC a0_14 	FROM t0_4  TO  t0_12 TYPE 32
+	ARC a0_15 	FROM t0_7  TO  t0_12 TYPE 48
+	ARC a0_16 	FROM t0_12  TO  t0_13 TYPE 74
+	ARC a0_17 	FROM t0_5  TO  t0_14 TYPE 101
+	ARC a0_18 	FROM t0_8  TO  t0_14 TYPE 5
+	ARC a0_19 	FROM t0_13  TO  t0_15 TYPE 50
+	ARC a0_20 	FROM t0_8  TO  t0_16 TYPE 114
+	ARC a0_21 	FROM t0_10  TO  t0_16 TYPE 76
+	ARC a0_22 	FROM t0_14  TO  t0_17 TYPE 65
+	ARC a0_23 	FROM t0_15  TO  t0_18 TYPE 20
+	ARC a0_24 	FROM t0_17  TO  t0_19 TYPE 69
+	ARC a0_25 	FROM t0_16  TO  t0_20 TYPE 43
+	ARC a0_26 	FROM t0_16  TO  t0_21 TYPE 41
+
+	HARD_DEADLINE d0_0 ON t0_11 AT 700
+	HARD_DEADLINE d0_1 ON t0_18 AT 900
+	HARD_DEADLINE d0_2 ON t0_19 AT 900
+	HARD_DEADLINE d0_3 ON t0_20 AT 900
+	HARD_DEADLINE d0_4 ON t0_21 AT 900
+}
+
+
+
+
+
