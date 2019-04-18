@@ -42,3 +42,5 @@ the parameters used by `generate-tgs.sh`.
 
 Gathering files of the same type in a single directory may help in future analyses.
 Namely, `adj-lists/`, and `eps/` will contain `.adjl`, and `.eps` files, respectively.
+The files contained by these directories are **hard link** files
+to the ones in `descriptions/`, **not copies**.
