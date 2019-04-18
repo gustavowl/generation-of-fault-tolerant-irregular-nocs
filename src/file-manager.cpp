@@ -1,5 +1,5 @@
 #include "include/file-manager.h"
-#include <iostream> //TODO: DELETE ME
+#include "include/adjacency-list.h"
 
 bool FileManager::readFile(std::string filepath, FileType type,
 		char separator, char comment) {
@@ -37,6 +37,7 @@ bool FileManager::readAdjList(std::ifstream* file, char separator, char comment)
 	const int expected_size = 3;
 	int values [expected_size] = {};
 	int size = 0;
+	AdjacencyList adjl;
 
 	while (std::getline(*file, line)) {
 		size = parseLine(&line, values, separator, comment);
@@ -51,6 +52,8 @@ bool FileManager::readAdjList(std::ifstream* file, char separator, char comment)
 
 		if (!header_read && size == expected_header_size) {
 			//TODO: Create adj list structure
+			adjl = AdjacencyList();
+			adjl.delEdge(1, 2);
 			header_read = true;
 			continue;
 		}
@@ -76,6 +79,7 @@ int FileManager::parseLine(std::string* line, int* values,
 		if (index != std::string::npos) //if valid index
 			line->erase(index, line->size() - index);
 	}
+
 	// trims string
 	if (!line->empty()) { //trims begin
 		index = line->find_first_not_of(" \t");
@@ -89,7 +93,6 @@ int FileManager::parseLine(std::string* line, int* values,
 	}
 
 	while (!line->empty()) {
-		std::cout << *line << std::endl;
 		index = line->find(separator);
 		
 		if (index != std::string::npos) {

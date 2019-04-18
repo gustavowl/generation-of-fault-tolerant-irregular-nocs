@@ -3,10 +3,10 @@ INCDIR = $(SRCDIR)/include
 OBJDIR = $(SRCDIR)/obj
 $(shell mkdir -p $(SRCDIR)/obj)
 
-_DEPS = file-manager.h
+_DEPS = file-manager.h graph-representation.h adjacency-list.h
 DEPS = $(patsubst %, $(INCDIR)/%, $(_DEPS))
 
-_OBJS = main.o file-manager.o
+_OBJS = main.o file-manager.o graph-representation.o adjacency-list.o
 OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 
 GCC = g++
