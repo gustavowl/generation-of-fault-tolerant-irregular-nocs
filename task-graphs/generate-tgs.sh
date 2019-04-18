@@ -6,7 +6,17 @@
 ORIG_DIR=$(pwd)
 TGFF=${ORIG_DIR}"/tgff-3.6/tgff" #path to compiled tgff
 DESC="descriptions"
-mkdir -p $DESC #stores .tgffopt files
+ADJL_DIR=${ORIG_DIR}/adj-lists
+EPS_DIR=${ORIG_DIR}/eps
+
+#stores all files: .tgffopt, .tgff, .eps, .vcd, and .adjl.
+#The files are distributed in a directory tree accoring to
+#attributes used in the for loop in the end of this file.
+mkdir -p $DESC 
+#stores only .adjl files in a single dir
+mkdir -p $ADJL_DIR 
+#stores only .eps files in a single dir
+mkdir -p $EPS_DIR
 
 # creates .tgffopt files
 #mkdir -p $DESC/shableu
@@ -63,10 +73,36 @@ write_tgffopt ()
 	#echo Wrote ${WORK_DIR}/${FILENAME}${FILETYPE}
 }
 
+copy_file ()
+{
+	#expects 3 arguments:
+	#	#1 - FILENAME
+	#	#2 - FILETYPE
+	#	#3 - TARGET DIRECTORY
+	FILENAME=$1
+	FILETYPE=$2
+	TARGET_DIR=$3
+	
+	#string manipulation to add original filepath to its name
+	PREFIX=${WORK_DIR:${#ORIG_DIR}}
+	PREFIX=${PREFIX/#\//}
+	PREFIX=$(echo "${PREFIX}" | sed 's/\//_/g')
+
+	TARGET_FILENAME=${PREFIX}_${FILENAME}${FILETYPE}
+
+	cp -f ${FILENAME}${FILETYPE} ${TARGET_DIR}/${TARGET_FILENAME}${FILETYPE}
+}
+
 run_tgff ()
 {
 	$TGFF ${WORK_DIR}/${FILENAME}
-	#echo "Executed tgff" ${WORK_DIR}/${FILENAME}${FILETYPE}
+	copy_file $FILENAME ".eps" ${EPS_DIR}
+}
+
+parse_tgff_to_adjacency_list ()
+{
+	python3 ${ORIG_DIR}/tgff-to-adj-list.py ${WORK_DIR}/${FILENAME}.tgff
+	copy_file $FILENAME ".adjl" ${ADJL_DIR}
 }
 
 # creates .tgffopt files
@@ -113,6 +149,7 @@ for SEED in ${ARR_SEED[*]}; do
 				for (( DEGREE=2; DEGREE<$[ TASK_CNT + 1 ]; DEGREE++ )); do
 					write_tgffopt
 					run_tgff
+					parse_tgff_to_adjacency_list
 				done
 				COUNT=$[ COUNT + 1 ]
 				PERC=$(echo "scale=2; 100*${COUNT}/${TOTAL}" | bc )

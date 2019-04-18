@@ -1,4 +1,4 @@
-graph: { label: "/home/koruja/Academic/ufrn/tcc/generation/task-graphs/descriptions/seed-2112/multi-start-node/weight-range-1-100/dimension-8x8/in-out-degrees-7-7.vcg"
+graph: { label: "/home/koruja/Academic/UFRN/2019-1/tcc/generation/task-graphs/descriptions/seed-2112/multi-start-node/weight-range-1-100/dimension-8x8/in-out-degrees-7-7.vcg"
 display_edge_labels: yes
 	node: { title: "t0_0" label: "t0_0 (17)"  color: lightgreen } 
 	node: { title: "t0_1" label: "t0_1 (0)"  color: lightgreen } 

@@ -2,3 +2,5 @@ src/obj/*.o
 gftinoc
 *.swp
 task-graphs/tgff-*/
+adj-lists/
+eps/
