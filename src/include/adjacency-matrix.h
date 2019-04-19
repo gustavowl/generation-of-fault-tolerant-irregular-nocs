@@ -4,8 +4,9 @@
 #include "graph-representation.h"
 #include <vector>
 
+// This class is used for representing DIRECTED GRAPHS
+// as square adjacency matrices.
 template <class T>
-// This class is used for representing square adjacency matrices.
 class AdjacencyMatrix : public GraphRepresentation {
 
 private:

@@ -17,6 +17,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	if (numNodes == 0 || (triangular && !symmetric))
 		return;
 
+	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
 	this->isTriangular = triangular;
 	this->adjm.resize(numNodes);
@@ -52,6 +53,11 @@ void AdjacencyMatrix<T>::addEdge(unsigned int origin,
 
 	if (isSymmetric && !isTriangular)
 		adjm[destination][origin] = weight;
+
+	if (isSymmetric)
+		numEdges += 2;
+	else
+		numEdges++;
 }
 
 template <class T>
@@ -67,6 +73,11 @@ void AdjacencyMatrix<T>::delEdge(unsigned int origin,
 
 	if (isSymmetric && !isTriangular)
 		adjm[destination][origin] = noEdgeValue;
+
+	if (isSymmetric)
+		numEdges -= 2;
+	else
+		numEdges--;
 
 }
 

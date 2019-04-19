@@ -8,7 +8,6 @@ AdjacencyList::AdjacencyList(unsigned int numNodes) {
 	if (numNodes == 0) return;
 	
 	this->numNodes = numNodes;
-	this->numEdges = numEdges;
 	this->adjl.resize(numNodes);
 }
 
@@ -26,10 +25,12 @@ void AdjacencyList::addEdge(unsigned int origin, unsigned int destination,
 	e.weight = weight;
 
 	adjl[origin].push_back(e);
+	numEdges++;
 
 	std::cout << origin << ',' << destination << ',' << weight << std::endl;
 }
 
 void AdjacencyList::delEdge(unsigned int origin, unsigned int destination) {
+	//numEdges--;
 	//TODO
 }

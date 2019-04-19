@@ -4,7 +4,8 @@
 #include "graph-representation.h"
 #include <vector>
 
-// This class is used for representing adjacency lists.
+// This class is used for storing DIRECTED GRAPHS
+// as adjacency lists.
 class AdjacencyList : public GraphRepresentation {
 private:
 	//Struct used locally to represent an edge.
