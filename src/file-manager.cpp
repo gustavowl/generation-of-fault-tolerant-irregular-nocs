@@ -1,30 +1,33 @@
 #include "include/file-manager.h"
-#include "include/adjacency-list.h"
 
-bool FileManager::readFile(std::string filepath, FileType type,
+GraphRepresentation* FileManager::readFile(std::string filepath, FileType type,
 		char separator, char comment) {
 	std::ifstream file;
 
 	file.open(filepath);
 
 	if (!file.is_open()) {
-		return false;
+		return NULL;
 	}
 	
+	GraphRepresentation* gr = NULL;
+
 	switch (type) {
 		case FileType::adj_list:
-			readAdjList(&file, separator, comment);
+			gr = readAdjList(&file, separator, comment);
 			break;
 
 		case FileType::adj_matrix:
+			//TODO: CHANGE ME
+			gr = readAdjList(&file, separator, comment);
 			break;
 	}
 
 	file.close();
-	return true;
+	return gr;
 }
 
-bool FileManager::readAdjList(std::ifstream* file, char separator, char comment) {
+AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, char comment) {
 	std::string line;
 
 	// expects to read two values in the header (first line):
@@ -37,7 +40,10 @@ bool FileManager::readAdjList(std::ifstream* file, char separator, char comment)
 	const int expected_size = 3;
 	int values [expected_size] = {};
 	int size = 0;
-	AdjacencyList adjl;
+
+	AdjacencyList* adjl = NULL;
+	unsigned int num_edges = 0;
+	unsigned int edges_count = 0;
 
 	while (std::getline(*file, line)) {
 		size = parseLine(&line, values, separator, comment);
@@ -46,22 +52,32 @@ bool FileManager::readAdjList(std::ifstream* file, char separator, char comment)
 			continue;
 
 		if (header_read && size == 3) {
-			//TODO: Add to edges to adj list
+			adjl->addEdge(values[0], values[1], values[2]);
+			edges_count++;
 			continue;
 		}
 
 		if (!header_read && size == expected_header_size) {
-			//TODO: Create adj list structure
-			adjl = AdjacencyList();
-			adjl.delEdge(1, 2);
+			adjl = new AdjacencyList(values[0]);
+			num_edges = values[1];
 			header_read = true;
+			//TODO: check if memory space was allocated
 			continue;
 		}
 
 		//ERROR: invalid .csv file
-		return false;
+		num_edges = edges_count - 1;
+		break;
 	}
-	return true;
+
+	//assert num_edges matches
+	if (num_edges != edges_count) {
+		if (adjl != NULL)
+			delete adjl;
+		return NULL;
+	}
+
+	return adjl;
 }
 
 bool FileManager::readAdjMatrix(std::ifstream* file, char separator, char comment) {

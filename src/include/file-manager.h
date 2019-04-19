@@ -2,6 +2,8 @@
 #define __FILE_MANAGER_H__
 
 #include <fstream>
+#include "graph-representation.h"
+#include "adjacency-list.h"
 
 // This class is used for manipulating files
 // (Operations such as read and write).
@@ -19,14 +21,14 @@ public:
 	 * (e.g. the file does not exist)
 	 * and true otherwise. 
 	 * */
-	static bool readFile(std::string filepath, FileType type,
+	static GraphRepresentation* readFile(std::string filepath, FileType type,
 			char separator=stdSeparator, char comment=stdComment);
 
 private:
 	static const char stdComment = '#';
 	static const char stdSeparator = ',';
 
-	static bool readAdjList(std::ifstream* file, char separator, char comment);
+	static AdjacencyList* readAdjList(std::ifstream* file, char separator, char comment);
 	static bool readAdjMatrix(std::ifstream* file, char separator, char comment);
 	
 	/* Parses a csv line.
