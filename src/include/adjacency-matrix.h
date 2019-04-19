@@ -10,20 +10,28 @@ class AdjacencyMatrix : public GraphRepresentation {
 
 private:
 	bool isSymmetric;
-	//if matrix is symetric and shortRep is set to true,
+	//if matrix is symetric and triangular is set to true,
 	//it will only store the lower triangular matrix
-	bool shortRep; 
+	bool isTriangular; 
+	//value to be assigned when and Edge is deleted
+	T noEdgeValue;
 
 	// The adjacency matrix itself:
 	// adjm[origin][destiny] = weight;
 	std::vector<std::vector<T>> adjm;
 
+	//conditional triangular matrix Node Id Swap:
+	//swaps the nodes ids if matrix is triangular and
+	//origin > destination (equivalent to attempting to access
+	//the upper triangle matrix)
+	void triangNodeIdSwap(unsigned int* origin, unsigned int* destination);
+
 public:
 	// Constructor
 	AdjacencyMatrix();
-	//expects numNodes > 0 and that shortRep -> symmetric
+	//expects numNodes > 0 and that triangular -> symmetric
 	AdjacencyMatrix(unsigned int numNodes, bool symmetric=false,
-			bool shortRep=false);
+			bool triangular=false, T noEdgeValue=0);
 
 	// Destructor
 	~AdjacencyMatrix(); 

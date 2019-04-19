@@ -16,3 +16,11 @@ The source code can be found on
 The version used was **3.6**.
 More information about TGFF can be found in
 task-graphs' directory.
+
+## MAKE
+
+If problems occur during the `make`,
+run the command again after converting the file lists
+(`_DEPS` and `_OBJS`)
+from multiple to single line.
+This can be done by deleting the backslashes (\\) and the newlines.
