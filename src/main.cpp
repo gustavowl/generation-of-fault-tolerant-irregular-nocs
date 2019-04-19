@@ -13,8 +13,12 @@ int main(int argc, char *argv[]) {
 	if (gr != NULL)
 		delete gr;
 
-	int k = 2112.73;
+	int k = NULL;
 	std::cout << k << std::endl;
+	bool bassaur = NULL;
+	std::cout << bassaur << std::endl;
+	float f = NULL;
+	std::cout << f << std::endl;
 
 	AdjacencyMatrix<int> adjm = AdjacencyMatrix<int>(10, false, false);
 

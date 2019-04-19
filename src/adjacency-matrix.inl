@@ -11,17 +11,20 @@ void AdjacencyMatrix<T>::triangNodeIdSwap(unsigned int* origin,
 
 template <class T>
 AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
-		bool symmetric, bool triangular, T noEdgeValue) {
+		bool symmetric, bool triangular, T nullEdgeValue) {
 
 	// Assert triangular -> symmetric
 	if (numNodes == 0 || (triangular && !symmetric))
 		return;
 
+	this->adjm.resize(numNodes);
+	if (adjm.empty())
+		return;
+
 	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
 	this->isTriangular = triangular;
-	this->adjm.resize(numNodes);
-	this->noEdgeValue = noEdgeValue;
+	this->nullEdgeValue = nullEdgeValue;
 
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
@@ -41,23 +44,20 @@ AdjacencyMatrix<T>::~AdjacencyMatrix() {
 
 template <class T>
 void AdjacencyMatrix<T>::addEdge(unsigned int origin,
-		unsigned int destination, unsigned int weight) {
+		unsigned int destination, T value) {
 	//check if arguments are valid
 	if (origin >= numNodes || destination >= numNodes ||
-			weight == 0)
+			value == nullEdgeValue)
 		return;
 
 	triangNodeIdSwap(&origin, &destination);
 
-	adjm[origin][destination] = weight;
+	adjm[origin][destination] = value;
 
 	if (isSymmetric && !isTriangular)
-		adjm[destination][origin] = weight;
+		adjm[destination][origin] = value;
 
-	if (isSymmetric)
-		numEdges += 2;
-	else
-		numEdges++;
+	numEdges++;
 }
 
 template <class T>
@@ -69,15 +69,12 @@ void AdjacencyMatrix<T>::delEdge(unsigned int origin,
 
 	triangNodeIdSwap(&origin, &destination);
 
-	adjm[origin][destination] = noEdgeValue;
+	adjm[origin][destination] = nullEdgeValue;
 
 	if (isSymmetric && !isTriangular)
-		adjm[destination][origin] = noEdgeValue;
+		adjm[destination][origin] = nullEdgeValue;
 
-	if (isSymmetric)
-		numEdges -= 2;
-	else
-		numEdges--;
+	numEdges--;
 
 }
 
@@ -90,15 +87,15 @@ bool AdjacencyMatrix<T>::edgeExists(unsigned int origin,
 
 	triangNodeIdSwap(&origin, &destination);
 
-	return adjm[origin][destination] != noEdgeValue;
+	return adjm[origin][destination] != nullEdgeValue;
 }
 
 template <class T>
-T AdjacencyMatrix<T>::getEdgeWeight(unsigned int origin,
+T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 		unsigned int destination) {
 
 	if (origin >= numNodes || destination >= numNodes)
-		return false;
+		return nullEdgeValue;
 
 	triangNodeIdSwap(&origin, &destination);
 

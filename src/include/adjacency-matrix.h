@@ -4,18 +4,23 @@
 #include "graph-representation.h"
 #include <vector>
 
-// This class is used for representing DIRECTED GRAPHS
+// This class is used for representing graphs
 // as square adjacency matrices.
+//
+// NOTE: In order for this implementation to work
+// with 0-weighted edges, it will be probably
+// necessary to create a struct to store it.
+// Simply because NULL == 0 (TODO: ASSERT)
+// and this would bug the edgeExists() method
+// for standard values of nullEdgeValue
 template <class T>
-class AdjacencyMatrix : public GraphRepresentation {
+class AdjacencyMatrix : public GraphRepresentation<T> {
 
 private:
 	bool isSymmetric;
 	//if matrix is symetric and triangular is set to true,
 	//it will only store the lower triangular matrix
 	bool isTriangular; 
-	//value to be assigned when and Edge is deleted
-	T noEdgeValue;
 
 	// The adjacency matrix itself:
 	// adjm[origin][destiny] = weight;
@@ -32,23 +37,23 @@ public:
 	AdjacencyMatrix();
 	//expects numNodes > 0 and that triangular -> symmetric
 	AdjacencyMatrix(unsigned int numNodes, bool symmetric=false,
-			bool triangular=false, T noEdgeValue=0);
+			bool triangular=false, T nullEdgeValue=NULL);
 
 	// Destructor
 	~AdjacencyMatrix(); 
 
 	//adds edge for valid values of origin and destination:
-	//[0, numNodes). Adds edge if weight > 0.
-	void addEdge(unsigned int origin, unsigned int destination,
-			unsigned int weight);
+	//[0, numNodes). Adds edge if value != nullEdgeValue.
+	void addEdge(unsigned int origin, unsigned int destination, T value);
 
 	//deletes edge if origin and destination values are in
 	//the valid range: [0, numNodes)
 	void delEdge(unsigned int origin, unsigned int destination);
 
+	// returns if adjm[origin][destiny] != nullEdgeValue
 	bool edgeExists(unsigned int origin, unsigned int destination);
 
-	T getEdgeWeight(unsigned int origin, unsigned int destination);
+	T getEdgeValue(unsigned int origin, unsigned int destination);
 };
 
 #include "../adjacency-matrix.inl"
