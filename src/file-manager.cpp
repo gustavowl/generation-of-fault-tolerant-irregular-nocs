@@ -60,7 +60,12 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 			adjl = new AdjacencyList(values[0]);
 			num_edges = values[1];
 			header_read = true;
-			//TODO: check if memory space was allocated
+
+			//TODO: check if this condition verifies if
+			//memory space was allocated
+			if (adjl == NULL)
+				break;
+
 			continue;
 		}
 

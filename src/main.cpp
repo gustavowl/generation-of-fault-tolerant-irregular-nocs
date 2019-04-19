@@ -1,6 +1,7 @@
 #include <iostream>
 #include "include/file-manager.h"
 #include "include/graph-representation.h"
+#include "include/adjacency-matrix.h"
 
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
@@ -11,6 +12,11 @@ int main(int argc, char *argv[]) {
 
 	if (gr != NULL)
 		delete gr;
+
+	int k = 2112.73;
+	std::cout << k << std::endl;
+
+	AdjacencyMatrix<int> adjm = AdjacencyMatrix<int>(10, false, false);
 
 	return 0;
 }

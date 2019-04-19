@@ -13,7 +13,6 @@ AdjacencyList::AdjacencyList(unsigned int numNodes) {
 }
 
 AdjacencyList::~AdjacencyList() {
-	//TODO: Use valgrind to check whether adjl was deallocated
 }
 
 void AdjacencyList::addEdge(unsigned int origin, unsigned int destination,
