@@ -29,7 +29,7 @@ private:
 	static const char stdSeparator = ',';
 
 	static AdjacencyList* readAdjList(std::ifstream* file, char separator, char comment);
-	static bool readAdjMatrix(std::ifstream* file, char separator, char comment);
+	static AdjacencyList* readAdjMatrix(std::ifstream* file, char separator, char comment);
 	
 	/* Parses a csv line.
 	 * Lines beginning with `comment` are ignored.

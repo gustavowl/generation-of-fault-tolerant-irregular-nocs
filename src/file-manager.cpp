@@ -18,8 +18,7 @@ GraphRepresentation* FileManager::readFile(std::string filepath, FileType type,
 			break;
 
 		case FileType::adj_matrix:
-			//TODO: CHANGE ME
-			gr = readAdjList(&file, separator, comment);
+			gr = readAdjMatrix(&file, separator, comment);
 			break;
 	}
 
@@ -38,7 +37,7 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 	// expects three values in the remaining lines:
 	// origin, destiny, and weight
 	const int expected_size = 3;
-	int values [expected_size] = {};
+	int values[expected_size] = {};
 	int size = 0;
 
 	AdjacencyList* adjl = NULL;
@@ -80,8 +79,8 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 	return adjl;
 }
 
-bool FileManager::readAdjMatrix(std::ifstream* file, char separator, char comment) {
-	return false;
+AdjacencyList* FileManager::readAdjMatrix(std::ifstream* file, char separator, char comment) {
+	return NULL;
 }
 
 int FileManager::parseLine(std::string* line, int* values,
@@ -104,9 +103,10 @@ int FileManager::parseLine(std::string* line, int* values,
 	}
 	if (!line->empty()) { //trims end
 		index = line->find_last_not_of(" \t");
-		if (index != std::string::npos)
+		if (index != std::string::npos && index != line->size() - 1)
 			line->erase(index, line->size() - index);
 	}
+
 
 	while (!line->empty()) {
 		index = line->find(separator);

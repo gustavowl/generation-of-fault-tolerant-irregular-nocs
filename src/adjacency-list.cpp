@@ -27,8 +27,10 @@ void AdjacencyList::addEdge(unsigned int origin, unsigned int destination,
 	e.weight = weight;
 
 	adjl[origin].push_back(e);
+
+	std::cout << origin << ',' << destination << ',' << weight << std::endl;
 }
 
 void AdjacencyList::delEdge(unsigned int origin, unsigned int destination) {
-	std::cout << this->getNumEdges() + 70 << std::endl;
+	//TODO
 }
