@@ -9,10 +9,13 @@
 //
 // NOTE: In order for this implementation to work
 // with 0-weighted edges, it will be probably
-// necessary to create a struct to store it.
-// Simply because NULL == 0 (TODO: ASSERT)
-// and this would bug the edgeExists() method
-// for standard values of nullEdgeValue
+// recommended to create a struct to store it.
+// Simply because 0 would be the standard value
+// for nullEdgeValue.
+// The nullEdgeValue affects the behaviour of
+// edgeExists() and delEdge().
+// The value of nullEdgeValue can be changed in
+// the constructor.
 template <class T>
 class AdjacencyMatrix : public GraphRepresentation<T> {
 

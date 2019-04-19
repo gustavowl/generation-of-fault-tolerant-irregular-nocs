@@ -1,7 +1,7 @@
 #include "include/file-manager.h"
 
-GraphRepresentation* FileManager::readFile(std::string filepath, FileType type,
-		char separator, char comment) {
+GraphRepresentation<unsigned int>* FileManager::readFile(std::string filepath,
+		FileType type, char separator, char comment) {
 	std::ifstream file;
 
 	file.open(filepath);
@@ -10,7 +10,7 @@ GraphRepresentation* FileManager::readFile(std::string filepath, FileType type,
 		return NULL;
 	}
 	
-	GraphRepresentation* gr = NULL;
+	GraphRepresentation<unsigned int>* gr = NULL;
 
 	switch (type) {
 		case FileType::adj_list:
@@ -26,7 +26,8 @@ GraphRepresentation* FileManager::readFile(std::string filepath, FileType type,
 	return gr;
 }
 
-AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, char comment) {
+AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
+		char separator, char comment) {
 	std::string line;
 
 	// expects to read two values in the header (first line):
@@ -38,11 +39,10 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 	// origin, destiny, and weight
 	const int expected_size = 3;
 	int values[expected_size] = {};
-	int size = 0;
+	unsigned int size = 0;
 
-	AdjacencyList* adjl = NULL;
+	AdjacencyList<unsigned int>* adjl = NULL;
 	unsigned int num_edges = 0;
-	unsigned int edges_count = 0;
 
 	while (std::getline(*file, line)) {
 		size = parseLine(&line, values, separator, comment);
@@ -52,12 +52,11 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 
 		if (header_read && size == 3) {
 			adjl->addEdge(values[0], values[1], values[2]);
-			edges_count++;
 			continue;
 		}
 
 		if (!header_read && size == expected_header_size) {
-			adjl = new AdjacencyList(values[0]);
+			adjl = new AdjacencyList<unsigned int>(values[0], 0);
 			num_edges = values[1];
 			header_read = true;
 
@@ -70,27 +69,26 @@ AdjacencyList* FileManager::readAdjList(std::ifstream* file, char separator, cha
 		}
 
 		//ERROR: invalid .csv file
-		num_edges = edges_count - 1;
 		break;
 	}
 
-	//assert num_edges matches
-	if (num_edges != edges_count) {
-		if (adjl != NULL)
-			delete adjl;
+	//assert num_edges matches number of inserted edges
+	if (adjl != NULL && num_edges != adjl->getNumEdges()) {
+		delete adjl;
 		return NULL;
 	}
 
 	return adjl;
 }
 
-AdjacencyList* FileManager::readAdjMatrix(std::ifstream* file, char separator, char comment) {
+AdjacencyMatrix<unsigned int>* FileManager::readAdjMatrix(std::ifstream* file,
+		char separator, char comment) {
 	return NULL;
 }
 
-int FileManager::parseLine(std::string* line, int* values,
+unsigned int FileManager::parseLine(std::string* line, int* values,
 		char separator, char comment) {
-	int size = 0;
+	unsigned int size = 0;
 	std::size_t index;
 	
 	// removes comment

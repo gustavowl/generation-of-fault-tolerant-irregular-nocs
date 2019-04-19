@@ -6,27 +6,27 @@
 
 // This class is used for storing DIRECTED GRAPHS
 // as adjacency lists.
+template <class T>
 class AdjacencyList : public GraphRepresentation<T> {
 private:
 	//Struct used locally to represent an edge.
 	//It has two fields: destination and weight.
 	//The information about the origin is implicit
 	//inside adjl vector.
-	template <typename T>
 	struct Edge {
 		unsigned int dest; 
 		T value;
 	};
 	// The adjacency list itself
-	std::vector<std::vector<Edge<T>>> adjl;
+	std::vector<std::vector<Edge>> adjl;
 
 	// returns a NULL pointer if either origin or destination
 	// are out of the range [0, numNodes); or if
 	// adjl[origin][destination == nullEdgeValue
-	Edge<T>* searchEdge(unsigned origin, unsigned destination);
+	Edge* searchEdge(unsigned origin, unsigned destination);
 	// returns edge position.
-	// ERROR WILL OCCUR IF edge is not in adjl.
-	size_t getEdgePos(unsigned origin, Edge<T>* edge);
+	// only call this method if edge is in adjl.
+	size_t getEdgePos(unsigned origin, Edge* edge);
 
 public:
 	// Constructors

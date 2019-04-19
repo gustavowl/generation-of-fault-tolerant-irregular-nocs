@@ -1,7 +1,7 @@
-template<class T>
-Edge<T>* AdjacencyList<T>::searchEdge(unsigned int origin,
+template <class T>
+typename AdjacencyList<T>::Edge* AdjacencyList<T>::searchEdge(unsigned int origin,
 		unsigned int destination) {
-	if (origin >= numNodes, destination >= numNodes)
+	if (origin >= this->numNodes || destination >= this->numNodes)
 		return NULL;
 
 	//begin search
@@ -11,6 +11,16 @@ Edge<T>* AdjacencyList<T>::searchEdge(unsigned int origin,
 	}
 
 	return NULL;
+}
+
+template <class T>
+size_t AdjacencyList<T>::getEdgePos(unsigned origin, Edge* edge) {
+	for (size_t i = 0; i < adjl[origin].size(); i++) {
+		if (&adjl[origin][i] == edge)
+			return i;
+	}
+	// removes warning
+	return std::string::npos;
 }
 
 template <class T>
@@ -37,22 +47,22 @@ void AdjacencyList<T>::addEdge(unsigned int origin, unsigned int destination,
 		T value) {
 
 	//check if arguments are valid
-	if (origin >= numNodes || destination >= numNodes ||
-			value == nullEdgeValue)
+	if (origin >= this->numNodes || destination >= this->numNodes ||
+			value == this->nullEdgeValue)
 		return;
 
-	Edge e;
+	AdjacencyList<T>::Edge e;
 	e.dest = destination;
 	e.value = value;
 
 	adjl[origin].push_back(e);
-	numEdges++;
+	this->numEdges++;
 }
 
 template <class T>
 void AdjacencyList<T>::delEdge(unsigned int origin, unsigned int destination) {
 
-	Edge<T>* e = searchEdge(origin, destination);
+	AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
 
 	if (e == NULL)
 		return;
@@ -60,22 +70,22 @@ void AdjacencyList<T>::delEdge(unsigned int origin, unsigned int destination) {
 	size_t pos = getEdgePos(origin, e);
 
 	adjl[origin].erase(adjl[origin].begin() + pos);
-	numEdges--;
+	this->numEdges--;
 }
 
 template <class T>
 bool AdjacencyList<T>::edgeExists(unsigned int origin, unsigned int destination) {
-	if (origin >= numNodes || destination >= numNodes)
+	if (origin >= this->numNodes || destination >= this->numNodes)
 		return false;
-	return getEdgeValue(origin, destination) != nullEdgeValue;
+	return getEdgeValue(origin, destination) != this->nullEdgeValue;
 }
 
 template <class T>
 T AdjacencyList<T>::getEdgeValue(unsigned int origin, unsigned int destination) {
 
-	Edge<T>* e = searchEdge(origin, destination);
+	AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
 
 	if (e != NULL)
 		return e->value;
-	return nullEdgeValue;
+	return this->nullEdgeValue;
 }

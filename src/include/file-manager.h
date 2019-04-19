@@ -4,6 +4,7 @@
 #include <fstream>
 #include "graph-representation.h"
 #include "adjacency-list.h"
+#include "adjacency-matrix.h"
 
 // This class is used for manipulating files
 // (Operations such as read and write).
@@ -21,15 +22,17 @@ public:
 	 * (e.g. the file does not exist)
 	 * and true otherwise. 
 	 * */
-	static GraphRepresentation* readFile(std::string filepath, FileType type,
-			char separator=stdSeparator, char comment=stdComment);
+	static GraphRepresentation<unsigned int>* readFile(std::string filepath,
+			FileType type, char separator=stdSeparator, char comment=stdComment);
 
 private:
 	static const char stdComment = '#';
 	static const char stdSeparator = ',';
 
-	static AdjacencyList* readAdjList(std::ifstream* file, char separator, char comment);
-	static AdjacencyList* readAdjMatrix(std::ifstream* file, char separator, char comment);
+	static AdjacencyList<unsigned int>* readAdjList(std::ifstream* file,
+			char separator, char comment);
+	static AdjacencyMatrix<unsigned int>* readAdjMatrix(std::ifstream* file,
+			char separator, char comment);
 	
 	/* Parses a csv line.
 	 * Lines beginning with `comment` are ignored.
@@ -42,7 +45,8 @@ private:
 	 *
 	 * The function returns the length of `result`.
 	 */
-	static int parseLine(std::string* line, int* values, char separator, char comment);
+	static unsigned int parseLine(std::string* line, int* values,
+			char separator, char comment);
 };
 
 #endif

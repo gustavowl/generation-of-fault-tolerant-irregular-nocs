@@ -1,7 +1,6 @@
 template <class T>
 GraphRepresentation<T>::GraphRepresentation() {
 	numNodes = numEdges = 0;
-	nullEdgeValue = NULL;
 }
 
 template <class T>

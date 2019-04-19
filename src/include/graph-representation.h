@@ -5,7 +5,7 @@
 // Contains methods that are overwritten by
 // its sons.
 template <class T>
-class GraphRepresentation<T> {
+class GraphRepresentation {
 protected:
 	unsigned int numNodes;
 	unsigned int numEdges;
