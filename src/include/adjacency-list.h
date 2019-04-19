@@ -20,6 +20,14 @@ private:
 	// The adjacency list itself
 	std::vector<std::vector<Edge<T>>> adjl;
 
+	// returns a NULL pointer if either origin or destination
+	// are out of the range [0, numNodes); or if
+	// adjl[origin][destination == nullEdgeValue
+	Edge<T>* searchEdge(unsigned origin, unsigned destination);
+	// returns edge position.
+	// ERROR WILL OCCUR IF edge is not in adjl.
+	size_t getEdgePos(unsigned origin, Edge<T>* edge);
+
 public:
 	// Constructors
 	AdjacencyList();
@@ -38,6 +46,7 @@ public:
 
 	void delEdge(unsigned int origin, unsigned int destination);
 
+	// returns if adjl[origin][destination] != nullEdgeValue
 	bool edgeExists(unsigned int origin, unsigned int destination);
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);

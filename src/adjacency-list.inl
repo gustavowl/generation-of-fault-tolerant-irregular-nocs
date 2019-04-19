@@ -1,4 +1,17 @@
-#include <iostream> //TODO: DELETE ME
+template<class T>
+Edge<T>* AdjacencyList<T>::searchEdge(unsigned int origin,
+		unsigned int destination) {
+	if (origin >= numNodes, destination >= numNodes)
+		return NULL;
+
+	//begin search
+	for (size_t i = 0; i < adjl[origin].size(); i++) {
+		if (adjl[origin][i].dest == destination)
+			return &adjl[origin][i];
+	}
+
+	return NULL;
+}
 
 template <class T>
 AdjacencyList<T>::AdjacencyList() {
@@ -34,22 +47,35 @@ void AdjacencyList<T>::addEdge(unsigned int origin, unsigned int destination,
 
 	adjl[origin].push_back(e);
 	numEdges++;
-
-	std<T>::cout << origin << ',' << destination << ',' << value << std::endl;
 }
 
 template <class T>
 void AdjacencyList<T>::delEdge(unsigned int origin, unsigned int destination) {
-	//numEdges--;
-	//TODO
+
+	Edge<T>* e = searchEdge(origin, destination);
+
+	if (e == NULL)
+		return;
+
+	size_t pos = getEdgePos(origin, e);
+
+	adjl[origin].erase(adjl[origin].begin() + pos);
+	numEdges--;
 }
 
 template <class T>
 bool AdjacencyList<T>::edgeExists(unsigned int origin, unsigned int destination) {
-	return false;
+	if (origin >= numNodes || destination >= numNodes)
+		return false;
+	return getEdgeValue(origin, destination) != nullEdgeValue;
 }
 
 template <class T>
 T AdjacencyList<T>::getEdgeValue(unsigned int origin, unsigned int destination) {
-	return NULL;
+
+	Edge<T>* e = searchEdge(origin, destination);
+
+	if (e != NULL)
+		return e->value;
+	return nullEdgeValue;
 }

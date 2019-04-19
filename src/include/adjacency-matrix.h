@@ -50,7 +50,7 @@ public:
 	//the valid range: [0, numNodes)
 	void delEdge(unsigned int origin, unsigned int destination);
 
-	// returns if adjm[origin][destiny] != nullEdgeValue
+	// returns if adjm[origin][destination] != nullEdgeValue
 	bool edgeExists(unsigned int origin, unsigned int destination);
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);
