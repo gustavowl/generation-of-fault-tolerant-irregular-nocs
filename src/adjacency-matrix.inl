@@ -2,7 +2,7 @@ template <class T>
 void AdjacencyMatrix<T>::triangNodeIdSwap(unsigned int* origin,
 		unsigned int* destination) {
 
-	if (isTriangular && *origin > *destination) {
+	if (isTriangular && *origin < *destination) {
 		unsigned int change = *origin;
 		*origin = *destination;
 		*destination = change;

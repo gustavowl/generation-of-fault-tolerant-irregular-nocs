@@ -31,7 +31,7 @@ private:
 
 	//conditional triangular matrix Node Id Swap:
 	//swaps the nodes ids if matrix is triangular and
-	//origin > destination (equivalent to attempting to access
+	//origin < destination (equivalent to attempting to access
 	//the upper triangle matrix)
 	void triangNodeIdSwap(unsigned int* origin, unsigned int* destination);
 
