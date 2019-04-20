@@ -9,6 +9,8 @@ void AdjacencyMatrix<T>::triangNodeIdSwap(unsigned int* origin,
 	}
 }
 
+//TODO: verify if space to  be allocated is free.
+//Otherwise, process may be killed.
 template <class T>
 AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 		bool symmetric, bool triangular, T nullEdgeValue) {
@@ -148,7 +150,7 @@ void AdjacencyMatrix<T>::setInvalid() {
 			}
 
 			delete[] this->adjm[i];
-			std::cout << "Deallocated " << i << " out of " <<
+			std::cout << "Deallocated " << i + 1 << " out of " <<
 				this->numNodes << std::endl;
 		}
 		delete[] this-> adjm;

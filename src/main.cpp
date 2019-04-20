@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 			gr->getNumNodes(), true, true, false);
 	GraphConverter::convert(gr, &adjm);
 	AdjacencyMatrix<unsigned int> ba = AdjacencyMatrix<unsigned int>(
-			100000, false, false, 0);
+			1000, false, false, 0);
 
 	std::cout << "Graph read from file:\n" <<
 		"==============================" << std::endl;
