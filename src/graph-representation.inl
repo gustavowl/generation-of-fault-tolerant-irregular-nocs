@@ -18,6 +18,11 @@ unsigned int GraphRepresentation<T>::getNumEdges() {
 }
 
 template <class T>
+bool GraphRepresentation<T>::isValid() {
+	return numNodes != 0;
+}
+
+template <class T>
 void GraphRepresentation<T>::print() {
 	for (unsigned int orig = 0; orig < numNodes; orig++) {
 		for (unsigned int dest = 0; dest < numNodes; dest++) {

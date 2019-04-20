@@ -78,6 +78,8 @@ AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
 		return NULL;
 	}
 
+	adjl->shrinkToFit(); //saves memory space
+
 	return adjl;
 }
 

@@ -20,6 +20,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	this->adjm.resize(numNodes);
 	if (adjm.empty())
 		return;
+	this->adjm.shrink_to_fit(); //saves memory space
 
 	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
@@ -28,14 +29,31 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
-		for (unsigned int i = 0; i < numNodes; i++)
+		for (unsigned int i = 0; i < numNodes; i++) {
 			this->adjm[i].resize(i + 1);
+			//TODO: bad_alloc
+			//TODO: set all values to nullEdgeValue
+			if (this->adjm[i].empty()) {
+				//failed to allocate memory. Reset
+				setInvalid();
+				return;
+			}
+			this->adjm[i].shrink_to_fit();
+		}
 		return;
 	}
 	
 	//else, resizes adjm columns to square matrix
-	for (unsigned int i = 0; i < numNodes; i++)
+	for (unsigned int i = 0; i < numNodes; i++) {
 		this->adjm[i].resize(numNodes);
+		//TODO: bad_alloc
+		if (this->adjm[i].empty()) {
+			//failed to allocate memory. Reset
+			setInvalid();
+			return;
+		}
+		this->adjm[i].shrink_to_fit();
+	}
 }
 
 template <class T>
@@ -100,4 +118,12 @@ T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 	triangNodeIdSwap(&origin, &destination);
 
 	return adjm[origin][destination];
+}
+
+template <class T>
+void AdjacencyMatrix<T>::setInvalid() {
+	//Set graph as zero-order/invalid.
+	this->adjm.resize(0);
+	this->adjm.shrink_to_fit(); //saves memory
+	this->numNodes = 0;
 }

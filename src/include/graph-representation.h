@@ -32,6 +32,9 @@ public:
 
 	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
 
+	//alias to isZeroOrder.
+	bool isValid();
+
 	//TODO: DELETEME (DEBUG)
 	void print();
 };

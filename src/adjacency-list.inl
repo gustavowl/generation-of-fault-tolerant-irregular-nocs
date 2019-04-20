@@ -32,8 +32,9 @@ AdjacencyList<T>::AdjacencyList(unsigned int numNodes, T nullEdgeValue) {
 	if (numNodes == 0) return;
 	
 	this->adjl.resize(numNodes);
-	if (adjl.empty())
+	if (adjl.empty()) //TODO: bad_alloc
 		return;
+	this->adjl.shrink_to_fit(); // saves memory space
 	this->numNodes = numNodes;
 	this->nullEdgeValue = nullEdgeValue;
 }
@@ -55,7 +56,7 @@ void AdjacencyList<T>::addEdge(unsigned int origin, unsigned int destination,
 	e.dest = destination;
 	e.value = value;
 
-	adjl[origin].push_back(e);
+	adjl[origin].push_back(e); //TODO: bad_alloc
 	this->numEdges++;
 }
 
@@ -88,4 +89,10 @@ T AdjacencyList<T>::getEdgeValue(unsigned int origin, unsigned int destination) 
 	if (e != NULL)
 		return e->value;
 	return this->nullEdgeValue;
+}
+
+template <class T>
+void AdjacencyList<T>::shrinkToFit() {
+	for (unsigned int i = 0; i < this->numNodes; i++)
+		this->adjl[i].shrink_to_fit();
 }

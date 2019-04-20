@@ -35,6 +35,11 @@ private:
 	//the upper triangle matrix)
 	void triangNodeIdSwap(unsigned int* origin, unsigned int* destination);
 
+	//Called when constructor is unable to allocate memory.
+	//If any element (edge or node) was added,
+	//it is destroyed.
+	void setInvalid();
+
 public:
 	// Constructor
 	AdjacencyMatrix();
