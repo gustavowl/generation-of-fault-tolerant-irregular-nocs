@@ -30,16 +30,14 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
 		for (unsigned int i = 0; i < numNodes; i++) {
-			this->adjm[i].resize(i + 1);
+			//resize and sets all values to nullEdgeValue
+			this->adjm[i].resize(i + 1, this->nullEdgeValue);
 			//TODO: bad_alloc
 			if (this->adjm[i].empty()) {
 				//failed to allocate memory. Reset
 				setInvalid();
 				return;
 			}
-			//sets all values to nullEdgeValue
-			for (unsigned int j = 0; j < i + 1; j++)
-				this->adjm[i][j] = this->nullEdgeValue;
 			this->adjm[i].shrink_to_fit();
 		}
 		return;
@@ -47,16 +45,20 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	
 	//else, resizes adjm columns to square matrix
 	for (unsigned int i = 0; i < numNodes; i++) {
-		this->adjm[i].resize(numNodes);
+		//resizes and sets all values to nullEdgeValue
+		try {
+			this->adjm[i].resize(numNodes, this->nullEdgeValue);
+			std::cout << "Allocated " << i << " out of " << numNodes << '\n';
+		}
+		catch (std::bad_alloc& ba) {
+			std::cerr << "bad_alloc caught: " << ba.what() << '\n';
+		}
 		//TODO: bad_alloc
 		if (this->adjm[i].empty()) {
 			//failed to allocate memory. Reset
 			setInvalid();
 			return;
 		}
-		//sets all values to nullEdgeValue
-		for (unsigned int j = 0; j < numNodes; j++)
-			this->adjm[i][j] = this->nullEdgeValue;
 		this->adjm[i].shrink_to_fit();
 	}
 }
@@ -128,6 +130,7 @@ T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 template <class T>
 void AdjacencyMatrix<T>::setInvalid() {
 	//Set graph as zero-order/invalid.
+	std::cout << "SET INVALID" << std::endl;
 	this->adjm.resize(0);
 	this->adjm.shrink_to_fit(); //saves memory
 	this->numNodes = 0;
