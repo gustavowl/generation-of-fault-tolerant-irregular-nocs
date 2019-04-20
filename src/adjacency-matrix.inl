@@ -17,10 +17,14 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	if (numNodes == 0 || (triangular && !symmetric))
 		return;
 
-	this->adjm.resize(numNodes);
-	if (adjm.empty())
+	this->adjm = new (std::nothrow) T* [numNodes];
+	if (this->adjm == NULL) { //unable to allocate mem space
+		setInvalid();
 		return;
-	this->adjm.shrink_to_fit(); //saves memory space
+	}
+	//removes garbage pointers
+	for (unsigned int i = 0; i < numNodes; i++)
+		this->adjm[i] = NULL;
 
 	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
@@ -30,41 +34,42 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
 		for (unsigned int i = 0; i < numNodes; i++) {
-			//resize and sets all values to nullEdgeValue
-			this->adjm[i].resize(i + 1, this->nullEdgeValue);
-			//TODO: bad_alloc
-			if (this->adjm[i].empty()) {
+			//allocates space
+			this->adjm[i] = new (std::nothrow) T [i+1];
+
+			if (this->adjm[i] == NULL) {
 				//failed to allocate memory. Reset
 				setInvalid();
 				return;
 			}
-			this->adjm[i].shrink_to_fit();
+			//sets all values to nullEdgeValue
+			for (unsigned int j = 0; j <= i; j++)
+				this->adjm[i][j] = this->nullEdgeValue;
 		}
 		return;
 	}
 	
 	//else, resizes adjm columns to square matrix
 	for (unsigned int i = 0; i < numNodes; i++) {
-		//resizes and sets all values to nullEdgeValue
-		try {
-			this->adjm[i].resize(numNodes, this->nullEdgeValue);
-			std::cout << "Allocated " << i << " out of " << numNodes << '\n';
-		}
-		catch (std::bad_alloc& ba) {
-			std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-		}
-		//TODO: bad_alloc
-		if (this->adjm[i].empty()) {
+		//allocates space
+		this->adjm[i] = new (std::nothrow) T [i+1];
+
+		if (this->adjm[i] == NULL) {
 			//failed to allocate memory. Reset
 			setInvalid();
 			return;
 		}
-		this->adjm[i].shrink_to_fit();
+		//sets all values to nullEdgeValue
+		for (unsigned int j = 0; j <= i; j++)
+			this->adjm[i][j] = this->nullEdgeValue;
+		std::cout << "Allocated " << i+1 << " out of " <<
+			numNodes << std::endl;
 	}
 }
 
 template <class T>
 AdjacencyMatrix<T>::~AdjacencyMatrix() {
+	setInvalid();
 }
 
 template <class T>
@@ -131,7 +136,23 @@ template <class T>
 void AdjacencyMatrix<T>::setInvalid() {
 	//Set graph as zero-order/invalid.
 	std::cout << "SET INVALID" << std::endl;
-	this->adjm.resize(0);
-	this->adjm.shrink_to_fit(); //saves memory
+
+	if (this->adjm != NULL) {
+		//then there are some arrays allocated
+		for (unsigned int i = 0; i < this->numNodes; i++) {
+
+			if (this->adjm[i] == NULL) {
+				//by the way the constructor works,
+				//all pointers from here on are also NULL
+				break;
+			}
+
+			delete[] this->adjm[i];
+			std::cout << "Deallocated " << i << " out of " <<
+				this->numNodes << std::endl;
+		}
+		delete[] this-> adjm;
+	}
+
 	this->numNodes = 0;
 }

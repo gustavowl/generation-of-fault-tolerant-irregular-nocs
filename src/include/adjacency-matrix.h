@@ -2,7 +2,6 @@
 #define __ADJACENCY_MATRIX__
 
 #include "graph-representation.h"
-#include <vector>
 
 // This class is used for representing graphs
 // as square adjacency matrices.
@@ -27,7 +26,7 @@ private:
 
 	// The adjacency matrix itself:
 	// adjm[origin][destiny] = weight;
-	std::vector<std::vector<T>> adjm;
+	T** adjm;
 
 	//conditional triangular matrix Node Id Swap:
 	//swaps the nodes ids if matrix is triangular and
