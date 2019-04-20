@@ -1,6 +1,8 @@
 #ifndef __GRAPH_REPRESENTATION__
 #define __GRAPH_REPRESENTATION__
 
+#include <vector>
+
 // Abstract class for a graph representation.
 // Contains methods that are overwritten by
 // its sons.
@@ -32,6 +34,8 @@ public:
 
 	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
 
+	virtual std::vector<unsigned int> getNeighbours(unsigned int node);
+	
 	//alias to isZeroOrder.
 	bool isValid();
 

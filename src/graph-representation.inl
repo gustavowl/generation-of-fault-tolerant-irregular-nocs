@@ -18,6 +18,21 @@ unsigned int GraphRepresentation<T>::getNumEdges() {
 }
 
 template <class T>
+std::vector<unsigned int> GraphRepresentation<T>::getNeighbours(unsigned int node) {
+	unsigned int ncount = 0; //neighbours count
+	std::vector<unsigned int> neighbours (this->numNodes);
+
+	for (unsigned int dest = 0; dest < this->numNodes; dest++) {
+		if (this->edgeExists(node, dest))
+			neighbours[ncount++] = dest;
+	}
+
+	neighbours.resize(ncount);
+	neighbours.shrink_to_fit();
+	return neighbours;
+}
+
+template <class T>
 bool GraphRepresentation<T>::isValid() {
 	return numNodes != 0;
 }
