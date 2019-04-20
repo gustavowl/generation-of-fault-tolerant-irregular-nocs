@@ -25,19 +25,21 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
 	this->isTriangular = triangular;
-	this->nullEdgeValue = this->nullEdgeValue;
+	this->nullEdgeValue = nullEdgeValue;
 
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
 		for (unsigned int i = 0; i < numNodes; i++) {
 			this->adjm[i].resize(i + 1);
 			//TODO: bad_alloc
-			//TODO: set all values to nullEdgeValue
 			if (this->adjm[i].empty()) {
 				//failed to allocate memory. Reset
 				setInvalid();
 				return;
 			}
+			//sets all values to nullEdgeValue
+			for (unsigned int j = 0; j < i + 1; j++)
+				this->adjm[i][j] = this->nullEdgeValue;
 			this->adjm[i].shrink_to_fit();
 		}
 		return;
@@ -52,6 +54,9 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 			setInvalid();
 			return;
 		}
+		//sets all values to nullEdgeValue
+		for (unsigned int j = 0; j < numNodes; j++)
+			this->adjm[i][j] = this->nullEdgeValue;
 		this->adjm[i].shrink_to_fit();
 	}
 }

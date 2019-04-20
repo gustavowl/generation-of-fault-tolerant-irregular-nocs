@@ -53,9 +53,9 @@ public:
 
 	// This function should be called in order to
 	// save memory usage. It is recommended to call it
-	// after multiple calls do addEdge. For instance,
-	// call it after the adding loop finishes, not
-	// in each iteration.
+	// after multiple calls to addEdge or delEdge.
+	// For instance, it may be called after a loop finishes,
+	// not in each iteration.
 	void shrinkToFit();
 };
 
