@@ -18,6 +18,18 @@ int main(int argc, char *argv[]) {
 			gr->getNumNodes(), true, true, false);
 	GraphConverter::convert(gr, &adjm);
 
+	std::cout << "Graph read from file:\n" <<
+		"==============================" << std::endl;
+	gr->print();
+	std::cout << "==============================" << std::endl;
+	std::cout << "Converted Graph:\n" <<
+		"==============================" << std::endl;
+	adjm.print();
+
+	std::cout << "==============================" << std::endl;
+	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() << std::endl;
+
+
 	delete gr;
 
 	return 0;

@@ -31,8 +31,12 @@ public:
 	virtual bool edgeExists(unsigned int origin, unsigned int destination) = 0;
 
 	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
+
+	//TODO: DELETEME (DEBUG)
+	void print();
 };
 
+#include <iostream> //TODO: DELETEME (DEBUG)
 #include "../graph-representation.inl"
 
 #endif

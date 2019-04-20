@@ -1,5 +1,6 @@
 src/obj/*.o
 gftinoc
+debug
 *.swp
 task-graphs/tgff-*/
 adj-lists/

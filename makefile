@@ -16,11 +16,18 @@ INLS = $(patsubst %, $(SRCDIR)/%, $(_INLS))
 
 GCC = g++
 CFLAGS = -I$(INCDIR) -Wall
+DEBUGFLAGS = -g -O0
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS) $(INLS)
-	$(GCC) -c -o $@ $< $(CFLAGS)
+	$(GCC) -c -o $@ $< $(CFLAGS) $(DEBUGFLAGS)
 
 gftinoc: $(OBJS)
 	$(GCC) $^ -o $@ $(CFLAGS)
+
+debug: $(OBJS)
+	$(GCC)  $^ -o $@ $(CFLAGS) 
+
+clean:
+	rm -f $(OBJDIR)/*.o
 
 .PHONY: clean
