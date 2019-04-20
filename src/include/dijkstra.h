@@ -3,10 +3,17 @@
 
 #include "graph-representation.h"
 #include <vector>
+#include <limits>
 
 //Groups different versions of Dijkstra's algorithm
+template <class T>
 class Dijkstra {
 public:
+	struct Node {
+		unsigned int nodeId;
+		T weightSum;
+		unsigned int hops;
+	}
 
 	//Dijkstra's Algorithm interface.
 	//graph is the graph representation itself.
@@ -14,30 +21,25 @@ public:
 	//deset: destination node.
 	//isWeight states whether the graph is weighted or not.
 	//If false; then dijkstra's algorithm can return the first
-	//path found.
+	//path found (pruning the search space).
 	//
-	//It returns a vector pointer containing the shortest path
-	//found. NULL is returned if no path is found.
-	//NOTE: remember to deallocate pointer.
-	template <class T>
-	static vector<unsigned int>* dijkstra(
+	//Returns a node struct that contains:
+	//reached node id (assert that nodeId == dest),
+	//weightSum (sum of the weights from orig to dest),
+	//and hops (number of hops from orig to dest).
+	static node dijkstra(
 			const GraphRepresentation<T>* graph,
 			unsigned int orig, unsigned int dest,
 			bool isWeighted=true);
 
 private:
-	//implementation of weighted Dijkstra's Algorithm
-	template <class T>
-	static vector<unsigned int>* weighted(
-			const GraphRepresentation<T>* graph,
-			unsigned int orig, unsigned int dest);
+	bool isWeighted;
 
-	//implementation of unweighted Dijkstr'as Algorithm:
-	//returns once the first path is found.
-	template <class T>
-	static vector<unsigned int>* unweighted(
-			const GraphRepresentation<T>* graph,
-			unsigned int orig, unsigned int dest);
+	static node extractMin(std::vector<node>* minPriority, bool isWeighted=true);
+
+	static void relaxWeighted(Node* orig, Node* dest, T weight);
+
+	static void relaxUnweighted(Node* orig, Node* dest);
 };
 
 #include "../dijkstra.inl"
