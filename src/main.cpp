@@ -23,6 +23,8 @@ int main(int argc, char *argv[]) {
 	AdjacencyMatrix<unsigned int> adjm = AdjacencyMatrix<unsigned int>(
 			gr->getNumNodes(), false, false, 0);
 	GraphConverter::convert(gr, &adjm);
+	
+	GraphRepresentation<unsigned int>* adjm2 = adjm.copy();
 //	AdjacencyMatrix<unsigned int> ba = AdjacencyMatrix<unsigned int>(
 //			1000, false, false, 0);
 //

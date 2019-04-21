@@ -34,6 +34,8 @@ public:
 
 	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
 
+	virtual GraphRepresentation<T>* copy() = 0;
+
 	virtual std::vector<unsigned int> getNeighbours(unsigned int node);
 	
 	//alias to isZeroOrder.

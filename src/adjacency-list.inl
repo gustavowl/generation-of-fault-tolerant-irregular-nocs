@@ -92,6 +92,29 @@ T AdjacencyList<T>::getEdgeValue(unsigned int origin, unsigned int destination) 
 }
 
 template <class T>
+GraphRepresentation<T>* AdjacencyList<T>::copy() {
+	//initial instantiations
+	AdjacencyList<T>* ret = new AdjacencyList<T>(this->numNodes,
+			this->nullEdgeValue);
+
+	//checks if graph created is valid
+	if (ret->numNodes == 0)
+		return NULL;
+
+	//copies edges
+	for (unsigned int i = 0; i < this->numNodes; i++) {
+		for (unsigned int j = 0; j < this->adjl[i].size(); j++) {
+			ret->addEdge(i, this->adjl[i][j].dest,
+					this->adjl[i][j].value);
+		}
+	}
+
+	ret->shrinkToFit();
+
+	return ret;
+}
+
+template <class T>
 void AdjacencyList<T>::shrinkToFit() {
 	for (unsigned int i = 0; i < this->numNodes; i++)
 		this->adjl[i].shrink_to_fit();

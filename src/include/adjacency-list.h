@@ -51,6 +51,8 @@ public:
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);
 
+	GraphRepresentation<T>* copy();
+
 	// This function should be called in order to
 	// save memory usage. It is recommended to call it
 	// after multiple calls to addEdge or delEdge.

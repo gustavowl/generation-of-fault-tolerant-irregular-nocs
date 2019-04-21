@@ -135,6 +135,31 @@ T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 }
 
 template <class T>
+GraphRepresentation<T>* AdjacencyMatrix<T>::copy() {
+	//calls constructor to reserve mem space and initial instantiation
+	AdjacencyMatrix<T>* ret = new AdjacencyMatrix(this->numNodes,
+			this->isSymmetric, this->isTriangular, this->nullEdgeValue);
+
+	//checks if matrix if valid
+	if (ret->numNodes == 0)
+		return NULL;
+
+	//copies edges
+	for (unsigned int i = 0; i < ret->numNodes; i++) {
+		unsigned int max_j = ret->numNodes - 1;
+
+		if (ret->isSymmetric)
+			max_j = i;
+		
+		for(unsigned int j = 0; j <= max_j; j++)
+			if (this->edgeExists(i, j))
+				ret->addEdge(i, j, this->getEdgeValue(i, j));
+	}
+
+	return ret;
+}
+
+template <class T>
 void AdjacencyMatrix<T>::setInvalid() {
 	//Set graph as zero-order/invalid.
 	std::cout << "SET INVALID" << std::endl;

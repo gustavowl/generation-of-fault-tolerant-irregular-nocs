@@ -61,6 +61,8 @@ public:
 	bool edgeExists(unsigned int origin, unsigned int destination);
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);
+
+	GraphRepresentation<T>* copy();
 };
 
 #include "../adjacency-matrix.inl"
