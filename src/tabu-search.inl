@@ -1,18 +1,52 @@
 template <class T>
 void fitToEpsilon(AdjacencyMatrix<bool>* initSol, unsigned int epsilon) {
-	while (epsilon < ret->getNumEdges()) {
+	//saves nodes degrees
+	unsigned int size = initSol->getNumNodes();
+	unsigned int degrees[initSol->getNumNodes()];
+	for unsigned int i = 0; i < initSol->getNumNodes(); i++)
+		degrees[i] = initSol->getNodeDegree(i);
+
+	while (epsilon < initSol->getNumEdges()) {
 		//removes edges
-		unsigned int degrees[ret->getNumNodes()];
-		for unsigned int i = 0; i < ret->getNumNodes(); i++)
-			degrees[i] = ret->getNodeDegree(i);
+		//computes positions of the two nodes with largest degrees
+		unsigned int largest = 0;
+		unsigned int largest2 = 0;
 
+		for (unsigned int i = 1; i < size; i++) {
+			if (degrees[i] > degrees[largest]) {
+				largest2 = largest;
+				largest = i;
+				continue;
+			}
+			if (degrees[i] > degrees[largest2])
+				largest2 = i;
+		}
 
+		initSol->delEdge(largest, largest2);
+		degrees[largest]--;
+		degrees[largest2]--;
 	}
-	while (epsilon > ret->getNumEdges()) {
+
+	while (epsilon > initSol->getNumEdges()) {
 		//adds edges
-		
+		//computes positions of the two nodes with smallest degrees
+		unsigned int smallest = 0;
+		unsigned int smallest2 = 0;
+
+		for (unsigned int i = 1; i < size; i++) {
+			if (degrees[i] < degrees[smallest]) {
+				smallest2 = smallest;
+				smallest = i;
+				continue;
+			}
+			if (degrees[i] < degrees[smallest2])
+				smallest2 = i;
+		}
+
+		initSol->addEdge(smallest, smallest2, true);
+		degrees[smallest]++;
+		degrees[smallest2]++;
 	}
-	//TODO: while (epsilon > ret->getNumEdges()) addEdges()
 }
 
 template <class T>
