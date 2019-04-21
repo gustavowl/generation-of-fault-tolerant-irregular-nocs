@@ -51,6 +51,9 @@ public:
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);
 
+	//returns the out-degree
+	unsigned int getNodeDegree(unsigned int node);
+
 	GraphRepresentation<T>* copy();
 
 	// This function should be called in order to

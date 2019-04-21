@@ -34,8 +34,17 @@ public:
 
 	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
 
+	virtual unsigned int getNodeDegree(unsigned int node) = 0;
+
 	virtual GraphRepresentation<T>* copy() = 0;
 
+	//returns a vector containing the next step neighbours.
+	//For an undirected graph:
+	//	a----b----c
+	//	getneighbours(b) shall return the list [a, c]
+	//For a directed graph,
+	//	a---->b---->c
+	//	getneighbours(b) shall return the list [c]
 	virtual std::vector<unsigned int> getNeighbours(unsigned int node);
 	
 	//alias to isZeroOrder.

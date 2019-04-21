@@ -92,6 +92,11 @@ T AdjacencyList<T>::getEdgeValue(unsigned int origin, unsigned int destination) 
 }
 
 template <class T>
+unsigned int AdjacencyList<T>::getNodeDegree(unsigned int node) {
+	return getNeighbours(node).size;
+}
+
+template <class T>
 GraphRepresentation<T>* AdjacencyList<T>::copy() {
 	//initial instantiations
 	AdjacencyList<T>* ret = new AdjacencyList<T>(this->numNodes,

@@ -24,9 +24,18 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 		setInvalid();
 		return;
 	}
-	//removes garbage pointers
+	//removes garbage content
 	for (unsigned int i = 0; i < numNodes; i++)
 		this->adjm[i] = NULL;
+
+	this->degrees = new (std::nothrow) unsigned int [numNodes];
+	if (this->degrees == NULL) {
+		setInvalid();
+		return;
+	}
+	//removes garbage content
+	for (unsigned int i = 0; i < numNodes; i++)
+		this->degrees[i] = 0;
 
 	this->numNodes = numNodes;
 	this->isSymmetric = symmetric;
@@ -89,6 +98,9 @@ void AdjacencyMatrix<T>::addEdge(unsigned int origin,
 	if (isSymmetric && !isTriangular)
 		adjm[destination][origin] = value;
 
+	degrees[origin]++;
+	degrees[destination]++;
+
 	this->numEdges++;
 }
 
@@ -106,8 +118,10 @@ void AdjacencyMatrix<T>::delEdge(unsigned int origin,
 	if (isSymmetric && !isTriangular)
 		adjm[destination][origin] = this->nullEdgeValue;
 
-	this->numEdges--;
+	degrees[origin]--;
+	degrees[destination]--;
 
+	this->numEdges--;
 }
 
 template <class T>
@@ -132,6 +146,13 @@ T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 	triangNodeIdSwap(&origin, &destination);
 
 	return adjm[origin][destination];
+}
+
+template <class T>
+unsigned int AdjacencyMatrix<T>::getNodeDegree(unsigned int node) {
+	if (node >= this->numNodes)
+		return 0;
+	return degree[node];
 }
 
 template <class T>
@@ -180,6 +201,9 @@ void AdjacencyMatrix<T>::setInvalid() {
 		}
 		delete[] this-> adjm;
 	}
+
+	if (this->degrees != NULL)
+		delete[] this->degrees;
 
 	this->numNodes = 0;
 }

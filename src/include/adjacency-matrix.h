@@ -28,6 +28,9 @@ private:
 	// adjm[origin][destiny] = weight;
 	T** adjm;
 
+	//stores the degrees of the vertices (reger to getNodeDegree())
+	unsigned int* degrees;
+
 	//conditional triangular matrix Node Id Swap:
 	//swaps the nodes ids if matrix is triangular and
 	//origin < destination (equivalent to attempting to access
@@ -61,6 +64,11 @@ public:
 	bool edgeExists(unsigned int origin, unsigned int destination);
 
 	T getEdgeValue(unsigned int origin, unsigned int destination);
+
+	//returns the number of incident edges. For both directed (asymmetric)
+	//and undirected (symmetric) graphs. For directed graphs, it computes
+	//in-degree + out-degree.
+	unsigned int getNodeDegree(unsigned int node);
 
 	GraphRepresentation<T>* copy();
 };
