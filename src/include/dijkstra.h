@@ -13,7 +13,7 @@ public:
 		unsigned int nodeId;
 		T weightSum;
 		unsigned int hops;
-	}
+	};
 
 	//Dijkstra's Algorithm interface.
 	//graph is the graph representation itself.
@@ -28,16 +28,13 @@ public:
 	//reached node id (assert that nodeId == dest),
 	//weightSum (sum of the weights from orig to dest),
 	//and hops (number of hops from orig to dest).
-	static node dijkstra(
-			const GraphRepresentation<T>* graph,
+	static Node dijkstra(
+			GraphRepresentation<T>* graph,
 			unsigned int orig, unsigned int dest,
-			bool isWeighted=true);
+			T weightInf, bool isWeighted=true);
 
 private:
-	bool isWeighted;
-
-	static node extractMin(std::vector<node>* minPriority, T weightInf,
-			bool isWeighted=true);
+	static Node extractMin(std::vector<Node>* minPriority, bool isWeighted=true);
 
 	static void relaxWeighted(Node* orig, Node* dest, T weight);
 

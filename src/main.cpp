@@ -1,8 +1,11 @@
+//TODO: clean includes
 #include <iostream>
 #include "include/file-manager.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-matrix.h"
 #include "include/graph-converter.h"
+#include "include/dijkstra.h"
+#include <limits>
 
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
@@ -34,6 +37,12 @@ int main(int argc, char *argv[]) {
 	std::cout << "==============================" << std::endl;
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() << std::endl;
 
+	std::cout << "DEBUGS DJIKSTRA'S ALGORITHM" << std::endl;
+	for (unsigned int i = 1; i < gr->getNumEdges(); i++)
+		std::cout << "0 to " << i << " = " <<
+			Dijkstra<unsigned int>::dijkstra(gr, 0, i,
+					std::numeric_limits<unsigned int>::max()).weightSum <<
+			std::endl;
 
 	delete gr;
 

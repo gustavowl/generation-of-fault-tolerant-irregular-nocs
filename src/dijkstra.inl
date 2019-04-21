@@ -1,10 +1,9 @@
 template <class T>
-node Dijkstra<T>::dijkstra (
-		const GraphRepresentation<T>* graph,
+typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
+		GraphRepresentation<T>* graph,
 		unsigned int orig, unsigned int dest,
 		T weightInf, bool isWeighted) {
 
-	this->isWeighted = isWeighted;
 	unsigned int hopInf = std::numeric_limits<unsigned int>::max();
 	//sets Dijkstra's vars
 	bool wasVisited[graph->getNumNodes()]; //prevents cycling
@@ -29,18 +28,19 @@ node Dijkstra<T>::dijkstra (
 		wasVisited[selectedNode.nodeId] = true;
 
 		//relaxation
-		neighbours = graph->getNeighbours(selectedNode.nodeid);
+		neighbours = graph->getNeighbours(selectedNode.nodeId);
 		while (! neighbours.empty()) {
-			unsigned int neighbour = neighbours.pop_back();
+			unsigned int neighbour = neighbours.back();
+			neighbours.pop_back();
 			//prevents cycling:
 			//check if node was previously visited
 			if (!wasVisited[neighbour]) {
-				if (this->isWeighted) {
+				if (isWeighted) {
 					relaxWeighted(&selectedNode, &nodes[neighbour],
 							graph->getEdgeValue(selectedNode.nodeId, neighbour));
 				}
 				else {
-					relaxUnweighted(&selectedNode, &minPriority[neighbour]);
+					relaxUnweighted(&selectedNode, &nodes[neighbour]);
 				}
 			}
 		}
@@ -54,30 +54,30 @@ node Dijkstra<T>::dijkstra (
 }
 
 template <class T>
-node Dijkstra<T>::extractMin(std::vector<node>* minPriority,
+typename Dijkstra<T>::Node Dijkstra<T>::extractMin(std::vector<Node>* minPriority,
 		bool isWeighted) {
 	unsigned int index = 0;
-	unsigned int minHops = minPriority[0].hops;
-	T minWeight = minPriority[0].weightSum;
+	unsigned int minHops = minPriority->at(0).hops;
+	T minWeight = minPriority->at(0).weightSum;
 
 	//searches min
-	for (unsigned int i; i < minPriority->size(); i++) {
+	for (unsigned int i = 1; i < minPriority->size(); i++) {
 		if (isWeighted) {
-			if (minPriority[i].weightSum < minWeight) {
-				minWeight = minPriority[i].weightSum;
+			if (minPriority->at(i).weightSum < minWeight) {
+				minWeight = minPriority->at(i).weightSum;
 				index = i;
 			}
 			continue;
 		}
 		//not weighted
-		if (minPriority[i].hops < minHops) {
-			minHops = minPriority[i].hops;
+		if (minPriority->at(i).hops < minHops) {
+			minHops = minPriority->at(i).hops;
 			index = i;
 		}
 	}
 
 	//extracts min
-	node ret = minPriority[index];
+	Node ret = minPriority->at(index);
 	minPriority->erase(minPriority->begin() + index);
 	return ret;
 }
@@ -92,5 +92,5 @@ template <class T>
 void Dijkstra<T>::relaxUnweighted(Node* orig, Node* dest) {
 	//TODO
 	if (dest->hops > orig->hops + 1)
-		dest->hopes = orig->hops + 1;
+		dest->hops = orig->hops + 1;
 }
