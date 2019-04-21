@@ -28,6 +28,7 @@ public:
 	//reached node id (assert that nodeId == dest),
 	//weightSum (sum of the weights from orig to dest),
 	//and hops (number of hops from orig to dest).
+	//TODO: verify if it returns infinity for disconnected graphs.
 	static Node dijkstra(
 			GraphRepresentation<T>* graph,
 			unsigned int orig, unsigned int dest,
