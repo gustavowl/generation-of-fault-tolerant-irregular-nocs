@@ -54,7 +54,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 	//else, resizes adjm columns to square matrix
 	for (unsigned int i = 0; i < numNodes; i++) {
 		//allocates space
-		this->adjm[i] = new (std::nothrow) T [i+1];
+		this->adjm[i] = new (std::nothrow) T [numNodes];
 
 		if (this->adjm[i] == NULL) {
 			//failed to allocate memory. Reset
@@ -62,7 +62,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 			return;
 		}
 		//sets all values to nullEdgeValue
-		for (unsigned int j = 0; j <= i; j++)
+		for (unsigned int j = 0; j < numNodes; j++)
 			this->adjm[i][j] = this->nullEdgeValue;
 		std::cout << "Allocated " << i+1 << " out of " <<
 			numNodes << std::endl;

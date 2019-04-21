@@ -2,10 +2,10 @@ template <class T>
 node Dijkstra<T>::dijkstra (
 		const GraphRepresentation<T>* graph,
 		unsigned int orig, unsigned int dest,
-		bool isWeighted) {
+		T weightInf, bool isWeighted) {
 
 	this->isWeighted = isWeighted;
-	//unsigned int inf = std::numeric_limits<unsigned int>::max();
+	unsigned int hopInf = std::numeric_limits<unsigned int>::max();
 	//sets Dijkstra's vars
 	bool wasVisited[graph->getNumNodes()]; //prevents cycling
 	//empty set (S)
@@ -13,8 +13,8 @@ node Dijkstra<T>::dijkstra (
 	//initializes priority queue w/ origin node
 	std::vector<Node> minPriority (graph->getNumNodes());
 	for (unsigned int i = 0; i < graph->getNumNodes(); i++) {
-		minPriority[i] = Node { i, inf, inf };
-		nodes[i] = Node { i, inf, inf };
+		minPriority[i] = Node { i, weightInf, hopInf };
+		nodes[i] = Node { i, weightInf, hopInf };
 		wasVisited[i] = false;
 	}
 	minPriority[orig] = Node { orig, 0, 0 };
@@ -40,7 +40,7 @@ node Dijkstra<T>::dijkstra (
 							graph->getEdgeValue(selectedNode.nodeId, neighbour));
 				}
 				else {
-					relaxUnweighted(&selectedNode, &nodes[neighbour]);
+					relaxUnweighted(&selectedNode, &minPriority[neighbour]);
 				}
 			}
 		}

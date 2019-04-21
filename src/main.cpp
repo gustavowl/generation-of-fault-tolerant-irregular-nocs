@@ -7,19 +7,22 @@
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
 
+//	GraphRepresentation<unsigned int>* gr = FileManager::readFile(
+//			"task-graphs/adj-lists/descriptions_seed-73_multi-start-node_weight-range-1-100_dimension-4x4_in-out-degrees-2-2.adjl",
+//			FileManager::FileType::adj_list);
+
 	GraphRepresentation<unsigned int>* gr = FileManager::readFile(
-			"task-graphs/adj-lists/descriptions_seed-73_multi-start-node_weight-range-1-100_dimension-4x4_in-out-degrees-2-2.adjl",
-			FileManager::FileType::adj_list);
+			"dijkstra.adjl", FileManager::FileType::adj_list, ' ');
 
 	if (gr == NULL)
 		return -1;
 
-	AdjacencyMatrix<bool> adjm = AdjacencyMatrix<bool>(
-			gr->getNumNodes(), true, true, false);
+	AdjacencyMatrix<unsigned int> adjm = AdjacencyMatrix<unsigned int>(
+			gr->getNumNodes(), false, false, 0);
 	GraphConverter::convert(gr, &adjm);
-	AdjacencyMatrix<unsigned int> ba = AdjacencyMatrix<unsigned int>(
-			1000, false, false, 0);
-
+//	AdjacencyMatrix<unsigned int> ba = AdjacencyMatrix<unsigned int>(
+//			1000, false, false, 0);
+//
 	std::cout << "Graph read from file:\n" <<
 		"==============================" << std::endl;
 	gr->print();

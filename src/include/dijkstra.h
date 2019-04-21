@@ -19,7 +19,8 @@ public:
 	//graph is the graph representation itself.
 	//orig: origin node.
 	//deset: destination node.
-	//isWeight states whether the graph is weighted or not.
+	//weightInf: the value correspondent to infinity for type T.
+	//isWeighted: states whether the graph is weighted or not.
 	//If false; then dijkstra's algorithm can return the first
 	//path found (pruning the search space).
 	//
@@ -35,7 +36,8 @@ public:
 private:
 	bool isWeighted;
 
-	static node extractMin(std::vector<node>* minPriority, bool isWeighted=true);
+	static node extractMin(std::vector<node>* minPriority, T weightInf,
+			bool isWeighted=true);
 
 	static void relaxWeighted(Node* orig, Node* dest, T weight);
 
