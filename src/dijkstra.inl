@@ -42,6 +42,12 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 				else {
 					relaxUnweighted(&selectedNode, &nodes[neighbour]);
 				}
+
+				//updates minPriority queue
+				for (unsigned int i = 0; i < minPriority.size(); i++) {
+					if (minPriority[i].nodeId == neighbour)
+						minPriority[i] = nodes[neighbour];
+				}
 			}
 		}
 		
@@ -84,13 +90,17 @@ typename Dijkstra<T>::Node Dijkstra<T>::extractMin(std::vector<Node>* minPriorit
 
 template <class T>
 void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight) {
-	if (dest->weightSum > orig->weightSum + weight)
+	if (dest->weightSum > orig->weightSum + weight) {
 		dest->weightSum = orig->weightSum + weight;
+		dest->hops = orig->hops + 1;
+	}
 }
 
 template <class T>
 void Dijkstra<T>::relaxUnweighted(Node* orig, Node* dest) {
 	//TODO
-	if (dest->hops > orig->hops + 1)
+	if (dest->hops > orig->hops + 1) {
 		dest->hops = orig->hops + 1;
+		dest->weightSum = dest->hops;
+	}
 }

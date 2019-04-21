@@ -38,9 +38,9 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() << std::endl;
 
 	std::cout << "DEBUGS DJIKSTRA'S ALGORITHM" << std::endl;
-	for (unsigned int i = 1; i < gr->getNumEdges(); i++)
+	for (unsigned int i = 1; i < adjm.getNumNodes(); i++)
 		std::cout << "0 to " << i << " = " <<
-			Dijkstra<unsigned int>::dijkstra(gr, 0, i,
+			Dijkstra<unsigned int>::dijkstra(&adjm, 0, i,
 					std::numeric_limits<unsigned int>::max()).weightSum <<
 			std::endl;
 
