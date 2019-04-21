@@ -41,6 +41,8 @@ public:
 	//alias to isZeroOrder.
 	bool isValid();
 
+	T getNullEdgeValue();
+
 	//TODO: DELETEME (DEBUG)
 	void print();
 };

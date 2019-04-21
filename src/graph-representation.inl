@@ -51,3 +51,8 @@ void GraphRepresentation<T>::print() {
 		}
 	}
 }
+
+template <class T>
+T GraphRepresentation<T>::getNullEdgeValue() {
+	return nullEdgeValue;
+}
