@@ -1,5 +1,6 @@
 template <class T>
-void fitToEpsilon(AdjacencyMatrix<bool>* initSol, size_t epsilon) {
+void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol,
+		size_t epsilon) {
 	//saves nodes degrees
 	size_t size = initSol->getNumNodes();
 	size_t degrees[initSol->getNumNodes()];
@@ -122,7 +123,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 			//	3.1 - Dijkstra
 			size_t numHops = Dijkstra<bool>::dijkstra(
 					initSol, largest, lrgNeighbour, true,
-					false);
+					false).hops;
 			//	3.2 - if disconnected
 			if (numHops == HOP_INF) {
 				//	3.2.1 - remove edge
@@ -132,7 +133,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 				//	3.2.2 - add edge to a TabuList.
 				//	neighbours is being used as complement of
 				//	tabuList. Refer back to step 2.2
-				for (int i = 0; i < neighbours.size(); i++) {
+				for (size_t i = 0; i < neighbours.size(); i++) {
 					if (neighbours[i] == smlNeighbour) {
 						neighbours.erase(neighbours.begin() + i);
 						break;
@@ -163,7 +164,7 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 	AdjacencyMatrix<bool>* initSol = new AdjacencyMatrix<bool>(
 			tg->getNumNodes(), true, true, tg->getNullEdgeValue());
 	//unable to generate graph
-	if (initSol->getNumNodes != tg->getNumNodes())
+	if (initSol->getNumNodes() != tg->getNumNodes())
 		return NULL;
 
 	//copies task graph, converting representation
@@ -229,6 +230,6 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	delete currSol;
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
-	AdjacencyMatrix<T>* ret;
+	AdjacencyMatrix<T>* ret = NULL;
 	return ret;
 }

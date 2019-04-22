@@ -4,7 +4,7 @@
 #include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-matrix.h"
-//#include "include/tabu-search.h"
+#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
@@ -35,10 +35,10 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
 		std::endl;
 
-//	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
-//			gr, gr->getNumEdges(), 10000, gr->getNumEdges());
+	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
+			gr, gr->getNumEdges(), 10000, gr->getNumEdges());
 
-	//delete res;
+	delete res;
 	delete gr;
 
 	return 0;
