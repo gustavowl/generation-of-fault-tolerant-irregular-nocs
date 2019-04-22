@@ -7,16 +7,16 @@
 
 //defines constant for infinity hops
 //Alias for unreachable
-#define HOP_INF std::numeric_limits<unsigned int>::max()
+#define HOP_INF std::numeric_limits<size_t>::max()
 
 //Groups different versions of Dijkstra's algorithm
 template <class T>
 class Dijkstra {
 public:
 	struct Node {
-		unsigned int nodeId;
+		size_t nodeId;
 		T weightSum;
-		unsigned int hops;
+		size_t hops;
 	};
 
 	//Dijkstra's Algorithm interface.
@@ -35,7 +35,7 @@ public:
 	//TODO: verify if it returns infinity for disconnected graphs.
 	static Node dijkstra(
 			GraphRepresentation<T>* graph,
-			unsigned int orig, unsigned int dest,
+			size_t orig, size_t dest,
 			T weightInf, bool isWeighted=true);
 
 private:

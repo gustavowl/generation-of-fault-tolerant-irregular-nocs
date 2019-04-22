@@ -29,13 +29,13 @@ private:
 	T** adjm;
 
 	//stores the degrees of the vertices (reger to getNodeDegree())
-	unsigned int* degrees;
+	size_t* degrees;
 
 	//conditional triangular matrix Node Id Swap:
 	//swaps the nodes ids if matrix is triangular and
 	//origin < destination (equivalent to attempting to access
 	//the upper triangle matrix)
-	void triangNodeIdSwap(unsigned int* origin, unsigned int* destination);
+	void triangNodeIdSwap(size_t* origin, size_t* destination);
 
 	//Called when constructor is unable to allocate memory.
 	//If any element (edge or node) was added,
@@ -46,7 +46,7 @@ public:
 	// Constructor
 	AdjacencyMatrix();
 	//expects numNodes > 0 and that triangular -> symmetric
-	AdjacencyMatrix(unsigned int numNodes, bool symmetric=false,
+	AdjacencyMatrix(size_t numNodes, bool symmetric=false,
 			bool triangular=false, T nullEdgeValue=NULL);
 
 	// Destructor
@@ -54,21 +54,21 @@ public:
 
 	//adds edge for valid values of origin and destination:
 	//[0, numNodes). Adds edge if value != nullEdgeValue.
-	void addEdge(unsigned int origin, unsigned int destination, T value);
+	void addEdge(size_t origin, size_t destination, T value);
 
 	//deletes edge if origin and destination values are in
 	//the valid range: [0, numNodes)
-	void delEdge(unsigned int origin, unsigned int destination);
+	void delEdge(size_t origin, size_t destination);
 
 	// returns if adjm[origin][destination] != nullEdgeValue
-	bool edgeExists(unsigned int origin, unsigned int destination);
+	bool edgeExists(size_t origin, size_t destination);
 
-	T getEdgeValue(unsigned int origin, unsigned int destination);
+	T getEdgeValue(size_t origin, size_t destination);
 
 	//returns the number of incident edges. For both directed (asymmetric)
 	//and undirected (symmetric) graphs. For directed graphs, it computes
 	//in-degree + out-degree.
-	unsigned int getNodeDegree(unsigned int node);
+	size_t getNodeDegree(size_t node);
 
 	GraphRepresentation<T>* copy();
 };

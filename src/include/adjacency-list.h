@@ -14,7 +14,7 @@ private:
 	//The information about the origin is implicit
 	//inside adjl vector.
 	struct Edge {
-		unsigned int dest; 
+		size_t dest; 
 		T value;
 	};
 	// The adjacency list itself
@@ -23,16 +23,16 @@ private:
 	// returns a NULL pointer if either origin or destination
 	// are out of the range [0, numNodes); or if
 	// adjl[origin][destination == nullEdgeValue
-	Edge* searchEdge(unsigned origin, unsigned destination);
+	Edge* searchEdge(size_t origin, size_t destination);
 	// returns edge position.
 	// only call this method if edge is in adjl.
-	size_t getEdgePos(unsigned origin, Edge* edge);
+	size_t getEdgePos(size_t origin, Edge* edge);
 
 public:
 	// Constructors
 	AdjacencyList();
 	//only initializes if numNodes > 0
-	AdjacencyList(unsigned int numNodes, T nullEdgeValue=NULL);
+	AdjacencyList(size_t numNodes, T nullEdgeValue=NULL);
 
 	// Destructor
 	~AdjacencyList(); 
@@ -41,18 +41,18 @@ public:
 	//Not empty if constructor AdjacencyList(numNodes)
 	//was called with valid arguments
 	//Valid arguments if origin and destination in [0, numNodes)
-	void addEdge(unsigned int origin, unsigned int destination,
+	void addEdge(size_t origin, size_t destination,
 			T value);
 
-	void delEdge(unsigned int origin, unsigned int destination);
+	void delEdge(size_t origin, size_t destination);
 
 	// returns if adjl[origin][destination] != nullEdgeValue
-	bool edgeExists(unsigned int origin, unsigned int destination);
+	bool edgeExists(size_t origin, size_t destination);
 
-	T getEdgeValue(unsigned int origin, unsigned int destination);
+	T getEdgeValue(size_t origin, size_t destination);
 
 	//returns the out-degree
-	unsigned int getNodeDegree(unsigned int node);
+	size_t getNodeDegree(size_t node);
 
 	GraphRepresentation<T>* copy();
 

@@ -9,8 +9,8 @@
 template <class T>
 class GraphRepresentation {
 protected:
-	unsigned int numNodes;
-	unsigned int numEdges;
+	size_t numNodes;
+	size_t numEdges;
 	
 	// Value to be assigned to an Edge if it
 	// is deleted, i.e. does not exist.
@@ -22,19 +22,18 @@ public:
 	// Destructor
 	virtual ~GraphRepresentation();
 
-	unsigned int getNumNodes();
-	unsigned int getNumEdges();
+	size_t getNumNodes();
+	size_t getNumEdges();
 
-	virtual void addEdge(unsigned int origin, unsigned int destination,
-			T value) = 0;
+	virtual void addEdge(size_t origin, size_t destination, T value) = 0;
 
-	virtual void delEdge(unsigned int origin, unsigned int destination) = 0;
+	virtual void delEdge(size_t origin, size_t destination) = 0;
 
-	virtual bool edgeExists(unsigned int origin, unsigned int destination) = 0;
+	virtual bool edgeExists(size_t origin, size_t destination) = 0;
 
-	virtual T getEdgeValue(unsigned int origin, unsigned int destination) = 0;
+	virtual T getEdgeValue(size_t origin, size_t destination) = 0;
 
-	virtual unsigned int getNodeDegree(unsigned int node) = 0;
+	virtual size_t getNodeDegree(size_t node) = 0;
 
 	virtual GraphRepresentation<T>* copy() = 0;
 
@@ -45,7 +44,7 @@ public:
 	//For a directed graph,
 	//	a---->b---->c
 	//	getneighbours(b) shall return the list [c]
-	virtual std::vector<unsigned int> getNeighbours(unsigned int node);
+	virtual std::vector<size_t> getNeighbours(size_t node);
 	
 	//alias to isZeroOrder.
 	bool isValid();

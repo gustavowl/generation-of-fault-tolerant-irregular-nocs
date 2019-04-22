@@ -1,9 +1,9 @@
 template <class T>
-void AdjacencyMatrix<T>::triangNodeIdSwap(unsigned int* origin,
-		unsigned int* destination) {
+void AdjacencyMatrix<T>::triangNodeIdSwap(size_t* origin,
+		size_t* destination) {
 
 	if (isTriangular && *origin < *destination) {
-		unsigned int change = *origin;
+		size_t change = *origin;
 		*origin = *destination;
 		*destination = change;
 	}
@@ -12,7 +12,7 @@ void AdjacencyMatrix<T>::triangNodeIdSwap(unsigned int* origin,
 //TODO: verify if space to  be allocated is free.
 //Otherwise, process may be killed.
 template <class T>
-AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
+AdjacencyMatrix<T>::AdjacencyMatrix(size_t numNodes,
 		bool symmetric, bool triangular, T nullEdgeValue) {
 
 	// Assert triangular -> symmetric
@@ -25,16 +25,16 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 		return;
 	}
 	//removes garbage content
-	for (unsigned int i = 0; i < numNodes; i++)
+	for (size_t i = 0; i < numNodes; i++)
 		this->adjm[i] = NULL;
 
-	this->degrees = new (std::nothrow) unsigned int [numNodes];
+	this->degrees = new (std::nothrow) size_t [numNodes];
 	if (this->degrees == NULL) {
 		setInvalid();
 		return;
 	}
 	//removes garbage content
-	for (unsigned int i = 0; i < numNodes; i++)
+	for (size_t i = 0; i < numNodes; i++)
 		this->degrees[i] = 0;
 
 	this->numNodes = numNodes;
@@ -44,7 +44,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 
 	//resizes adjm columns to triangular matrix
 	if (isTriangular) {
-		for (unsigned int i = 0; i < numNodes; i++) {
+		for (size_t i = 0; i < numNodes; i++) {
 			//allocates space
 			this->adjm[i] = new (std::nothrow) T [i+1];
 
@@ -54,14 +54,14 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 				return;
 			}
 			//sets all values to nullEdgeValue
-			for (unsigned int j = 0; j <= i; j++)
+			for (size_t j = 0; j <= i; j++)
 				this->adjm[i][j] = this->nullEdgeValue;
 		}
 		return;
 	}
 	
 	//else, resizes adjm columns to square matrix
-	for (unsigned int i = 0; i < numNodes; i++) {
+	for (size_t i = 0; i < numNodes; i++) {
 		//allocates space
 		this->adjm[i] = new (std::nothrow) T [numNodes];
 
@@ -71,7 +71,7 @@ AdjacencyMatrix<T>::AdjacencyMatrix(unsigned int numNodes,
 			return;
 		}
 		//sets all values to nullEdgeValue
-		for (unsigned int j = 0; j < numNodes; j++)
+		for (size_t j = 0; j < numNodes; j++)
 			this->adjm[i][j] = this->nullEdgeValue;
 		std::cout << "Allocated " << i+1 << " out of " <<
 			numNodes << std::endl;
@@ -84,8 +84,8 @@ AdjacencyMatrix<T>::~AdjacencyMatrix() {
 }
 
 template <class T>
-void AdjacencyMatrix<T>::addEdge(unsigned int origin,
-		unsigned int destination, T value) {
+void AdjacencyMatrix<T>::addEdge(size_t origin,
+		size_t destination, T value) {
 	//check if arguments are valid
 	if (origin >= this->numNodes || destination >= this->numNodes ||
 			value == this->nullEdgeValue)
@@ -105,8 +105,8 @@ void AdjacencyMatrix<T>::addEdge(unsigned int origin,
 }
 
 template <class T>
-void AdjacencyMatrix<T>::delEdge(unsigned int origin,
-		unsigned int destination){
+void AdjacencyMatrix<T>::delEdge(size_t origin,
+		size_t destination){
 	//check if arguments are valid
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return;
@@ -125,8 +125,8 @@ void AdjacencyMatrix<T>::delEdge(unsigned int origin,
 }
 
 template <class T>
-bool AdjacencyMatrix<T>::edgeExists(unsigned int origin,
-		unsigned int destination) {
+bool AdjacencyMatrix<T>::edgeExists(size_t origin,
+		size_t destination) {
 
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return false;
@@ -137,8 +137,8 @@ bool AdjacencyMatrix<T>::edgeExists(unsigned int origin,
 }
 
 template <class T>
-T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
-		unsigned int destination) {
+T AdjacencyMatrix<T>::getEdgeValue(size_t origin,
+		size_t destination) {
 
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return this->nullEdgeValue;
@@ -149,10 +149,10 @@ T AdjacencyMatrix<T>::getEdgeValue(unsigned int origin,
 }
 
 template <class T>
-unsigned int AdjacencyMatrix<T>::getNodeDegree(unsigned int node) {
+size_t AdjacencyMatrix<T>::getNodeDegree(size_t node) {
 	if (node >= this->numNodes)
 		return 0;
-	return degree[node];
+	return degrees[node];
 }
 
 template <class T>
@@ -166,13 +166,13 @@ GraphRepresentation<T>* AdjacencyMatrix<T>::copy() {
 		return NULL;
 
 	//copies edges
-	for (unsigned int i = 0; i < ret->numNodes; i++) {
-		unsigned int max_j = ret->numNodes - 1;
+	for (size_t i = 0; i < ret->numNodes; i++) {
+		size_t max_j = ret->numNodes - 1;
 
 		if (ret->isSymmetric)
 			max_j = i;
 		
-		for(unsigned int j = 0; j <= max_j; j++)
+		for(size_t j = 0; j <= max_j; j++)
 			if (this->edgeExists(i, j))
 				ret->addEdge(i, j, this->getEdgeValue(i, j));
 	}
@@ -187,7 +187,7 @@ void AdjacencyMatrix<T>::setInvalid() {
 
 	if (this->adjm != NULL) {
 		//then there are some arrays allocated
-		for (unsigned int i = 0; i < this->numNodes; i++) {
+		for (size_t i = 0; i < this->numNodes; i++) {
 
 			if (this->adjm[i] == NULL) {
 				//by the way the constructor works,

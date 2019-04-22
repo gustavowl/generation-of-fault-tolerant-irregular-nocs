@@ -8,21 +8,21 @@ GraphRepresentation<T>::~GraphRepresentation() {
 }
 
 template <class T>
-unsigned int GraphRepresentation<T>::getNumNodes() {
+size_t GraphRepresentation<T>::getNumNodes() {
 	return numNodes;
 }
 
 template <class T>
-unsigned int GraphRepresentation<T>::getNumEdges() {
+size_t GraphRepresentation<T>::getNumEdges() {
 	return numEdges;
 }
 
 template <class T>
-std::vector<unsigned int> GraphRepresentation<T>::getNeighbours(unsigned int node) {
-	unsigned int ncount = 0; //neighbours count
-	std::vector<unsigned int> neighbours (this->numNodes);
+std::vector<size_t> GraphRepresentation<T>::getNeighbours(size_t node) {
+	size_t ncount = 0; //neighbours count
+	std::vector<size_t> neighbours (this->numNodes);
 
-	for (unsigned int dest = 0; dest < this->numNodes; dest++) {
+	for (size_t dest = 0; dest < this->numNodes; dest++) {
 		if (this->edgeExists(node, dest))
 			neighbours[ncount++] = dest;
 	}
@@ -39,8 +39,8 @@ bool GraphRepresentation<T>::isValid() {
 
 template <class T>
 void GraphRepresentation<T>::print() {
-	for (unsigned int orig = 0; orig < numNodes; orig++) {
-		for (unsigned int dest = 0; dest < numNodes; dest++) {
+	for (size_t orig = 0; orig < numNodes; orig++) {
+		for (size_t dest = 0; dest < numNodes; dest++) {
 			if (!edgeExists(orig, dest))
 				continue;
 			std::cout << "Edge from " << orig <<

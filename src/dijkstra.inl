@@ -1,7 +1,7 @@
 template <class T>
 typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 		GraphRepresentation<T>* graph,
-		unsigned int orig, unsigned int dest,
+		size_t orig, size_t dest,
 		T weightInf, bool isWeighted) {
 
 	//sets Dijkstra's vars
@@ -10,7 +10,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 	Node nodes[graph->getNumNodes()];
 	//initializes priority queue w/ origin node
 	std::vector<Node> minPriority (graph->getNumNodes());
-	for (unsigned int i = 0; i < graph->getNumNodes(); i++) {
+	for (size_t i = 0; i < graph->getNumNodes(); i++) {
 		minPriority[i] = Node { i, weightInf, HOP_INF };
 		nodes[i] = Node { i, weightInf, HOP_INF };
 		wasVisited[i] = false;
@@ -19,7 +19,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 
 	//custom vars
 	Node selectedNode;
-	std::vector<unsigned int> neighbours;
+	std::vector<size_t> neighbours;
 
 	while(! minPriority.empty()) {
 		selectedNode = extractMin(&minPriority);
@@ -29,7 +29,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 		//relaxation
 		neighbours = graph->getNeighbours(selectedNode.nodeId);
 		while (! neighbours.empty()) {
-			unsigned int neighbour = neighbours.back();
+			size_t neighbour = neighbours.back();
 			neighbours.pop_back();
 			//prevents cycling:
 			//check if node was previously visited
@@ -43,7 +43,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 				}
 
 				//updates minPriority queue
-				for (unsigned int i = 0; i < minPriority.size(); i++) {
+				for (size_t i = 0; i < minPriority.size(); i++) {
 					if (minPriority[i].nodeId == neighbour) {
 						minPriority[i] = nodes[neighbour];
 						break;
@@ -63,12 +63,12 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 template <class T>
 typename Dijkstra<T>::Node Dijkstra<T>::extractMin(std::vector<Node>* minPriority,
 		bool isWeighted) {
-	unsigned int index = 0;
-	unsigned int minHops = minPriority->at(0).hops;
+	size_t index = 0;
+	size_t minHops = minPriority->at(0).hops;
 	T minWeight = minPriority->at(0).weightSum;
 
 	//searches min
-	for (unsigned int i = 1; i < minPriority->size(); i++) {
+	for (size_t i = 1; i < minPriority->size(); i++) {
 		if (isWeighted) {
 			if (minPriority->at(i).weightSum < minWeight) {
 				minWeight = minPriority->at(i).weightSum;
