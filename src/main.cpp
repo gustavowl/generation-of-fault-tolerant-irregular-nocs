@@ -10,22 +10,23 @@
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
 
-//	GraphRepresentation<unsigned int>* gr = FileManager::readFile(
+//	GraphRepresentation<size_t>* gr = FileManager::readFile(
 //			"task-graphs/adj-lists/descriptions_seed-73_multi-start-node_weight-range-1-100_dimension-4x4_in-out-degrees-2-2.adjl",
 //			FileManager::FileType::adj_list);
 
-	GraphRepresentation<unsigned int>* gr = FileManager::readFile(
+	GraphRepresentation<size_t>* gr = FileManager::readFile(
 			"dijkstra.adjl", FileManager::FileType::adj_list, ' ');
 
 	if (gr == NULL)
 		return -1;
 
-	AdjacencyMatrix<unsigned int> adjm = AdjacencyMatrix<unsigned int>(
+	AdjacencyMatrix<size_t> adjm = AdjacencyMatrix<size_t>(
 			gr->getNumNodes(), false, false, 0);
 	GraphConverter::convert(gr, &adjm);
 	
-	GraphRepresentation<unsigned int>* adjm2 = adjm.copy();
-//	AdjacencyMatrix<unsigned int> ba = AdjacencyMatrix<unsigned int>(
+	GraphRepresentation<size_t>* adjm2 = adjm.copy();
+	delete adjm2;
+//	AdjacencyMatrix<size_t> ba = AdjacencyMatrix<size_t>(
 //			1000, false, false, 0);
 //
 	std::cout << "Graph read from file:\n" <<
@@ -40,10 +41,10 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() << std::endl;
 
 	std::cout << "DEBUGS DJIKSTRA'S ALGORITHM" << std::endl;
-	for (unsigned int i = 1; i < adjm.getNumNodes(); i++)
+	for (size_t i = 1; i < adjm.getNumNodes(); i++)
 		std::cout << "0 to " << i << " = " <<
-			Dijkstra<unsigned int>::dijkstra(&adjm, 0, i,
-					std::numeric_limits<unsigned int>::max()).weightSum <<
+			(Dijkstra<size_t>::dijkstra(&adjm, 0, i,
+					std::numeric_limits<size_t>::max(), false).hops == HOP_INF) <<
 			std::endl;
 
 	delete gr;

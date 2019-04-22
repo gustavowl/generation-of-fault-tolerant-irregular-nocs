@@ -99,9 +99,6 @@ void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight) {
 
 template <class T>
 void Dijkstra<T>::relaxUnweighted(Node* orig, Node* dest) {
-	//TODO
-	if (dest->hops > orig->hops + 1) {
+	if (dest->hops > orig->hops + 1)
 		dest->hops = orig->hops + 1;
-		dest->weightSum = dest->hops;
-	}
 }

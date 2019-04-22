@@ -1,6 +1,6 @@
 #include "include/file-manager.h"
 
-GraphRepresentation<unsigned int>* FileManager::readFile(std::string filepath,
+GraphRepresentation<size_t>* FileManager::readFile(std::string filepath,
 		FileType type, char separator, char comment) {
 	std::ifstream file;
 
@@ -10,7 +10,7 @@ GraphRepresentation<unsigned int>* FileManager::readFile(std::string filepath,
 		return NULL;
 	}
 	
-	GraphRepresentation<unsigned int>* gr = NULL;
+	GraphRepresentation<size_t>* gr = NULL;
 
 	switch (type) {
 		case FileType::adj_list:
@@ -26,7 +26,7 @@ GraphRepresentation<unsigned int>* FileManager::readFile(std::string filepath,
 	return gr;
 }
 
-AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
+AdjacencyList<size_t>* FileManager::readAdjList(std::ifstream* file,
 		char separator, char comment) {
 	std::string line;
 
@@ -39,10 +39,10 @@ AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
 	// origin, destiny, and weight
 	const int expected_size = 3;
 	int values[expected_size] = {};
-	unsigned int size = 0;
+	size_t size = 0;
 
-	AdjacencyList<unsigned int>* adjl = NULL;
-	unsigned int num_edges = 0;
+	AdjacencyList<size_t>* adjl = NULL;
+	size_t num_edges = 0;
 
 	while (std::getline(*file, line)) {
 		size = parseLine(&line, values, separator, comment);
@@ -56,7 +56,7 @@ AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
 		}
 
 		if (!header_read && size == expected_header_size) {
-			adjl = new AdjacencyList<unsigned int>(values[0], 0);
+			adjl = new AdjacencyList<size_t>(values[0], 0);
 			num_edges = values[1];
 			header_read = true;
 
@@ -83,14 +83,14 @@ AdjacencyList<unsigned int>* FileManager::readAdjList(std::ifstream* file,
 	return adjl;
 }
 
-AdjacencyMatrix<unsigned int>* FileManager::readAdjMatrix(std::ifstream* file,
+AdjacencyMatrix<size_t>* FileManager::readAdjMatrix(std::ifstream* file,
 		char separator, char comment) {
 	return NULL;
 }
 
-unsigned int FileManager::parseLine(std::string* line, int* values,
+size_t FileManager::parseLine(std::string* line, int* values,
 		char separator, char comment) {
-	unsigned int size = 0;
+	size_t size = 0;
 	std::size_t index;
 	
 	// removes comment

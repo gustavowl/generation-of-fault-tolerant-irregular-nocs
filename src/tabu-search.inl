@@ -1,18 +1,18 @@
 template <class T>
-void fitToEpsilon(AdjacencyMatrix<bool>* initSol, unsigned int epsilon) {
+void fitToEpsilon(AdjacencyMatrix<bool>* initSol, size_t epsilon) {
 	//saves nodes degrees
-	unsigned int size = initSol->getNumNodes();
-	unsigned int degrees[initSol->getNumNodes()];
-	for unsigned int i = 0; i < initSol->getNumNodes(); i++)
+	size_t size = initSol->getNumNodes();
+	size_t degrees[initSol->getNumNodes()];
+	for size_t i = 0; i < initSol->getNumNodes(); i++)
 		degrees[i] = initSol->getNodeDegree(i);
 
 	while (epsilon < initSol->getNumEdges()) {
 		//removes edges
 		//computes positions of the two nodes with largest degrees
-		unsigned int largest = 0;
-		unsigned int largest2 = 0;
+		size_t largest = 0;
+		size_t largest2 = 0;
 
-		for (unsigned int i = 1; i < size; i++) {
+		for (size_t i = 1; i < size; i++) {
 			if (degrees[i] > degrees[largest]) {
 				largest2 = largest;
 				largest = i;
@@ -30,10 +30,10 @@ void fitToEpsilon(AdjacencyMatrix<bool>* initSol, unsigned int epsilon) {
 	while (epsilon > initSol->getNumEdges()) {
 		//adds edges
 		//computes positions of the two nodes with smallest degrees
-		unsigned int smallest = 0;
-		unsigned int smallest2 = 0;
+		size_t smallest = 0;
+		size_t smallest2 = 0;
 
-		for (unsigned int i = 1; i < size; i++) {
+		for (size_t i = 1; i < size; i++) {
 			if (degrees[i] < degrees[smallest]) {
 				smallest2 = smallest;
 				smallest = i;
@@ -51,9 +51,9 @@ void fitToEpsilon(AdjacencyMatrix<bool>* initSol, unsigned int epsilon) {
 
 template <class T>
 bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* initSol) {
-	unsigned int size = initSol->getNumNodes();
-	unsigned int degree = 0;
-	for (unsigned int i = 0; i < size; i++) {
+	size_t size = initSol->getNumNodes();
+	size_t degree = 0;
+	for (size_t i = 0; i < size; i++) {
 		degree = initSol->getNodeDegree(i);
 		if (degree < 2 || degree > 4)
 			return false;
@@ -64,25 +64,25 @@ bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* initSol) {
 template <class T>
 void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 	//sets initial variables
-	unsigned int size = initSol->getNumNodes();
-	unsigned int degrees[size];
-	for (unsigned int i = 0; i < size; i++)
+	size_t size = initSol->getNumNodes();
+	size_t degrees[size];
+	for (size_t i = 0; i < size; i++)
 		degrees[i] = initSol->getNodeDegree(i);
-	std::vector<unsigned int> neighbours;
+	std::vector<size_t> neighbours;
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
 		//1 - remove edge
 		//	1.1 - identify node with largest degree
-		unsigned int largest = 0;
-		for (unsigned int i = 1; i < size; i++) {
+		size_t largest = 0;
+		for (size_t i = 1; i < size; i++) {
 			if (degrees[i] > degrees[largest])
 				largest = i;
 		}
 		//	1.2 - identify its neighbour with largest degree
 		neighbours = initSol->getNeighbours(largest);
-		unsigned int lrgNeighbour = neighbours[0];
-		for (unsigned int i = 1; i < neighbours.size(); i++) {
+		size_t lrgNeighbour = neighbours[0];
+		for (size_t i = 1; i < neighbours.size(); i++) {
 			if (degrees[neighbours[i]] > degrees[lrgNeighbour])
 				lrgNeighbour = neighbours[i];
 		}
@@ -93,8 +93,8 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 		
 		//2 - add edge
 		//	2.1 - identify node with smallest degree
-		unsigned int smallest = 0;
-		for (unsigned int i = 1; i < size; i++) {
+		size_t smallest = 0;
+		for (size_t i = 1; i < size; i++) {
 			if (degrees[i] < degrees[smallest])
 				smallest = i;
 		}
@@ -108,8 +108,8 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 		while (true) {
 			//	2.3 - identify node neighbour with smallest degree
 			//		node in tabu list
-			unsigned int smlNeighbour = neighbours[0];
-			for (unsigned int i = 1; i < neighbours.size(); i++) {
+			size_t smlNeighbour = neighbours[0];
+			for (size_t i = 1; i < neighbours.size(); i++) {
 				if (degrees[neighbours[i]] < degrees[smlNeighbour])
 					smlNeighbour = neighbours[i];
 			}
@@ -120,7 +120,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 
 			//3 - check if graph is disconnect
 			//	3.1 - Dijkstra
-			unsigned int numHops = Dijkstra<bool>::dijkstra(
+			size_t numHops = Dijkstra<bool>::dijkstra(
 					initSol, largest, lrgNeighbour, true,
 					false);
 			//	3.2 - if disconnected
@@ -149,7 +149,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 
 template <class T>
 AdjacencyMatrix<bool>* TabuSearch<T>generateInitSol(
-		const GraphRepresentation<T>* tg, unsigned int epsilon) {
+		const GraphRepresentation<T>* tg, size_t epsilon) {
 	//checks wheter if epsilon is valid or not.
 	//i.e. if it is possible to generate a graph such that
 	//for all nodes, degree(node) in [2, 4]
@@ -183,8 +183,8 @@ T TabuSearch<T>fitness(const GraphRepresentation<T>* tg
 
 template <class T>
 AdjacencyMatrix<T>* TabuSearch<T>::start(
-		const GraphRepresentation<T>* tg, unsigned int tabuListSize,
-		unsigned int stopCriteria, unsigned int epsilon) {
+		const GraphRepresentation<T>* tg, size_t tabuListSize,
+		size_t stopCriteria, size_t epsilon) {
 
 	AdjacencyMatrix<bool>* currSol = generateValidStartGraph(tg, epsilon);
 	if (currSol == NULL)
@@ -195,7 +195,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	GraphRepresentation<T>* bestSol; //TODO: set num edges (create copy const?)
 	GraphConverter::convert(currSol, bestSol);
 	T bestFit = currFit;
-	unsigned int count = 0;
+	size_t count = 0;
 
 	while(count < stopCriteria) {
 

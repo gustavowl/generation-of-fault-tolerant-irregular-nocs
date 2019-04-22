@@ -14,7 +14,7 @@ private:
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
 	static void fitToEpsilon(AdjacencyMatrix<bool>* initSol,
-			unsigned int epsilon);
+			size_t epsilon);
 
 	//returns whether initSol is feasible or not.
 	//A solution is feasible if the degree of all of its nodes
@@ -50,7 +50,7 @@ private:
 	//i.e. if epsilon is too restrictive or not restrictive
 	//enough for \-/ node, degree(node) in [2, 4].
 	static AdjacencyMatrix<bool>* generateInitSol(
-			const GraphRepresentation<T>* tg, unsigned int epsilon);
+			const GraphRepresentation<T>* tg, size_t epsilon);
 
 	//Computes QAP
 	static T fitness(const GraphRepresentation<T>* tg);
@@ -80,8 +80,8 @@ public:
 	//	(there exists a node for which degree(node) not in [2, 4].
 	//	TODO: return set of solutions.
 	static AdjacencyMatrix<T>* start(const GraphRepresentation<T>* tg,
-			unsigned int tabuListSize, unsigned int stopCriteria,
-			unsigned int epsilon);
+			size_t tabuListSize, size_t stopCriteria,
+			size_t epsilon);
 };
 
 #include "../tabu-search.inl"
