@@ -46,6 +46,9 @@ T GraphRepresentation<T>::getNullEdgeValue() const {
 
 template <class T>
 void GraphRepresentation<T>::print() const {
+	std::string linesep = "=============================================";
+	std::cout << linesep << std::endl;
+	std::cout << numNodes << " nodes, " << numEdges << " edges\n\n";
 	for (size_t orig = 0; orig < numNodes; orig++) {
 		for (size_t dest = 0; dest < numNodes; dest++) {
 			if (!edgeExists(orig, dest))
@@ -54,7 +57,13 @@ void GraphRepresentation<T>::print() const {
 				" to " << dest << ". " <<
 				" Value = " << getEdgeValue(orig, dest) <<
 				std::endl;
-
 		}
 	}
+
+	std::cout << '\n';
+	for (size_t i = 0; i < numNodes; i++)
+		std::cout << "Node " << i << " degree = " <<
+			this->getNodeDegree(i) << std::endl;
+
+	std::cout << linesep << std::endl;
 }

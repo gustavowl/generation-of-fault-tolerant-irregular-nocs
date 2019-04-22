@@ -170,8 +170,11 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 	//copies task graph, converting representation
 	GraphConverter::convert(tg, initSol);
 
+	initSol->print();
 	fitToEpsilon(initSol, epsilon);
+	initSol->print();
 	makeFeasible(initSol);
+	initSol->print();
 
 	return initSol;
 }
