@@ -22,7 +22,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 	std::vector<size_t> neighbours;
 
 	while(! minPriority.empty()) {
-		selectedNode = extractMin(&minPriority);
+		selectedNode = extractMin(&minPriority, isWeighted);
 		nodes[selectedNode.nodeId] = selectedNode;
 		wasVisited[selectedNode.nodeId] = true;
 
