@@ -1,5 +1,5 @@
 template <class ST, class DT>
-void GraphConverter::convert(GraphRepresentation<ST>* source,
+void GraphConverter::convert(const GraphRepresentation<ST>* source,
 		GraphRepresentation<DT>* dest) {
 	//Asserts that both representations have the same
 	//number of nodes.

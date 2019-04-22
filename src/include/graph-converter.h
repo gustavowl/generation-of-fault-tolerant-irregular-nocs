@@ -19,7 +19,7 @@ public:
 	 * throughout the process.
 	 */
 	template <class ST, class DT> //Source Type, Dest Type
-	static void convert(GraphRepresentation<ST>* source, GraphRepresentation<DT>* dest);
+	static void convert(const GraphRepresentation<ST>* source, GraphRepresentation<DT>* dest);
 
 };
 
