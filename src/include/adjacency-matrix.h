@@ -54,10 +54,12 @@ public:
 
 	//adds edge for valid values of origin and destination:
 	//[0, numNodes). Adds edge if value != nullEdgeValue.
+	//and if an edge from origin to destination does not
+	//exist yet.
 	void addEdge(size_t origin, size_t destination, T value);
 
 	//deletes edge if origin and destination values are in
-	//the valid range: [0, numNodes)
+	//the valid range: [0, numNodes).
 	void delEdge(size_t origin, size_t destination);
 
 	// returns if adjm[origin][destination] != nullEdgeValue

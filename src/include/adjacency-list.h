@@ -37,7 +37,8 @@ public:
 	// Destructor
 	~AdjacencyList(); 
 
-	//only adds edges if adjl is not empty and arguments are valid.
+	//only adds edges if adjl is not empty and arguments are valid,
+	//and it does not exist already.
 	//Not empty if constructor AdjacencyList(numNodes)
 	//was called with valid arguments
 	//Valid arguments if origin and destination in [0, numNodes)

@@ -11,9 +11,8 @@ void GraphConverter::convert(const GraphRepresentation<ST>* source,
 	//Copies edges
 	for (size_t i = 0; i < snodes; i++) {
 		for (size_t j = 0; j < snodes; j++) {
-			if (! source->edgeExists(i, j))
-				continue;
-			dest->addEdge(i, j, source->getEdgeValue(i, j));
+			if (source->edgeExists(i, j))
+				dest->addEdge(i, j, source->getEdgeValue(i, j));
 		}
 	}
 }

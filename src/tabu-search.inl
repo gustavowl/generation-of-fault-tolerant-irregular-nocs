@@ -100,21 +100,33 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 				smallest = i;
 		}
 
-		//	2.2 - create empty tabuList
-		//	invalid neighbours will be removed from this list
-		//	in step 3.2.2. This has the same effect as the tabuList:
-		//	neighbours is the complement of the tabuList
-		neighbours = initSol->getNeighbours(smallest);
+		//	2.2 - create empty tabuList of target nodes
+		bool tabuList[size];
+		for (size_t i = 0; i < size; i++)
+			tabuList[i] = false;
+		tabuList[smallest] = true;
 
 		while (true) {
-			//	2.3 - identify node neighbour with smallest degree
-			//		node in tabu list
-			size_t smlNeighbour = neighbours[0];
-			for (size_t i = 1; i < neighbours.size(); i++) {
-				if (degrees[neighbours[i]] < degrees[smlNeighbour])
-					smlNeighbour = neighbours[i];
+			//	2.3 - identify second node with smallest degree
+			//		(not in tabuList)
+			size_t smlNeighbour = 0; //first node not in tabu
+			for (size_t i = 0; i < size; i++) {
+				if (!tabuList[i]) {
+					smlNeighbour = i;
+					break;
+				}
+			}
+			//second node not in tabu
+			for (size_t i = smlNeighbour + 1; i < size; i++) {
+				if (!tabuList[i] && degrees[i] < degrees[smlNeighbour])
+					smlNeighbour = i;
 			}
 			//	2.4 - add edge
+			if (initSol->edgeExists(smallest, smlNeighbour)) {
+				//edge exists, add target node to tabuList
+				tabuList[smlNeighbour] = true;
+				continue;
+			}
 			initSol->addEdge(smallest, smlNeighbour, true);
 			degrees[smallest]++;
 			degrees[smlNeighbour]++;
@@ -130,15 +142,8 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 				initSol->delEdge(smallest, smlNeighbour);
 				degrees[smallest]--;
 				degrees[smlNeighbour]--;
-				//	3.2.2 - add edge to a TabuList.
-				//	neighbours is being used as complement of
-				//	tabuList. Refer back to step 2.2
-				for (size_t i = 0; i < neighbours.size(); i++) {
-					if (neighbours[i] == smlNeighbour) {
-						neighbours.erase(neighbours.begin() + i);
-						break;
-					}
-				}
+				//	3.2.2 - add target node to a TabuList
+				tabuList[smlNeighbour] = true;
 				//	3.2.3 - go back to step 2.3
 				continue;
 			}
@@ -170,11 +175,8 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 	//copies task graph, converting representation
 	GraphConverter::convert(tg, initSol);
 
-	initSol->print();
 	fitToEpsilon(initSol, epsilon);
-	initSol->print();
 	makeFeasible(initSol);
-	initSol->print();
 
 	return initSol;
 }

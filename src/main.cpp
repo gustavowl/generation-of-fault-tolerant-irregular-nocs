@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 		std::endl;
 
 	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
-			gr, gr->getNumEdges(), 10000, gr->getNumEdges());
+			gr, gr->getNumEdges(), 10000, 12);
 
 	delete res;
 	delete gr;

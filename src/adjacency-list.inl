@@ -55,6 +55,9 @@ void AdjacencyList<T>::addEdge(size_t origin, size_t destination,
 			value == this->nullEdgeValue)
 		return;
 
+	if (this->edgeExists(origin, destination))
+		return;
+
 	AdjacencyList<T>::Edge e;
 	e.dest = destination;
 	e.value = value;
@@ -68,7 +71,7 @@ void AdjacencyList<T>::delEdge(size_t origin, size_t destination) {
 
 	const AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
 
-	if (e == NULL)
+	if (!this->edgeExists(origin, destination))
 		return;
 
 	size_t pos = getEdgePos(origin, e);

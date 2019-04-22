@@ -93,6 +93,10 @@ void AdjacencyMatrix<T>::addEdge(size_t origin,
 
 	triangNodeIdSwap(&origin, &destination);
 
+	if (this->edgeExists(origin, destination)) {
+		return;
+	}
+
 	adjm[origin][destination] = value;
 
 	if (isSymmetric && !isTriangular)
@@ -112,6 +116,10 @@ void AdjacencyMatrix<T>::delEdge(size_t origin,
 		return;
 
 	triangNodeIdSwap(&origin, &destination);
+
+	if (!this->edgeExists(origin, destination)) {
+		return;
+	}
 
 	adjm[origin][destination] = this->nullEdgeValue;
 

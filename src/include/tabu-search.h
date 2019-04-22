@@ -32,15 +32,15 @@ private:
 	//			1.3 - remove edge
 	//		2 - add edge
 	//			2.1 - identify node with smallest degree
-	//			2.2 - create empty tabuList
-	//			2.3 - identify node neighbour with smallest degree
-	//				node in tabu list
+	//			2.2 - create empty tabuList of target nodes
+	//			2.3 - identify second node with smallest degree
+	//				(not in tabuList)
 	//			2.4 - add edge
 	//		3 - check if graph is disconnect
 	//			3.1 - Dijkstra
 	//			3.2 - if disconnected
 	//				3.2.1 - remove edge
-	//				3.2.2 - add edge to a TabuList
+	//				3.2.2 - add target node to a TabuList
 	//				3.2.3 - go back to step 2.3
 	//called by generateInitSol.
 	static void makeFeasible(AdjacencyMatrix<bool>* initSol);
