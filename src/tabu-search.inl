@@ -63,6 +63,88 @@ bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* initSol) {
 
 template <class T>
 void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
+	//sets initial variables
+	unsigned int size = initSol->getNumNodes();
+	unsigned int degrees[size];
+	for (unsigned int i = 0; i < size; i++)
+		degrees[i] = initSol->getNodeDegree(i);
+	std::vector<unsigned int> neighbours;
+
+	//while (not feasible)
+	while (!isFeasible(initSol)) {
+		//1 - remove edge
+		//	1.1 - identify node with largest degree
+		unsigned int largest = 0;
+		for (unsigned int i = 1; i < size; i++) {
+			if (degrees[i] > degrees[largest])
+				largest = i;
+		}
+		//	1.2 - identify its neighbour with largest degree
+		neighbours = initSol->getNeighbours(largest);
+		unsigned int lrgNeighbour = neighbours[0];
+		for (unsigned int i = 1; i < neighbours.size(); i++) {
+			if (degrees[neighbours[i]] > degrees[lrgNeighbour])
+				lrgNeighbour = neighbours[i];
+		}
+		//	1.3 - remove edge
+		initSol->delEdge(largest, lrgNeighbour);
+		degrees[largest]--;
+		degrees[lrgNeighbour]--;
+		
+		//2 - add edge
+		//	2.1 - identify node with smallest degree
+		unsigned int smallest = 0;
+		for (unsigned int i = 1; i < size; i++) {
+			if (degrees[i] < degrees[smallest])
+				smallest = i;
+		}
+
+		//	2.2 - create empty tabuList
+		//	invalid neighbours will be removed from this list
+		//	in step 3.2.2. This has the same effect as the tabuList:
+		//	neighbours is the complement of the tabuList
+		neighbours = initSol->getNeighbours(smallest);
+
+		while (true) {
+			//	2.3 - identify node neighbour with smallest degree
+			//		node in tabu list
+			unsigned int smlNeighbour = neighbours[0];
+			for (unsigned int i = 1; i < neighbours.size(); i++) {
+				if (degrees[neighbours[i]] < degrees[smlNeighbour])
+					smlNeighbour = neighbours[i];
+			}
+			//	2.4 - add edge
+			initSol->addEdge(smallest, smlNeighbour, true);
+			degrees[smallest]++;
+			degrees[smlNeighbour]++;
+
+			//3 - check if graph is disconnect
+			//	3.1 - Dijkstra
+			unsigned int numHops = Dijkstra<bool>::dijkstra(
+					initSol, largest, lrgNeighbour, true,
+					false);
+			//	3.2 - if disconnected
+			if (numHops == HOP_INF) {
+				//	3.2.1 - remove edge
+				initSol->delEdge(smallest, smlNeighbour);
+				degrees[smallest]--;
+				degrees[smlNeighbour]--;
+				//	3.2.2 - add edge to a TabuList.
+				//	neighbours is being used as complement of
+				//	tabuList. Refer back to step 2.2
+				for (int i = 0; i < neighbours.size(); i++) {
+					if (neighbours[i] == smlNeighbour) {
+						neighbours.erase(neighbours.begin() + i);
+						break;
+					}
+				}
+				//	3.2.3 - go back to step 2.3
+				continue;
+			}
+
+			break;
+		}
+	}
 }
 
 template <class T>

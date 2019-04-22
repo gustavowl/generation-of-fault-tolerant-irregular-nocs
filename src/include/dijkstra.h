@@ -5,6 +5,10 @@
 #include <vector>
 #include <limits>
 
+//defines constant for infinity hops
+//Alias for unreachable
+#define HOP_INF std::numeric_limits<unsigned int>::max()
+
 //Groups different versions of Dijkstra's algorithm
 template <class T>
 class Dijkstra {

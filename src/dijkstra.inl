@@ -4,7 +4,6 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 		unsigned int orig, unsigned int dest,
 		T weightInf, bool isWeighted) {
 
-	unsigned int hopInf = std::numeric_limits<unsigned int>::max();
 	//sets Dijkstra's vars
 	bool wasVisited[graph->getNumNodes()]; //prevents cycling
 	//empty set (S)
@@ -12,8 +11,8 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 	//initializes priority queue w/ origin node
 	std::vector<Node> minPriority (graph->getNumNodes());
 	for (unsigned int i = 0; i < graph->getNumNodes(); i++) {
-		minPriority[i] = Node { i, weightInf, hopInf };
-		nodes[i] = Node { i, weightInf, hopInf };
+		minPriority[i] = Node { i, weightInf, HOP_INF };
+		nodes[i] = Node { i, weightInf, HOP_INF };
 		wasVisited[i] = false;
 	}
 	minPriority[orig] = Node { orig, 0, 0 };
@@ -45,8 +44,10 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 
 				//updates minPriority queue
 				for (unsigned int i = 0; i < minPriority.size(); i++) {
-					if (minPriority[i].nodeId == neighbour)
+					if (minPriority[i].nodeId == neighbour) {
 						minPriority[i] = nodes[neighbour];
+						break;
+					}
 				}
 			}
 		}
