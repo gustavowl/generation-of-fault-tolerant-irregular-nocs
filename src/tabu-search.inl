@@ -3,7 +3,7 @@ void fitToEpsilon(AdjacencyMatrix<bool>* initSol, size_t epsilon) {
 	//saves nodes degrees
 	size_t size = initSol->getNumNodes();
 	size_t degrees[initSol->getNumNodes()];
-	for size_t i = 0; i < initSol->getNumNodes(); i++)
+	for (size_t i = 0; i < initSol->getNumNodes(); i++)
 		degrees[i] = initSol->getNodeDegree(i);
 
 	while (epsilon < initSol->getNumEdges()) {
@@ -148,7 +148,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 }
 
 template <class T>
-AdjacencyMatrix<bool>* TabuSearch<T>generateInitSol(
+AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 		const GraphRepresentation<T>* tg, size_t epsilon) {
 	//checks wheter if epsilon is valid or not.
 	//i.e. if it is possible to generate a graph such that
@@ -160,10 +160,10 @@ AdjacencyMatrix<bool>* TabuSearch<T>generateInitSol(
 		return NULL;
 	}
 
-	AdjacencyMatrix<bool>* initSol = new AdjacencyMatrix(tg->getNumNodes(),
-			true, true, tg->getNullEdgeValue());
+	AdjacencyMatrix<bool>* initSol = new AdjacencyMatrix<bool>(
+			tg->getNumNodes(), true, true, tg->getNullEdgeValue());
 	//unable to generate graph
-	if (ret->getNumNodes != tg->getNumNodes())
+	if (initSol->getNumNodes != tg->getNumNodes())
 		return NULL;
 
 	//copies task graph, converting representation
@@ -176,8 +176,8 @@ AdjacencyMatrix<bool>* TabuSearch<T>generateInitSol(
 }
 
 template <class T>
-T TabuSearch<T>fitness(const GraphRepresentation<T>* tg
-		const GraphRepresentation<T>* solution) {
+T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
+		const AdjacencyMatrix<bool>* sol) {
 	return tg->getEdgeValue(0, 0); 
 }
 
@@ -186,14 +186,14 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		const GraphRepresentation<T>* tg, size_t tabuListSize,
 		size_t stopCriteria, size_t epsilon) {
 
-	AdjacencyMatrix<bool>* currSol = generateValidStartGraph(tg, epsilon);
+	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
 
 	T currFit = fitness(tg, currSol);
 	//creates a copy
-	GraphRepresentation<T>* bestSol; //TODO: set num edges (create copy const?)
-	GraphConverter::convert(currSol, bestSol);
+	//TODO: set num edges (create copy const?)
+	GraphRepresentation<bool>* bestSol = currSol->copy(); 
 	T bestFit = currFit;
 	size_t count = 0;
 
@@ -218,14 +218,17 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 		if (currFit < bestFit) {
 			count = 0;
-			bestSol = currSol;
-			bestFir = currFit;
+			delete bestSol;
+			bestSol = currSol->copy();
+			bestFit = currFit;
 			continue;
 		}
 		count++;
 	}
 
 	delete currSol;
-	//TODO: create new matrix. Compute QAP for each edge, then return
-	return bestSol;
+	//TODO: create new matrix from bestSol.
+	//	Compute QAP for each edge, then return
+	AdjacencyMatrix<T>* ret;
+	return ret;
 }

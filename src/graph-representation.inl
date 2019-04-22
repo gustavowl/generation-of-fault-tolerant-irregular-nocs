@@ -8,17 +8,19 @@ GraphRepresentation<T>::~GraphRepresentation() {
 }
 
 template <class T>
-size_t GraphRepresentation<T>::getNumNodes() {
+size_t GraphRepresentation<T>::getNumNodes() const {
 	return numNodes;
 }
 
 template <class T>
-size_t GraphRepresentation<T>::getNumEdges() {
+size_t GraphRepresentation<T>::getNumEdges() const {
 	return numEdges;
 }
 
 template <class T>
-std::vector<size_t> GraphRepresentation<T>::getNeighbours(size_t node) {
+std::vector<size_t> GraphRepresentation<T>::getNeighbours(
+		size_t node) const {
+
 	size_t ncount = 0; //neighbours count
 	std::vector<size_t> neighbours (this->numNodes);
 
@@ -33,12 +35,17 @@ std::vector<size_t> GraphRepresentation<T>::getNeighbours(size_t node) {
 }
 
 template <class T>
-bool GraphRepresentation<T>::isValid() {
+bool GraphRepresentation<T>::isValid() const {
 	return numNodes != 0;
 }
 
 template <class T>
-void GraphRepresentation<T>::print() {
+T GraphRepresentation<T>::getNullEdgeValue() const {
+	return nullEdgeValue;
+}
+
+template <class T>
+void GraphRepresentation<T>::print() const {
 	for (size_t orig = 0; orig < numNodes; orig++) {
 		for (size_t dest = 0; dest < numNodes; dest++) {
 			if (!edgeExists(orig, dest))
@@ -50,9 +57,4 @@ void GraphRepresentation<T>::print() {
 
 		}
 	}
-}
-
-template <class T>
-T GraphRepresentation<T>::getNullEdgeValue() {
-	return nullEdgeValue;
 }

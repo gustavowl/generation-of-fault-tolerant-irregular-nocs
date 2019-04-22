@@ -52,15 +52,18 @@ private:
 	static AdjacencyMatrix<bool>* generateInitSol(
 			const GraphRepresentation<T>* tg, size_t epsilon);
 
-	//Computes QAP
-	static T fitness(const GraphRepresentation<T>* tg);
+	//Computes QAP. The tg nodes are mapped to sol nodes.
+	//tg: task graph
+	//sol: solution
+	static T fitness(const GraphRepresentation<T>* tg,
+			const AdjacencyMatrix<bool>* sol);
 
 public:
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed
 	//with latency. The Tabu Search should maximise fault tolerance
 	//as well. Thus, it is a multi-objective problem. There are
-	//two was to deal with such problem class: pareto principle,
+	//two was to deal with such problem class: pareto dominance,
 	//and epsilon restriction (TODO check translation).
 	//This implementation uses epsilon restriction by fixing
 	//the number of edges.

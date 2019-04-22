@@ -1,11 +1,10 @@
 //TODO: clean includes
 #include <iostream>
 #include "include/file-manager.h"
+#include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-matrix.h"
-#include "include/graph-converter.h"
-#include "include/dijkstra.h"
-#include <limits>
+//#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
@@ -24,11 +23,6 @@ int main(int argc, char *argv[]) {
 			gr->getNumNodes(), false, false, 0);
 	GraphConverter::convert(gr, &adjm);
 	
-	GraphRepresentation<size_t>* adjm2 = adjm.copy();
-	delete adjm2;
-//	AdjacencyMatrix<size_t> ba = AdjacencyMatrix<size_t>(
-//			1000, false, false, 0);
-//
 	std::cout << "Graph read from file:\n" <<
 		"==============================" << std::endl;
 	gr->print();
@@ -38,15 +32,13 @@ int main(int argc, char *argv[]) {
 	adjm.print();
 
 	std::cout << "==============================" << std::endl;
-	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() << std::endl;
+	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
+		std::endl;
 
-	std::cout << "DEBUGS DJIKSTRA'S ALGORITHM" << std::endl;
-	for (size_t i = 1; i < adjm.getNumNodes(); i++)
-		std::cout << "0 to " << i << " = " <<
-			(Dijkstra<size_t>::dijkstra(&adjm, 0, i,
-					std::numeric_limits<size_t>::max(), false).hops == HOP_INF) <<
-			std::endl;
+//	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
+//			gr, gr->getNumEdges(), 10000, gr->getNumEdges());
 
+	//delete res;
 	delete gr;
 
 	return 0;

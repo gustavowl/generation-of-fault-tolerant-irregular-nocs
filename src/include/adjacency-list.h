@@ -23,10 +23,10 @@ private:
 	// returns a NULL pointer if either origin or destination
 	// are out of the range [0, numNodes); or if
 	// adjl[origin][destination == nullEdgeValue
-	Edge* searchEdge(size_t origin, size_t destination);
+	const Edge* searchEdge(size_t origin, size_t destination) const;
 	// returns edge position.
 	// only call this method if edge is in adjl.
-	size_t getEdgePos(size_t origin, Edge* edge);
+	size_t getEdgePos(size_t origin, const Edge* edge) const;
 
 public:
 	// Constructors
@@ -41,20 +41,19 @@ public:
 	//Not empty if constructor AdjacencyList(numNodes)
 	//was called with valid arguments
 	//Valid arguments if origin and destination in [0, numNodes)
-	void addEdge(size_t origin, size_t destination,
-			T value);
+	void addEdge(size_t origin, size_t destination, T value);
 
 	void delEdge(size_t origin, size_t destination);
 
 	// returns if adjl[origin][destination] != nullEdgeValue
-	bool edgeExists(size_t origin, size_t destination);
+	bool edgeExists(size_t origin, size_t destination) const;
 
-	T getEdgeValue(size_t origin, size_t destination);
+	T getEdgeValue(size_t origin, size_t destination) const;
 
 	//returns the out-degree
-	size_t getNodeDegree(size_t node);
+	size_t getNodeDegree(size_t node) const;
 
-	GraphRepresentation<T>* copy();
+	GraphRepresentation<T>* copy() const;
 
 	// This function should be called in order to
 	// save memory usage. It is recommended to call it

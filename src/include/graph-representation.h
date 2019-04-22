@@ -22,20 +22,20 @@ public:
 	// Destructor
 	virtual ~GraphRepresentation();
 
-	size_t getNumNodes();
-	size_t getNumEdges();
+	size_t getNumNodes() const;
+	size_t getNumEdges() const;
 
 	virtual void addEdge(size_t origin, size_t destination, T value) = 0;
 
 	virtual void delEdge(size_t origin, size_t destination) = 0;
 
-	virtual bool edgeExists(size_t origin, size_t destination) = 0;
+	virtual bool edgeExists(size_t origin, size_t destination) const = 0;
 
-	virtual T getEdgeValue(size_t origin, size_t destination) = 0;
+	virtual T getEdgeValue(size_t origin, size_t destination) const = 0;
 
-	virtual size_t getNodeDegree(size_t node) = 0;
+	virtual size_t getNodeDegree(size_t node) const = 0;
 
-	virtual GraphRepresentation<T>* copy() = 0;
+	virtual GraphRepresentation<T>* copy() const = 0;
 
 	//returns a vector containing the next step neighbours.
 	//For an undirected graph:
@@ -44,15 +44,15 @@ public:
 	//For a directed graph,
 	//	a---->b---->c
 	//	getneighbours(b) shall return the list [c]
-	virtual std::vector<size_t> getNeighbours(size_t node);
+	virtual std::vector<size_t> getNeighbours(size_t node) const;
 	
 	//alias to isZeroOrder.
-	bool isValid();
+	bool isValid() const;
 
-	T getNullEdgeValue();
+	T getNullEdgeValue() const;
 
 	//TODO: DELETEME (DEBUG)
-	void print();
+	void print() const;
 };
 
 #include <iostream> //TODO: DELETEME (DEBUG)

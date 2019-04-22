@@ -1,6 +1,6 @@
 template <class T>
 void AdjacencyMatrix<T>::triangNodeIdSwap(size_t* origin,
-		size_t* destination) {
+		size_t* destination) const {
 
 	if (isTriangular && *origin < *destination) {
 		size_t change = *origin;
@@ -126,7 +126,7 @@ void AdjacencyMatrix<T>::delEdge(size_t origin,
 
 template <class T>
 bool AdjacencyMatrix<T>::edgeExists(size_t origin,
-		size_t destination) {
+		size_t destination) const {
 
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return false;
@@ -138,7 +138,7 @@ bool AdjacencyMatrix<T>::edgeExists(size_t origin,
 
 template <class T>
 T AdjacencyMatrix<T>::getEdgeValue(size_t origin,
-		size_t destination) {
+		size_t destination) const {
 
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return this->nullEdgeValue;
@@ -149,14 +149,14 @@ T AdjacencyMatrix<T>::getEdgeValue(size_t origin,
 }
 
 template <class T>
-size_t AdjacencyMatrix<T>::getNodeDegree(size_t node) {
+size_t AdjacencyMatrix<T>::getNodeDegree(size_t node) const {
 	if (node >= this->numNodes)
 		return 0;
 	return degrees[node];
 }
 
 template <class T>
-GraphRepresentation<T>* AdjacencyMatrix<T>::copy() {
+GraphRepresentation<T>* AdjacencyMatrix<T>::copy() const {
 	//calls constructor to reserve mem space and initial instantiation
 	AdjacencyMatrix<T>* ret = new AdjacencyMatrix(this->numNodes,
 			this->isSymmetric, this->isTriangular, this->nullEdgeValue);

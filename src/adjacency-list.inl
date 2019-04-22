@@ -1,6 +1,6 @@
 template <class T>
-typename AdjacencyList<T>::Edge* AdjacencyList<T>::searchEdge(size_t origin,
-		size_t destination) {
+const typename AdjacencyList<T>::Edge* AdjacencyList<T>::searchEdge(
+		size_t origin, size_t destination) const {
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return NULL;
 
@@ -14,7 +14,9 @@ typename AdjacencyList<T>::Edge* AdjacencyList<T>::searchEdge(size_t origin,
 }
 
 template <class T>
-size_t AdjacencyList<T>::getEdgePos(size_t origin, Edge* edge) {
+size_t AdjacencyList<T>::getEdgePos(size_t origin,
+		const Edge* edge) const {
+
 	for (size_t i = 0; i < adjl[origin].size(); i++) {
 		if (&adjl[origin][i] == edge)
 			return i;
@@ -64,7 +66,7 @@ void AdjacencyList<T>::addEdge(size_t origin, size_t destination,
 template <class T>
 void AdjacencyList<T>::delEdge(size_t origin, size_t destination) {
 
-	AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
+	const AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
 
 	if (e == NULL)
 		return;
@@ -76,16 +78,18 @@ void AdjacencyList<T>::delEdge(size_t origin, size_t destination) {
 }
 
 template <class T>
-bool AdjacencyList<T>::edgeExists(size_t origin, size_t destination) {
+bool AdjacencyList<T>::edgeExists(size_t origin,
+		size_t destination) const {
 	if (origin >= this->numNodes || destination >= this->numNodes)
 		return false;
 	return getEdgeValue(origin, destination) != this->nullEdgeValue;
 }
 
 template <class T>
-T AdjacencyList<T>::getEdgeValue(size_t origin, size_t destination) {
+T AdjacencyList<T>::getEdgeValue(size_t origin,
+		size_t destination) const {
 
-	AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
+	const AdjacencyList<T>::Edge* e = searchEdge(origin, destination);
 
 	if (e != NULL)
 		return e->value;
@@ -93,12 +97,12 @@ T AdjacencyList<T>::getEdgeValue(size_t origin, size_t destination) {
 }
 
 template <class T>
-size_t AdjacencyList<T>::getNodeDegree(size_t node) {
+size_t AdjacencyList<T>::getNodeDegree(size_t node) const {
 	return this->getNeighbours(node).size();
 }
 
 template <class T>
-GraphRepresentation<T>* AdjacencyList<T>::copy() {
+GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 	//initial instantiations
 	AdjacencyList<T>* ret = new AdjacencyList<T>(this->numNodes,
 			this->nullEdgeValue);
