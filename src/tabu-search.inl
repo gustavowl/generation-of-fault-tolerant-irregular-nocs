@@ -50,7 +50,19 @@ void fitToEpsilon(AdjacencyMatrix<bool>* initSol, unsigned int epsilon) {
 }
 
 template <class T>
-void makeFeasible(AdjacencyMatrix<bool>* initSol) {
+bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* initSol) {
+	unsigned int size = initSol->getNumNodes();
+	unsigned int degree = 0;
+	for (unsigned int i = 0; i < size; i++) {
+		degree = initSol->getNodeDegree(i);
+		if (degree < 2 || degree > 4)
+			return false;
+	}
+	return true;
+}
+
+template <class T>
+void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 }
 
 template <class T>
@@ -66,19 +78,19 @@ AdjacencyMatrix<bool>* TabuSearch<T>generateInitSol(
 		return NULL;
 	}
 
-	AdjacencyMatrix<bool>* ret = new AdjacencyMatrix(tg->getNumNodes(),
+	AdjacencyMatrix<bool>* initSol = new AdjacencyMatrix(tg->getNumNodes(),
 			true, true, tg->getNullEdgeValue());
 	//unable to generate graph
 	if (ret->getNumNodes != tg->getNumNodes())
 		return NULL;
 
 	//copies task graph, converting representation
-	GraphConverter::convert(tg, &ret);
+	GraphConverter::convert(tg, initSol);
 
-	//TODO: fitToEpsilon
-	//TODO: make feasible
+	fitToEpsilon(initSol, epsilon);
+	makeFeasible(initSol);
 
-	return ret;
+	return initSol;
 }
 
 template <class T>
