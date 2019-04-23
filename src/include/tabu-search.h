@@ -19,8 +19,8 @@ private:
 	//of an edge: Deletes a random existing edge, and adds
 	//another edge randomly.
 	struct Movement{
-		size_t edgeDeltd[2]; //edge deleted
-		size_t edgeAdded[2]; //edge added
+		size_t* edgeDeltd; //edge deleted
+		size_t* edgeAdded; //edge added
 	};
 
 	//removes/adds edges until |E| = epsilon.
@@ -72,9 +72,9 @@ private:
 
 	static bool areEdgesEqual(size_t edge1[2], size_t edge2[2]);
 
-	static bool isInTabuList(const std::vector<size_t[2]>* tabuList, Movement mov);
+	static bool isInTabuList(const std::vector<size_t*>* tabuList, Movement mov);
 
-	static void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
+	static void addToTabuList(std::vector<size_t*>* tabuList, size_t* tabuIndex,
 			Movement mov);
 
 	//returns a movement for a random neighbour according to
@@ -93,7 +93,7 @@ private:
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
 	static Movement getRandomNeighbour(const AdjacencyMatrix<bool>* currSol,
-			size_t epsilon, const std::vector<size_t[2]>* tabuList,
+			size_t epsilon, const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
 
 	//makes movement specified by mov.
@@ -102,6 +102,12 @@ private:
 	//This method is called for neighbourhood search
 	static void makeMovement(AdjacencyMatrix<bool>* currSol, Movement mov,
 			bool undo=false);
+
+	//called after searching neighbourhood
+	static void deallocateMovement(Movement* mov);
+
+	//called after tabu search finishes
+	static void deallocateTabuList(std::vector<size_t*>* tabuList);
 
 public:
 	//Tabu search receives a task graph and attempts to minimise

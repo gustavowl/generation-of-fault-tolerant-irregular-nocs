@@ -226,12 +226,12 @@ bool TabuSearch<T>::areEdgesEqual(size_t edge1[2], size_t edge2[2]) {
 }
 
 template <class T>
-bool TabuSearch<T>::isInTabuList(const std::vector<size_t[2]>* tabuList,
+bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
 		typename TabuSearch<T>::Movement mov) {
 	//searches tabuList
 	size_t tabuEdge[2];
 	for (size_t i = 0; i < tabuList->size(); i++) {
-		tabuEdge = tabuList[i];
+		//tabuEdge = tabuList[i];
 		
 		//checks if any edge in movement is is tabuList
 		if (areEdgesEqual(tabuEdge, mov.edgeDeltd) ||
@@ -244,28 +244,39 @@ bool TabuSearch<T>::isInTabuList(const std::vector<size_t[2]>* tabuList,
 }
 
 template <class T>
-void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
-		typename TabuSearch<T>::Movement mov) {
+void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
+		size_t* tabuIndex, Movement mov) {
 	if (tabuList->size() == tabuList->capacity()) {
 		//cycle
-		tabuList[*tabuIndex] = mov.edgeDeltd;
+		tabuList->at(*tabuIndex)[0] = mov.edgeDeltd[0];
+		tabuList->at(*tabuIndex)[1] = mov.edgeDeltd[1];
 		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
-		tabuList[*tabuIndex] = mov.edgeAdded;
+
+		tabuList->at(*tabuIndex)[0] = mov.edgeAdded[0];
+		tabuList->at(*tabuIndex)[1] = mov.edgeAdded[1];
 		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
 		return;
 	}
 	//tabuList is not full, no need to cycle
-	tabuList->add(mov.edgeDeltd);
-	tabuList->add(mov.edgeAdded);	
+	size_t* newEdge = new size_t[2];
+	newEdge[0] = mov.edgeDeltd[0];
+	newEdge[1] = mov.edgeDeltd[1];
+	tabuList->push_back(newEdge);
+
+	newEdge = new size_t[2];
+	newEdge[0] = mov.edgeAdded[0];
+	newEdge[1] = mov.edgeAdded[1];
+	tabuList->push_back(newEdge);	
 }
 
 template <class T>
-typename TabuSearch<T>::Movement getRandomNeighbour(
+typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
-		const std::vector<size_t[2]>* tabuList, bool aspirationCrit) {
+		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
 
 	size_t numNodes = currSol->getNumNodes();
-	size_t edgeToDel[2], edgeToAdd[2];
+	size_t* edgeToDel = new size_t[2];
+   	size_t*	edgeToAdd = new size_t[2];
 	size_t delCount, addCount, delRandom, addRandom;
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
@@ -280,8 +291,8 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 		bool edgeExists, stop = false;
 
 		//searches triangular matrix
-		for (size_t i = 1; i < numNodes; i++) {
-			for (size_t j = 0; j < i; j++) {
+		for (size_t i = 1; i < numNodes && !stop; i++) {
+			for (size_t j = 0; j < i && !stop; j++) {
 				edgeExists = currSol->edgeExists(i, j);
 				if (edgeExists && addCount <= addRandom) {
 					if (addCount == addRandom) {
@@ -303,8 +314,7 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 		}
 
 		if (!aspirationCrit) {
-			if (! isInTabuList(tabuList, typename
-						TabuSearch<T>::Movement {
+			if (! isInTabuList(tabuList, Movement {
 						edgeToDel, edgeToAdd}) ) {
 				
 				aspirationCrit = true; //stop
@@ -313,20 +323,32 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 
 	} while (!aspirationCrit);
 
-	return typename TabuSearch<T>::Movement {edgeToDel, edgeToAdd};
+	return Movement {edgeToDel, edgeToAdd};
 }
 
 template <class T>
 void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* currSol,
 		typename TabuSearch<T>::Movement mov, bool undo) {
 	if (undo) {
-		currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
-		currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+		//currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+		//currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
 		return;
 	}
 
-	currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
-	currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+	//currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+	//currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+}
+
+template <class T>
+void TabuSearch<T>::deallocateMovement(Movement* mov) {
+	delete[] mov->edgeDeltd;
+	delete[] mov->edgeAdded;
+}
+
+template <class T>
+void TabuSearch<T>::deallocateTabuList(std::vector<size_t*>* tabuList) {
+	for (size_t i = 0; i < tabuList->size(); i++)
+		delete[] tabuList->at(i);
 }
 
 template <class T>
@@ -338,13 +360,13 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	if (currSol == NULL)
 		return NULL;
 	T currFit = fitness(tg, currSol);
-	typename TabuSearch<T>::Movement currMov;
+	Movement currMov;
 
 
-	std::vector<typename TabuSearch<T>::Movement> neighboursMov;
+	std::vector<Movement> neighboursMov;
 	std::vector<T> neighboursFit;
 
-	std::vector<size_t[2]> tabuList;
+	std::vector<size_t*> tabuList;
 	tabuList.reserve(tabuListSize * 2); //two edges per movement
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
@@ -363,11 +385,11 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		//2 * numNodes (check generateInitSol())
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
-			neighboursMov.add(getRandomNeighbour(currSol,
-						epsilon, tabuList));
+			neighboursMov.push_back(getRandomNeighbour(currSol,
+						epsilon, &tabuList));
 			//computes neighbours' fitness
 			makeMovement(currSol, neighboursMov[i]);
-			neighboursFit.add(fitness(tg, currSol));
+			neighboursFit.push_back(fitness(tg, currSol));
 			makeMovement(currSol, neighboursMov[i], true);
 		}
 
@@ -404,6 +426,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 				if (isInTabuList(&tabuList, currMov)) {
 					//tabu solution, search for next best neighbour
+					
 					neighboursMov.erase(neighboursMov.begin() + bestIndex);
 					neighboursFit.erase(neighboursFit.begin() + bestIndex);
 					continue;
@@ -413,20 +436,22 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 			//if all are tabu, generate non tabu neighbour
 			if (neighboursMov.empty()) {
-				currMov = getRandomNeighbour(currSol, epsilon, tabuList, false);
+				currMov = getRandomNeighbour(currSol, epsilon, &tabuList, false);
 				//computes neighbours' fitness
-				makeMovement(currSol, mov);
+				makeMovement(currSol, currMov);
 				currFit = (fitness(tg, currSol));
-				makeMovement(currSol, mov, true);
+				makeMovement(currSol, currMov, true);
 			}
 		}
 
+		//changes to best neighbour solution found
+		makeMovement(currSol, currMov);
+		addToTabuList(&tabuList, &tabuIndex, currMov);
+
+		for (size_t i = 0; i < neighboursMov.size(); i++)
+			deallocateMovement(&neighboursMov[i]);
 		neighboursMov.clear();
 		neighboursFit.clear();
-
-		//changes to best neighbour solution found
-		makeMovement(currSol, mov);
-		addToTabuList(&tabuList, tabuIndex, mov);
 
 		if (currFit < bestFit) {
 			count = 0;
@@ -443,6 +468,8 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	//	Compute QAP for each edge, then return
 	AdjacencyMatrix<T>* ret = NULL;
 	delete bestSol;
+
+	deallocateTabuList(&tabuList);
 
 	//TODO: return solution set
 	return ret;
