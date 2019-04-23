@@ -96,6 +96,13 @@ private:
 			size_t epsilon, std::vector<size_t[2]>* tabuList,
 			bool aspirationCrit=true);
 
+	//makes movement specified by mov.
+	//if undo is set to true, it tracebacks
+	//(undoes a movement done).
+	//This method is called for neighbourhood search
+	static void makeMovement(AdjacencyMatrix<bool>* currSol, Movement mov,
+			bool undo=false);
+
 public:
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed

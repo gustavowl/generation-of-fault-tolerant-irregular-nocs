@@ -306,6 +306,19 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 }
 
 template <class T>
+void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* currSol,
+		typename TabuSearch<T>::Movement mov, bool undo) {
+	if (undo) {
+		currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+		currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+		return;
+	}
+
+	currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+	currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+}
+
+template <class T>
 AdjacencyMatrix<T>* TabuSearch<T>::start(
 		const GraphRepresentation<T>* tg, size_t tabuListSize,
 		size_t stopCriteria, size_t epsilon) {
@@ -313,6 +326,9 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
+
+	std::vector<typename TabuSearch<T>::Movement> neighboursMov;
+	std::vector<T> neighboursFit;
 
 	T currFit = fitness(tg, currSol);
 	//creates a copy
@@ -322,6 +338,19 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	size_t count = 0;
 	
 	while(count < stopCriteria) {
+
+		//searches neighbourhood
+		//searches first epsilon random neighbours
+		//this is feasible since epsilon's upper bound is
+		//2 * numNodes (check generateInitSol())
+		for (size_t i = 0; i < epsilon; i++) {
+			//generates random neighbourhood movements
+			neighboursMov.add(getRandomNeighbour(currSol,
+						epsilon, tabuList, true));
+			//computes neighbours' fitness
+		}
+		neighboursMov.clear();
+		neighboursFit.clear();
 
 		//while (not tabu) {
 		//	random movement() //TODO: decide movements: swap?
