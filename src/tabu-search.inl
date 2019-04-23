@@ -210,14 +210,11 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 		}
 	}
 
-	tg->print();
-	sol->print();
-
 	return sum; 
 }
 
 template <class T>
-bool TabuSearch<T>::areEdgesEqual(size_t edge1[2], size_t edge2[2]) {
+bool TabuSearch<T>::areEdgesEqual(size_t* edge1, size_t* edge2) {
 	if ((edge1[0] == edge2[0] && edge1[1] == edge2[1]) ||
 			(edge1[0] == edge2[1] && edge1[1] == edge2[0])) {
 		return true;
@@ -227,11 +224,12 @@ bool TabuSearch<T>::areEdgesEqual(size_t edge1[2], size_t edge2[2]) {
 
 template <class T>
 bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
-		typename TabuSearch<T>::Movement mov) {
+		Movement mov) {
 	//searches tabuList
 	size_t tabuEdge[2];
 	for (size_t i = 0; i < tabuList->size(); i++) {
-		//tabuEdge = tabuList[i];
+		tabuEdge[0] = tabuList->at(i)[0];
+		tabuEdge[1] = tabuList->at(i)[1];
 		
 		//checks if any edge in movement is is tabuList
 		if (areEdgesEqual(tabuEdge, mov.edgeDeltd) ||
@@ -294,7 +292,7 @@ typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 		for (size_t i = 1; i < numNodes && !stop; i++) {
 			for (size_t j = 0; j < i && !stop; j++) {
 				edgeExists = currSol->edgeExists(i, j);
-				if (edgeExists && addCount <= addRandom) {
+				if (!edgeExists && addCount <= addRandom) {
 					if (addCount == addRandom) {
 						edgeToAdd[0] = i;
 						edgeToAdd[1] = j;
@@ -302,7 +300,7 @@ typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 					}
 					addCount++;
 				}
-				else if (!edgeExists && delCount <= delRandom) {
+				else if (edgeExists && delCount <= delRandom) {
 					if (delCount == delRandom) {
 						edgeToDel[0] = i;
 						edgeToDel[1] = j;
@@ -323,6 +321,11 @@ typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 
 	} while (!aspirationCrit);
 
+//	std::cout << "delCount/delRandom" << delCount << '/' << delRandom << '\n';
+//	std::cout << "addCount/addRandom" << addCount << '/' << addRandom << '\n';	
+//	std::cout << "edgeToDel " << edgeToDel[0] << ' ' << edgeToDel[1];
+//	std::cout << "\nedgeToAdd " << edgeToAdd[0] << ' ' << edgeToAdd[1] <<
+//		'\n' << std::endl;
 	return Movement {edgeToDel, edgeToAdd};
 }
 
@@ -378,6 +381,8 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	size_t count = 0;
 	
 	while(count < stopCriteria) {
+		currSol->print();
+		std::cout << count << '/' << stopCriteria << std::endl;
 
 		//searches neighbourhood
 		//searches first epsilon random neighbours
@@ -421,8 +426,12 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 					if (neighboursFit[i] < neighboursFit[bestIndex])
 						bestIndex = i;
 				}
+
 				currMov = neighboursMov[bestIndex];
 				currFit = neighboursFit[bestIndex];
+			//	std::cout << currMov.edgeDeltd[0] << ' ' << currMov.edgeDeltd[1] << '\n';
+			//	std::cout << currMov.edgeAdded[0] << ' ' << currMov.edgeAdded[1] << '\n';
+			//	std::cin.ignore();
 
 				if (isInTabuList(&tabuList, currMov)) {
 					//tabu solution, search for next best neighbour
@@ -466,6 +475,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	delete currSol;
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
+	bestSol->print();
 	AdjacencyMatrix<T>* ret = NULL;
 	delete bestSol;
 

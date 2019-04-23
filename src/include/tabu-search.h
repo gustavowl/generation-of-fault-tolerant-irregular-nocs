@@ -7,6 +7,7 @@
 #include "dijkstra.h"
 #include <vector>
 #include <cstdlib>
+#include <iostream> //TODO: DELETEME (DEBUG)
 
 template <class T>
 class TabuSearch {
@@ -70,7 +71,7 @@ private:
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol);
 
-	static bool areEdgesEqual(size_t edge1[2], size_t edge2[2]);
+	static bool areEdgesEqual(size_t* edge1, size_t* edge2);
 
 	static bool isInTabuList(const std::vector<size_t*>* tabuList, Movement mov);
 
