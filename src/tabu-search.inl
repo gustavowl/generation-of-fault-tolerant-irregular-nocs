@@ -246,6 +246,17 @@ bool TabuSearch<T>::isInTabuList(const std::vector<size_t[2]>* tabuList,
 template <class T>
 void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
 		typename TabuSearch<T>::Movement mov) {
+	if (tabuList->size() == tabuList->capacity()) {
+		//cycle
+		tabuList[*tabuIndex] = mov.edgeDeltd;
+		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
+		tabuList[*tabuIndex] = mov.edgeAdded;
+		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
+		return;
+	}
+	//tabuList is not full, no need to cycle
+	tabuList->add(mov.edgeDeltd);
+	tabuList->add(mov.edgeAdded);	
 }
 
 template <class T>
@@ -334,7 +345,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	std::vector<T> neighboursFit;
 
 	std::vector<size_t[2]> tabuList;
-	tabuList.reserve(tabuListSize);
+	tabuList.reserve(tabuListSize * 2); //two edges per movement
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
 
