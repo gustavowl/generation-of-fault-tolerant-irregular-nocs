@@ -1,6 +1,6 @@
 template <class T>
 typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
-		GraphRepresentation<T>* graph,
+		const GraphRepresentation<T>* graph,
 		size_t orig, size_t dest,
 		T weightInf, bool isWeighted) {
 

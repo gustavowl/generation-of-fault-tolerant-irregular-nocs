@@ -33,7 +33,7 @@ public:
 	//weightSum (sum of the weights from orig to dest),
 	//and hops (number of hops from orig to dest).
 	static Node dijkstra(
-			GraphRepresentation<T>* graph,
+			const GraphRepresentation<T>* graph,
 			size_t orig, size_t dest,
 			T weightInf, bool isWeighted=true);
 

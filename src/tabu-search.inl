@@ -184,7 +184,35 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 template <class T>
 T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 		const AdjacencyMatrix<bool>* sol) {
-	return tg->getEdgeValue(0, 0); 
+	//computes QAP function:
+	//for all edge(i, j) in tg
+	//\sum min_hops(node_i, node_j) * weightOf(edge(i, j))
+	T sum;
+	bool firstFound = false;
+
+	//Computes QAP for each edge in the task graph
+	for (size_t i = 0; i < tg->getNumNodes(); i++) {
+		for (size_t j = 0; j < tg->getNumNodes(); j++) {
+			if (tg->edgeExists(i, j)) {
+
+				size_t numHops = Dijkstra<bool>::dijkstra(
+						sol, i, j, true, false).hops;
+
+				T qap = numHops * tg->getEdgeValue(i, j);
+
+				if (firstFound) {
+					sum += qap;
+					continue;
+				}
+				sum = qap;
+				firstFound = true;
+			}
+		}
+	}
+
+	//adds 
+	
+	return sum; 
 }
 
 template <class T>
@@ -236,5 +264,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
 	AdjacencyMatrix<T>* ret = NULL;
+	delete bestSol;
+
 	return ret;
 }
