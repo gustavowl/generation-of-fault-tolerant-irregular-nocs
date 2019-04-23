@@ -70,6 +70,8 @@ private:
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol);
 
+	static bool areEdgesEqual(size_t edge1[2], size_t edge2[2]);
+
 	static bool isInTabuList(std::vector<size_t[2]>* tabuList, Movement mov);
 
 	static void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,

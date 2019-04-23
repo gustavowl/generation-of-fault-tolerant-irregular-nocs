@@ -217,8 +217,29 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 }
 
 template <class T>
+bool TabuSearch<T>::areEdgesEqual(size_t edge1[2], size_t edge2[2]) {
+	if ((edge1[0] == edge2[0] && edge1[1] == edge2[1]) ||
+			(edge1[0] == edge2[1] && edge1[1] == edge2[0])) {
+		return true;
+	}
+	return false;
+}
+
+template <class T>
 bool TabuSearch<T>::isInTabuList(std::vector<size_t[2]>* tabuList,
 		typename TabuSearch<T>::Movement mov) {
+	//searches tabuList
+	size_t tabuEdge[2];
+	for (size_t i = 0; i < tabuList->size(); i++) {
+		tabuEdge = tabuList[i];
+		
+		//checks if any edge in movement is is tabuList
+		if (areEdgesEqual(tabuEdge, mov.edgeDeltd) ||
+				areEdgesEqual(tabuEdge, mov.edgeAdded)) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -271,12 +292,12 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 		}
 
 		if (!aspirationCrit) {
-			//search tabuList
-			for (size_t i = 0; i < tabuList->size(); i++) {
-				//if (tabuList[i][0]
+			if (! isInTabuList(tabuList, typename
+						TabuSearch<T>::Movement {
+						edgeToDel, edgeToAdd}) ) {
+				
+				aspirationCrit = true; //stop
 			}
-			//if (not in tabuList)
-			//	aspirationCrit = true; //stop
 		}
 
 	} while (!aspirationCrit);
