@@ -444,7 +444,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 				if (isInTabuList(&tabuList, currMov)) {
 					//tabu solution, search for next best neighbour
-					
+					deallocateMovement(&neighboursMov[bestIndex]);
 					neighboursMov.erase(neighboursMov.begin() + bestIndex);
 					neighboursFit.erase(neighboursFit.begin() + bestIndex);
 					continue;
@@ -466,6 +466,8 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		makeMovement(currSol, currMov);
 		addToTabuList(&tabuList, &tabuIndex, currMov);
 
+		if (neighboursMov.empty())
+			deallocateMovement(&currMov);
 		for (size_t i = 0; i < neighboursMov.size(); i++)
 			deallocateMovement(&neighboursMov[i]);
 		neighboursMov.clear();
