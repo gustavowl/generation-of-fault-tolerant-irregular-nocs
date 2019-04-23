@@ -6,10 +6,22 @@
 #include "adjacency-matrix.h"
 #include "dijkstra.h"
 #include <vector>
+#include <cstdlib>
 
 template <class T>
 class TabuSearch {
 private:
+
+	//movement used for neighbourhood search: edge position
+	//swap. Movements are also added to tabuList (actually,
+	//the correspondent edges, not the movement itself).
+	//Neighbourhood search basically changes the position
+	//of an edge: Deletes a random existing edge, and adds
+	//another edge randomly.
+	struct Movement{
+		size_t edgeDeltd[2]; //edge deleted
+		size_t edgeAdded[2]; //edge added
+	};
 
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
@@ -57,6 +69,24 @@ private:
 	//sol: solution
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol);
+
+	//returns a movement for a random neighbour according to
+	//the neighbourhood step. A neighbourhood steps basically
+	//changes the position of an edge: deletes a random existing
+	//edge, and adds another edge randomly.
+	//
+	//currSol: current solution. A neighbour will be compute one step
+	//from here.
+	//epsilon: passed to start(). It limits the number of edges in the
+	//possible solution. Thus, it is used to calculate how many edges
+	//are not in the solution so an element of these complementary sets
+	//can be randomly chosen.
+	//tabuList: a vector of the edges in the tabuList. It will only be
+	//used if aspirationCrit is set to false.
+	//aspirationCrit: aspiration criteria. If it is set to false, then
+	//it will return a movement not in the tabuList.
+	static Movement getRandomNeighbour(const AdjacencyMatrix<bool>* currSol,
+			size_t epsilon, vector<size_t[2]>* tabuList, bool aspirationCrit=true);
 
 public:
 	//Tabu search receives a task graph and attempts to minimise

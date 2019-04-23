@@ -210,9 +210,64 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 		}
 	}
 
-	//adds 
-	
+	tg->print();
+	sol->print();
+
 	return sum; 
+}
+
+template <class T>
+typename TabuSearch<T>::Movement getRandomNeighbour(
+		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
+		vector<size_t[2]>* tabuList, bool aspirationCrit) {
+
+	size_t numNodes = currSol->getNumNodes();
+	size_t edgeToDel[2], edgeToAdd[2];
+	size_t delCount, addCount, delRandom, addRandom;
+	//no loops are allowed and the matrices are symmetric.
+	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
+	//This result can be obtained through arithmetic progression
+	size_t uniqueEdges = (numNodes * numNodes - numNodes) / 2;
+
+	do {
+		//search process
+		delRandom = rand() % (epsilon);
+		addRandom = rand() % (uniqueEdges - epsilon);
+		delCount = addCount = 0;
+		bool edgeExists, stop = false;
+
+		//searches triangular matrix
+		for (size_t i = 1; i < numNodes; i++) {
+			for (size_t j = 0; j < i; j++) {
+				edgeExists = currSol->edgeExists(i, j);
+				if (edgeExists && addCount <= addRandom) {
+					if (addCount == addRandom) {
+						edgeToAdd[0] = i;
+						edgeToAdd[1] = j;
+						stop = delCount > delRandom;
+					}
+					addCount++;
+				}
+				else if (!edgeExists && delCount <= delRandom) {
+					if (delCount == delRandom) {
+						edgeToDel[0] = i;
+						edgeToDel[1] = j;
+						stop = addCount > addRandom;
+					}
+					delCount++;
+				}
+			}
+		}
+
+		if (!aspirationCrit) {
+			//search tabuList
+			//if (not in tabuList)
+			//	aspirationCrit = true; //stop
+		}
+
+	} while (!aspirationCrit);
+
+	return Movement {edgeToDel, edgeToAdd};
 }
 
 template <class T>
@@ -230,7 +285,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	GraphRepresentation<bool>* bestSol = currSol->copy(); 
 	T bestFit = currFit;
 	size_t count = 0;
-
+	
 	while(count < stopCriteria) {
 
 		//while (not tabu) {

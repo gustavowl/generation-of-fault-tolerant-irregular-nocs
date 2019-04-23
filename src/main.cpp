@@ -5,6 +5,8 @@
 #include "include/graph-representation.h"
 #include "include/adjacency-matrix.h"
 #include "include/tabu-search.h"
+#include <cstdlib>
+#include <time.h>
 
 int main(int argc, char *argv[]) {
 	std::cout << "Hello World" << std::endl;
@@ -35,8 +37,10 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
 		std::endl;
 
+	//initializes seed for pseudo-random number generation
+	srand(time(NULL));
 	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
-			gr, gr->getNumEdges(), 10000, 12);
+			gr, gr->getNumEdges(), 10000, 8);
 
 	delete res;
 	delete gr;
