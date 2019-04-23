@@ -217,9 +217,20 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 }
 
 template <class T>
+bool TabuSearch<T>::isInTabuList(std::vector<size_t[2]>* tabuList,
+		typename TabuSearch<T>::Movement mov) {
+	return false;
+}
+
+template <class T>
+void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
+		typename TabuSearch<T>::Movement mov) {
+}
+
+template <class T>
 typename TabuSearch<T>::Movement getRandomNeighbour(
 		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
-		vector<size_t[2]>* tabuList, bool aspirationCrit) {
+		std::vector<size_t[2]>* tabuList, bool aspirationCrit) {
 
 	size_t numNodes = currSol->getNumNodes();
 	size_t edgeToDel[2], edgeToAdd[2];
@@ -261,13 +272,16 @@ typename TabuSearch<T>::Movement getRandomNeighbour(
 
 		if (!aspirationCrit) {
 			//search tabuList
+			for (size_t i = 0; i < tabuList->size(); i++) {
+				//if (tabuList[i][0]
+			}
 			//if (not in tabuList)
 			//	aspirationCrit = true; //stop
 		}
 
 	} while (!aspirationCrit);
 
-	return Movement {edgeToDel, edgeToAdd};
+	return typename TabuSearch<T>::Movement {edgeToDel, edgeToAdd};
 }
 
 template <class T>

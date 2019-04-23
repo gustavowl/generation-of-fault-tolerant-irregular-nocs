@@ -70,6 +70,11 @@ private:
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol);
 
+	static bool isInTabuList(std::vector<size_t[2]>* tabuList, Movement mov);
+
+	static void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
+			Movement mov);
+
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
@@ -86,7 +91,8 @@ private:
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
 	static Movement getRandomNeighbour(const AdjacencyMatrix<bool>* currSol,
-			size_t epsilon, vector<size_t[2]>* tabuList, bool aspirationCrit=true);
+			size_t epsilon, std::vector<size_t[2]>* tabuList,
+			bool aspirationCrit=true);
 
 public:
 	//Tabu search receives a task graph and attempts to minimise
