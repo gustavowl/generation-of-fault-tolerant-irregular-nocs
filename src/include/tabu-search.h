@@ -72,7 +72,7 @@ private:
 
 	static bool areEdgesEqual(size_t edge1[2], size_t edge2[2]);
 
-	static bool isInTabuList(std::vector<size_t[2]>* tabuList, Movement mov);
+	static bool isInTabuList(const std::vector<size_t[2]>* tabuList, Movement mov);
 
 	static void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
 			Movement mov);
@@ -93,7 +93,7 @@ private:
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
 	static Movement getRandomNeighbour(const AdjacencyMatrix<bool>* currSol,
-			size_t epsilon, std::vector<size_t[2]>* tabuList,
+			size_t epsilon, const std::vector<size_t[2]>* tabuList,
 			bool aspirationCrit=true);
 
 	//makes movement specified by mov.

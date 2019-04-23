@@ -226,7 +226,7 @@ bool TabuSearch<T>::areEdgesEqual(size_t edge1[2], size_t edge2[2]) {
 }
 
 template <class T>
-bool TabuSearch<T>::isInTabuList(std::vector<size_t[2]>* tabuList,
+bool TabuSearch<T>::isInTabuList(const std::vector<size_t[2]>* tabuList,
 		typename TabuSearch<T>::Movement mov) {
 	//searches tabuList
 	size_t tabuEdge[2];
@@ -251,7 +251,7 @@ void addToTabuList(std::vector<size_t[2]>* tabuList, size_t* tabuIndex,
 template <class T>
 typename TabuSearch<T>::Movement getRandomNeighbour(
 		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
-		std::vector<size_t[2]>* tabuList, bool aspirationCrit) {
+		const std::vector<size_t[2]>* tabuList, bool aspirationCrit) {
 
 	size_t numNodes = currSol->getNumNodes();
 	size_t edgeToDel[2], edgeToAdd[2];
@@ -326,11 +326,18 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
+	T currFit = fitness(tg, currSol);
+	typename TabuSearch<T>::Movement currMov;
+
 
 	std::vector<typename TabuSearch<T>::Movement> neighboursMov;
 	std::vector<T> neighboursFit;
 
-	T currFit = fitness(tg, currSol);
+	std::vector<size_t[2]> tabuList;
+	tabuList.reserve(tabuListSize);
+	//TODO: assert that tabuList.size() == 0
+	size_t tabuIndex = 0; //used to simulate circular queue
+
 	//creates a copy
 	//TODO: set num edges (create copy const?)
 	GraphRepresentation<bool>* bestSol = currSol->copy(); 
@@ -346,28 +353,69 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
 			neighboursMov.add(getRandomNeighbour(currSol,
-						epsilon, tabuList, true));
+						epsilon, tabuList));
 			//computes neighbours' fitness
+			makeMovement(currSol, neighboursMov[i]);
+			neighboursFit.add(fitness(tg, currSol));
+			makeMovement(currSol, neighboursMov[i], true);
 		}
+
+		//searches for aspiration criterea
+		bool aspirationCrit = false;
+		for (size_t i = 0; i < neighboursFit.size(); i++) {
+			if (!aspirationCrit) {
+				if (neighboursFit[i] < bestFit) {
+					currFit = neighboursFit[i];
+					currMov = neighboursMov[i];
+					aspirationCrit = true;
+				}
+				continue;
+			}
+			//there may be multiple aspiration criterea
+			//the best one is chosen
+			if (neighboursFit[i] < currFit) {
+				currFit = neighboursFit[i];
+				currMov = neighboursMov[i];
+			}
+		}
+		//if aspiration criterea not found,
+		//search for the best solution not in tabuList
+		if (!aspirationCrit) {
+			size_t bestIndex;
+			while (!neighboursMov.empty()) {
+				bestIndex = 0;
+				for (size_t i = 1; i < neighboursMov.size(); i++) {
+					if (neighboursFit[i] < neighboursFit[bestIndex])
+						bestIndex = i;
+				}
+				currMov = neighboursMov[bestIndex];
+				currFit = neighboursFit[bestIndex];
+
+				if (isInTabuList(&tabuList, currMov)) {
+					//tabu solution, search for next best neighbour
+					neighboursMov.erase(neighboursMov.begin() + bestIndex);
+					neighboursFit.erase(neighboursFit.begin() + bestIndex);
+					continue;
+				}
+				break; //non tabu best neighbour found
+			}
+
+			//if all are tabu, generate non tabu neighbour
+			if (neighboursMov.empty()) {
+				currMov = getRandomNeighbour(currSol, epsilon, tabuList, false);
+				//computes neighbours' fitness
+				makeMovement(currSol, mov);
+				currFit = (fitness(tg, currSol));
+				makeMovement(currSol, mov, true);
+			}
+		}
+
 		neighboursMov.clear();
 		neighboursFit.clear();
 
-		//while (not tabu) {
-		//	random movement() //TODO: decide movements: swap?
-		//	compute fitness
-		//	if isBetter() //TODO: verify this critera. Compute fitness is expensive
-		//		break;
-		//	else if isTabu()
-		//		traceback;
-		//	else
-		//		break;
-		//}
-		//add movement to tabu list()
-		//TODO: when to compute solution feasibleness?
-		//	too early may make TS not to convert into optimal
-		//	too late may make TS may found optimal, but the
-		//	closest feasible solutio*=ns are worse than others
-		//	previously found
+		//changes to best neighbour solution found
+		makeMovement(currSol, mov);
+		addToTabuList(&tabuList, tabuIndex, mov);
 
 		if (currFit < bestFit) {
 			count = 0;
@@ -385,5 +433,6 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	AdjacencyMatrix<T>* ret = NULL;
 	delete bestSol;
 
+	//TODO: return solution set
 	return ret;
 }
