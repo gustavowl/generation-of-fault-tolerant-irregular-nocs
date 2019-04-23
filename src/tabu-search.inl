@@ -359,6 +359,13 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		const GraphRepresentation<T>* tg, size_t tabuListSize,
 		size_t stopCriteria, size_t epsilon) {
 
+	//no loops are allowed and the matrices are symmetric.
+	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
+	//This result can be obtained through arithmetic progression
+	if (tabuListSize >= (tg->getNumNodes() * tg->getNumNodes() -
+				tg->getNumNodes()) / 2)
+		return NULL; //this would cause an infinite loop
+
 	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
@@ -368,9 +375,11 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 	std::vector<Movement> neighboursMov;
 	std::vector<T> neighboursFit;
-
+	
+	//stores tabu edges
+	//two edges are add/removed per movement (iteration)
 	std::vector<size_t*> tabuList;
-	tabuList.reserve(tabuListSize * 2); //two edges per movement
+	tabuList.reserve(tabuListSize);
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
 
