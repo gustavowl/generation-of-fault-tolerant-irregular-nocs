@@ -259,6 +259,9 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 }
 
 template <class T>
+
+
+template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {

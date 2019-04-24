@@ -78,6 +78,24 @@ private:
 	static void addToTabuList(std::vector<size_t*>* tabuList, size_t* tabuIndex,
 			Movement mov);
 
+	//this enum is used for neighbourhood search.
+	//Thus, used by delRandomEdge(), addRandomEdge(), and
+	//getRandomNeighbour() methos.
+	enum neighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
+		del1deg2, //deleted a edge with 1 degree 2 node
+		dflt, // (default) delete edge with degree >2 nodes or
+			//add edge with degree <4 nodes
+		add1deg4, //add edge with 1 degree 4 node
+		add2deg4 //add edge with 2 degree 4 nodes
+	};
+
+	static neighbourStatus delRandomEdge(AdjacencyMatrix<bool>* neighbour,
+			size_t* retEdge);
+
+	static bool addRandomEdge(AdjacencyMatrix<bool>* neighbour,
+			neighbourStatus status, size_t* deltdEdge,
+			bool aspirationCrit=true);
+
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
