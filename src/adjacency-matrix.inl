@@ -73,8 +73,6 @@ AdjacencyMatrix<T>::AdjacencyMatrix(size_t numNodes,
 		//sets all values to nullEdgeValue
 		for (size_t j = 0; j < numNodes; j++)
 			this->adjm[i][j] = this->nullEdgeValue;
-		std::cout << "Allocated " << i+1 << " out of " <<
-			numNodes << std::endl;
 	}
 }
 
@@ -191,8 +189,6 @@ GraphRepresentation<T>* AdjacencyMatrix<T>::copy() const {
 template <class T>
 void AdjacencyMatrix<T>::setInvalid() {
 	//Set graph as zero-order/invalid.
-	std::cout << "SET INVALID" << std::endl;
-
 	if (this->adjm != NULL) {
 		//then there are some arrays allocated
 		for (size_t i = 0; i < this->numNodes; i++) {
@@ -204,8 +200,6 @@ void AdjacencyMatrix<T>::setInvalid() {
 			}
 
 			delete[] this->adjm[i];
-			std::cout << "Deallocated " << i + 1 << " out of " <<
-				this->numNodes << std::endl;
 		}
 		delete[] this-> adjm;
 	}
