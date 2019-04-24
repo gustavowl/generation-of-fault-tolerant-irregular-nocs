@@ -15,7 +15,7 @@ private:
 
 	//movement used for neighbourhood search: edge position
 	//swap. Movements are also added to tabuList (actually,
-	//the correspondent edges, not the movement itself).
+	//the edgeDeltd, not the movement itself).
 	//Neighbourhood search basically changes the position
 	//of an edge: Deletes a random existing edge, and adds
 	//another edge randomly.

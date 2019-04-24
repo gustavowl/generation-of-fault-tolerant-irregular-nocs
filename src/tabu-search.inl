@@ -232,8 +232,7 @@ bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
 		tabuEdge[1] = tabuList->at(i)[1];
 		
 		//checks if any edge in movement is is tabuList
-		if (areEdgesEqual(tabuEdge, mov.edgeDeltd) ||
-				areEdgesEqual(tabuEdge, mov.edgeAdded)) {
+		if (areEdgesEqual(tabuEdge, mov.edgeAdded)) {
 			return true;
 		}
 	}
@@ -250,9 +249,6 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 		tabuList->at(*tabuIndex)[1] = mov.edgeDeltd[1];
 		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
 
-		tabuList->at(*tabuIndex)[0] = mov.edgeAdded[0];
-		tabuList->at(*tabuIndex)[1] = mov.edgeAdded[1];
-		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
 		return;
 	}
 	//tabuList is not full, no need to cycle
@@ -260,11 +256,6 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 	newEdge[0] = mov.edgeDeltd[0];
 	newEdge[1] = mov.edgeDeltd[1];
 	tabuList->push_back(newEdge);
-
-	newEdge = new size_t[2];
-	newEdge[0] = mov.edgeAdded[0];
-	newEdge[1] = mov.edgeAdded[1];
-	tabuList->push_back(newEdge);	
 }
 
 template <class T>
@@ -388,6 +379,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	GraphRepresentation<bool>* bestSol = currSol->copy(); 
 	T bestFit = currFit;
 	size_t count = 0;
+	size_t totalCount = 0;
 	
 	while(count < stopCriteria) {
 		currSol->print();
@@ -481,12 +473,14 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 			continue;
 		}
 		count++;
+		totalCount++;
 	}
 
 	delete currSol;
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
 	bestSol->print();
+	std::cout << "Total iterations: " << totalCount << std::endl;
 	AdjacencyMatrix<T>* ret = NULL;
 	delete bestSol;
 
