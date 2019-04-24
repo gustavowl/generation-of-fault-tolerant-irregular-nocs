@@ -324,13 +324,15 @@ template <class T>
 void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* currSol,
 		typename TabuSearch<T>::Movement mov, bool undo) {
 	if (undo) {
-		//currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
-		//currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+		currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+		currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
+				! currSol->getNullEdgeValue());
 		return;
 	}
 
-	//currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
-	//currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+	currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+	currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1],
+			! currSol->getNullEdgeValue());
 }
 
 template <class T>
