@@ -427,6 +427,15 @@ void TabuSearch<T>::addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
 			MIN_DEGREE) ? deltdEdge[0] : delEdge[1];
 	size_t* selecEdge = selectRandomEdge(neighbour, deg2Node,
 			false);
+
+	if (graph->getNodeDegree(selecEdge[0]) == MAX_DEGREE ||
+			graph->getNodeDegree(selecEdge[1]) == MAX_DEGREE)
+		*status = add1deg4; //trigger scenario 4
+
+	Movement mov = { delEdge, selecEdge };
+	makeMovement(neighbour, mov);
+
+	delete[] selecEdge;
 }
 
 template <class T>
