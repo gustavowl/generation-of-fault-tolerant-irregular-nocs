@@ -136,7 +136,7 @@ private:
 			NeighbourStatus* status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit);
 
-	static void addEdgeDftl(AdjacencyMatrix<bool>* neighbour,
+	static void addEdgeDflt(AdjacencyMatrix<bool>* neighbour,
 			NeighbourStatus* status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit);
 

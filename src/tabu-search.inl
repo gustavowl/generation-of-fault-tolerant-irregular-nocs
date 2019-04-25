@@ -296,7 +296,7 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 template <class T>
 typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
-	NeighbourStatus status = dftl;
+	NeighbourStatus status = dflt;
 
 	size_t numNodes = neighbour->getNumNodes();
 	size_t numEdges = neighbour->getNumEdges();
@@ -318,33 +318,33 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 }
 
 template <class T>
-static void addEdgeDel2Deg2(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::addEdgeDel2Deg2( AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit){
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
-static void addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit){
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
-static void addEdgeDftl(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::addEdgeDflt(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit){
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
-static void addEdgeAdd1Deg4(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::addEdgeAdd1Deg4(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit){
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
-static void addEdgeAdd2Deg4(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::addEdgeAdd2Deg4(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit){
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 }
 
 
@@ -353,20 +353,31 @@ void TabuSearch<T>::addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus status, size_t* deltdEdge,
 		std::vector<size_t*>* tabuList, bool aspirationCrit) {
 
-	/*switch (status) {
+	switch (status) {
 		case del2deg2:
+			addEdgeDel2Deg2(neighbour, &status, deltdEdge,
+					tabuList, aspirationCrit);
 			return;
 		case del1deg2:
-			return; //POINT OF NO RETURN
-		case dftl:
+			addEdgeDel1Deg2(neighbour, &status, deltdEdge,
+					tabuList, aspirationCrit);
+			//POINT OF kNOw RETURN
+			//Scenario 4 (add1deg4) may be triggered
+		case dflt:
+			addEdgeDflt(neighbour, &status, deltdEdge,
+					tabuList, aspirationCrit);
 			return;
 		case add1deg4:
+			addEdgeAdd1Deg4(neighbour, &status, deltdEdge,
+					tabuList, aspirationCrit);
 			return;
 		case add2deg4:
+			addEdgeAdd2Deg4(neighbour, &status, deltdEdge, 
+					tabuList, aspirationCrit);
 			return;
 		default:
 			return;			
-	}*/
+	}
 }
 
 template <class T>
