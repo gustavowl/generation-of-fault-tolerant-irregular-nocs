@@ -242,10 +242,9 @@ private:
 
 	//makes movement specified by mov.
 	//if undo is set to true, it tracebacks
-	//(undoes a movement done).
-	//This method is called for neighbourhood search
-	static void makeMovement(AdjacencyMatrix<bool>* currSol, Movement mov,
-			bool undo=false);
+	//This method is called for neighbourhood search in order to compute
+	//the fitness of the neighbour
+	static void makeMovement(AdjacencyMatrix<bool>* neighbour, Movement mov);
 
 	//called after searching neighbourhood
 	static void deallocateMovement(Movement* mov);

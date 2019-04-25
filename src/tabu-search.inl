@@ -336,7 +336,7 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
 			status = add2deg4;
 		}
 		
-		if (graph->getNodeDegree(edge[0]) == MAX_DEGREE ||
+		else if (graph->getNodeDegree(edge[0]) == MAX_DEGREE ||
 				graph->getNodeDegree(edge[1]) == MAX_DEGREE) {
 			status = add1deg4;
 		}
@@ -348,7 +348,7 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
 			status = del2deg2;
 		}
 		
-		if (graph->getNodeDegree(edge[0]) == MIN_DEGREE ||
+		else if (graph->getNodeDegree(edge[0]) == MIN_DEGREE ||
 				graph->getNodeDegree(edge[1]) == MIN_DEGREE) {
 			status = del1deg2;
 		}
@@ -515,24 +515,15 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 			false);
 	size_t* edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
 			tabuList, aspirationCrit);
-	NeighbourStatus addStatus = predictActionStatus(neighbour, edgeToAdd,
-			true);
 
 	return Movement{edgeToDel, edgeToAdd};
 }
 
 template <class T>
-void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* currSol,
-		typename TabuSearch<T>::Movement mov, bool undo) {
-	if (undo) {
-		currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
-		currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
-				! currSol->getNullEdgeValue());
-		return;
-	}
-
-	currSol->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
-	currSol->addEdge(mov.edgeAdded[0], mov.edgeAdded[1],
+void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* neighbour, bool undo) {
+	//before making movement, ensurres that the result will be feasible
+	currSol->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+	currSol->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
 			! currSol->getNullEdgeValue());
 }
 
