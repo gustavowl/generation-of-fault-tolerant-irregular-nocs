@@ -118,6 +118,13 @@ private:
 	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
 			bool exists=true);
 
+	//returns a randomly chosen edge incident to incidentNode.
+	//if exists is set to false, returns a edge that is NOT
+	//in the graph AND incident to incidentNode.
+	//Remember to deallocate the returned pointer.
+	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
+			size_t incidentNode, bool exists=true);
+
 	//Thus function is responsible for mantaining the solutions
 	//feasible (alongside addRandomEdge()).
 	//There are three possible scenarios when deleting edges:

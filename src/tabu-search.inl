@@ -294,6 +294,37 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 }
 
 template <class T>
+size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
+		size_t incidentNode, bool exists) {
+	size_t count = 0; selected;
+	if (exists) {
+		selected = rng() % graph->getNodeDegree(incidentNode);
+	}
+	else {
+		//|V| - existing_incident_edges - self_loop
+		selected = rng() % (graph->getNumNodes() - 
+				graph->getNodeDegree(incidentNode) - 1);
+	}
+
+	//searches triangular matrix
+	for (size_t i = 0; i < graph->getNumNodes(); i++) {
+		if (i != incidentNode) {
+			if ( (exists && graph->edgeExists(i, incidentNode)) ||
+				(!exists && !graph->edgeExists(i, incidentNode)) ) {
+
+				if (count == selected) {
+					size_t* ret = new size_t[2] {i, incidentNode};
+					return ret;
+				}
+				count++;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+template <class T>
 typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
 	NeighbourStatus status = dflt;
@@ -391,6 +422,11 @@ template <class T>
 void TabuSearch<T>::addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
 		std::vector<size_t*>* tabuList, bool aspirationCrit) {
+	//saves node of degree 2 id
+	size_t deg2Node = (neighbour->getNodeDegree(deltdEdge[0]) ==
+			MIN_DEGREE) ? deltdEdge[0] : delEdge[1];
+	size_t* selecEdge = selectRandomEdge(neighbour, deg2Node,
+			false);
 }
 
 template <class T>
