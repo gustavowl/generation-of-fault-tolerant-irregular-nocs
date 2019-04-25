@@ -325,7 +325,7 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 }
 
 template <class T>
-typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
+typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::selectEdgeToDel(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
 	NeighbourStatus status = dflt;
 
@@ -490,65 +490,21 @@ void TabuSearch<T>::addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 }
 
 template <class T>
-typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
-		const AdjacencyMatrix<bool>* currSol, size_t epsilon,
+typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
+		const AdjacencyMatrix<bool>* currSol,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
+	//copies the current solution
 
-	size_t numNodes = currSol->getNumNodes();
-	size_t* edgeToDel = new size_t[2];
-   	size_t*	edgeToAdd = new size_t[2];
-	size_t delCount, addCount, delRandom, addRandom;
-	//no loops are allowed and the matrices are symmetric.
-	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
-	//This result can be obtained through arithmetic progression
-	size_t uniqueEdges = (numNodes * numNodes - numNodes) / 2;
+	//selects and edge to be deleted
+	size_t* edgeToDel = selectEdgeToDel(neighbour);
+	NeighbourStatus delStatus = getActionStatus(neighbour, edgeToDel,
+			false);
+	size_t* edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
+			tabuList, aspirationCrit);
+	NeighbourStatus addStatus = getActionStatus(neighbour, edgeToAdd,
+			true);
 
-	do {
-		//search process
-		delRandom = rng() % (epsilon);
-		addRandom = rng() % (uniqueEdges - epsilon);
-		delCount = addCount = 0;
-		bool edgeExists, stop = false;
-
-		//searches triangular matrix
-		for (size_t i = 1; i < numNodes && !stop; i++) {
-			for (size_t j = 0; j < i && !stop; j++) {
-				edgeExists = currSol->edgeExists(i, j);
-				if (!edgeExists && addCount <= addRandom) {
-					if (addCount == addRandom) {
-						edgeToAdd[0] = i;
-						edgeToAdd[1] = j;
-						stop = delCount > delRandom;
-					}
-					addCount++;
-				}
-				else if (edgeExists && delCount <= delRandom) {
-					if (delCount == delRandom) {
-						edgeToDel[0] = i;
-						edgeToDel[1] = j;
-						stop = addCount > addRandom;
-					}
-					delCount++;
-				}
-			}
-		}
-
-		if (!aspirationCrit) {
-			if (! isInTabuList(tabuList, Movement {
-						edgeToDel, edgeToAdd}) ) {
-				
-				aspirationCrit = true; //stop
-			}
-		}
-
-	} while (!aspirationCrit);
-
-//	std::cout << "delCount/delRandom" << delCount << '/' << delRandom << '\n';
-//	std::cout << "addCount/addRandom" << addCount << '/' << addRandom << '\n';	
-//	std::cout << "edgeToDel " << edgeToDel[0] << ' ' << edgeToDel[1];
-//	std::cout << "\nedgeToAdd " << edgeToAdd[0] << ' ' << edgeToAdd[1] <<
-//		'\n' << std::endl;
-	return Movement {edgeToDel, edgeToAdd};
+	return Movement{edgeToDel, edgeToAdd};
 }
 
 template <class T>

@@ -125,15 +125,13 @@ private:
 	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
 			size_t incidentNode, bool exists=true);
 
-	//Thus function is responsible for mantaining the solutions
-	//feasible (alongside addRandomEdge()).
 	//There are three possible scenarios when deleting edges:
 	//1 - Delete an edge incident to 2 nodes of degree 2;
 	//2 - Delete an edge incident to 1 node of degree 2;
 	//3 - Otherwise.
 	//The return type is one of these three status.
-	static NeighbourStatus delRandomEdge(AdjacencyMatrix<bool>* neighbour,
-			size_t* retEdge);
+	static NeighbourStatus selectEdgeToDel(
+			AdjacencyMatrix<bool>* neighbour, size_t* retEdge);
 
 	//functions responsible for adding edges according to the scenarios
 	//and descriptions given in addRandomEdge()
@@ -209,8 +207,8 @@ private:
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
 	//edge, and adds another edge randomly. This method is aided by
-	//delRandomEdge(), and addRandomEdge(). These two methods are
-	//responsible for ensuring that the generate solution is feasible.
+	//selectEdgeToDel(), and selectEdgeToAdd(). These two methods are
+	//responsible for ensuring that the generated solution is feasible.
 	//In other words, that every node has degree in the [2, 4] range.
 	//The number of edges is fixed by the epsilon value passed to
 	//start(). Thus, this method shall not interfere in the number
@@ -226,9 +224,9 @@ private:
 	//used if aspirationCrit is set to false.
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
-	static Movement getRandomNeighbour(
+	static AdjacencyMatrix<bool>* randomNeighbourhoodStep(
 			const AdjacencyMatrix<bool>* currSol,
-			size_t epsilon, const std::vector<size_t*>* tabuList,
+			const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
 
 	//makes movement specified by mov.
