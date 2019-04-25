@@ -75,31 +75,56 @@ private:
 
 	static bool isInTabuList(const std::vector<size_t*>* tabuList, Movement mov);
 
+	//deleted edges are added to tabu list.
+	//Thus, the algorithm searches the neighbourhood for solutions
+	//WITHOUT that edge
 	static void addToTabuList(std::vector<size_t*>* tabuList, size_t* tabuIndex,
 			Movement mov);
 
 	//this enum is used for neighbourhood search.
 	//Thus, used by delRandomEdge(), addRandomEdge(), and
 	//getRandomNeighbour() methos.
-	enum neighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
+	enum NeighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
 		del1deg2, //deleted a edge with 1 degree 2 node
 		dflt, // (default) delete edge with degree >2 nodes or
-			//add edge with degree <4 nodes
+		//		add edge with degree <4 nodes
 		add1deg4, //add edge with 1 degree 4 node
 		add2deg4 //add edge with 2 degree 4 nodes
 	};
 
-	static neighbourStatus delRandomEdge(AdjacencyMatrix<bool>* neighbour,
+	//Thus function is responsible for mantaining the solutions
+	//feasible (alongside addRandomEdge()).
+	//There are three possible scenarios when deleting edges:
+	//1 - Delete an edge incident to 2 nodes of degree 2;
+	//2 - Delete an edge incident to 1 node of degree 2;
+	//3 - Otherwise.
+	//The return type is one of these three status.
+	static NeighbourStatus delRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			size_t* retEdge);
 
-	static bool addRandomEdge(AdjacencyMatrix<bool>* neighbour,
-			neighbourStatus status, size_t* deltdEdge,
-			bool aspirationCrit=true);
+	//Thus function is responsible for mantaining the solutions
+	//feasible (alongside delRandomEdge()). There are 5 scenarios
+	//possible. Their issues and detailed implementation can be
+	//found in the tabu-search.inl file.
+	//1 - The deleted edge was incident to two nodes of degree 2;
+	//	Solution: another random existing edge will be chosen and
+	//	their incident nodes will be swaped. For instance, (1, 2),
+	//	(3, 4) may be swapped to (1, 4), (3, 2).
+	//2 - The deleted edge was incident to one node of degree 2;
+	//	Solution: ... TODO
+	//	Note: it may rise scenario 4.
+	static void addRandomEdge(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit=true);
 
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
-	//edge, and adds another edge randomly.
+	//edge, and adds another edge randomly. This method is aided by
+	//delRandomEdge(), and addRandomEdge().
+	//The number of edges is fixed by the epsilon value passed to
+	//start(). Thus, this method shall not interfere in the number
+	//of edges. TODO: ASSERT.
 	//
 	//currSol: current solution. A neighbour will be compute one step
 	//from here.

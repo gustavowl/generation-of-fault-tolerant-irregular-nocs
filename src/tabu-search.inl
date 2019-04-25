@@ -259,7 +259,18 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 }
 
 template <class T>
+typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
+		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
+	NeighbourStatus status = dflt;
 
+	return status;
+}
+
+template <class T>
+void TabuSearch<T>::addRandomEdge(AdjacencyMatrix<bool>* neighbour,
+		NeighbourStatus status, size_t* deltdEdge,
+		std::vector<size_t*>* tabuList, bool aspirationCrit) {
+}
 
 template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
