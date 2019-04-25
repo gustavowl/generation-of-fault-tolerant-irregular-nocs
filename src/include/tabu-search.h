@@ -147,50 +147,6 @@ private:
 			NeighbourStatus* status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit);
 
-
-	//Thus function is responsible for mantaining the solutions
-	//feasible (alongside delRandomEdge()). There are 5 scenarios
-	//possible. Their issues and detailed implementation can be
-	//found in the tabu-search.inl file.
-	//1 - The deleted edge was incident to two nodes of degree 2;
-	//	Solution: another random existing edge will be chosen and
-	//	their incident nodes will be swaped. For instance, (1, 2),
-	//	(3, 4) may be swapped to (1, 4), (3, 2).
-	//2 - The deleted edge was incident to one node of degree 2;
-	//	Solution: An edge will be added incident to the degree 2
-	//	node and a random one. For example:
-	//	delete edge (1, 2) - nodes' degrees: 2 and 4, respectively,
-	//	add edge (1, random( {nodes} - 2 ))
-	//	Note: scenario 4 may be raisen.
-	//3 - Default. The deleted edge is incident to nodes with
-	//	degrees > 2; and the added edge is incident to nodes
-	//	with degrees < 4.
-	//4 - The added edge is incident to one node of degree 4.
-	//	Solution: Swap a random edge of the node with another
-	//	of degree < 4. For example, consider that edge (0, 5)
-	//	will be added. However, node 1 has degree 4: (0, 1),
-	//	(0, 2), (0, 3), and (0, 4). Choose one of these edges
-	//	randomly to be deleted. Choose another random node
-	//	n with degree < 4 and add the edge (0, n).
-	//	Note that allowing the degree of n to be 4 would trigger
-	//	scenario 5. As a consequence, scenario 5 could be triggered
-	//	multiple times depending on the current solution. This
-	//	would cause a far step in the neighbourhood search space,
-	//	(a leap, not a step) which is not desired.
-	//5 - The added edge is incident to two nodes of degree 4.
-	//	Solution: it basically activates scenario 4 twice.
-	//	For example, attempt to add the edge (0, 1), but
-	//	degree(0) = degree(1) = 4. Then,
-	//		delete random edge (0, x);
-	//		delete random edge (1, y);
-	//		add edge (0, random node n1) where degree(n1) < 4;
-	//		add edge (1, random node n2) where degree(n2) < 4.
-	//	Depending on the current solution, it may be necessary
-	//	to rechoose the random edges (0, x) and (1, y).
-	//
-	//If aspirationCrit is set to false, the tabuList is considered
-	//when adding edges (tabuList contains deleted edges, refer to
-	//isInTabuList() and addToTabuList()).
 	static void addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			NeighbourStatus status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit=true);
@@ -199,6 +155,11 @@ private:
 	//It is called by randomNeighbourhoodStep().
 	//returns the chosen edge.
 	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
+
+	//TODO: guarantee tabuList fesibleness, etc.
+	static size_t* selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
+			size_t* edgeToDel, NeighbourStatus delStatus,
+			std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
@@ -240,11 +201,70 @@ private:
 			const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
 
+	//Called by guaranteeFeasibleStep when scenarion 1 occurs.
+	//Scenario 1 Solution: another random existing edge will be chosen and
+	//	their incident nodes will be swaped. For instance, (1, 2),
+	//	(3, 4) may be swapped to (1, 4), (3, 2).
+	//Due to the implementation of selectEdgeToAdd(), mov contains the
+	//two original edges that shall be randomly rearranged.
+	//This method will change the nodes of one edge; and change the values
+	//of mov. The remaining edge will then be automatically rearranged by
+	//makeMovement() when the software stack is popped.
+	static void rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
+			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
+
+	//it changes the neighbour graph to a feasible solution if needed.
+	//This function is responsible for mantaining the solutions feasible.
+	//There are 5 scenarios possible.
+	//Their issues and detailed implementation can be
+	//found in the tabu-search.inl file.
+	//1 - The deleted edge was incident to two nodes of degree 2;
+	//2 - The deleted edge was incident to one node of degree 2;
+	//	Solution: An edge will be added incident to the degree 2
+	//	node and a random one. For example:
+	//	delete edge (1, 2) - nodes' degrees: 2 and 4, respectively,
+	//	add edge (1, random( {nodes} - 2 ))
+	//	Note: scenario 4 may be raisen.
+	//3 - Default. The deleted edge is incident to nodes with
+	//	degrees > 2; and the added edge is incident to nodes
+	//	with degrees < 4.
+	//4 - The added edge is incident to one node of degree 4.
+	//	Solution: Swap a random edge of the node with another
+	//	of degree < 4. For example, consider that edge (0, 5)
+	//	will be added. However, node 1 has degree 4: (0, 1),
+	//	(0, 2), (0, 3), and (0, 4). Choose one of these edges
+	//	randomly to be deleted. Choose another random node
+	//	n with degree < 4 and add the edge (0, n).
+	//	Note that allowing the degree of n to be 4 would trigger
+	//	scenario 5. As a consequence, scenario 5 could be triggered
+	//	multiple times depending on the current solution. This
+	//	would cause a far step in the neighbourhood search space,
+	//	(a leap, not a step) which is not desired.
+	//5 - The added edge is incident to two nodes of degree 4.
+	//	Solution: it basically activates scenario 4 twice.
+	//	For example, attempt to add the edge (0, 1), but
+	//	degree(0) = degree(1) = 4. Then,
+	//		delete random edge (0, x);
+	//		delete random edge (1, y);
+	//		add edge (0, random node n1) where degree(n1) < 4;
+	//		add edge (1, random node n2) where degree(n2) < 4.
+	//	Depending on the current solution, it may be necessary
+	//	to rechoose the random edges (0, x) and (1, y).
+	//
+	//If aspirationCrit is set to false, the tabuList is considered
+	//when adding edges (tabuList contains deleted edges, refer to
+	//isInTabuList() and addToTabuList()).
+	static void guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
+			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
+
 	//makes movement specified by mov.
-	//if undo is set to true, it tracebacks
-	//This method is called for neighbourhood search in order to compute
-	//the fitness of the neighbour
-	static void makeMovement(AdjacencyMatrix<bool>* neighbour, Movement mov);
+	static void makeMovement(AdjacencyMatrix<bool>* graph, Movement mov);
+
+	//This method is called for neighbourhood search.
+	//It guarantees that the resulting solution after the movement will
+	//be feasible.
+	static void generateNeighbour(AdjacencyMatrix<bool>* neighbour, Movement mov,
+			std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//called after searching neighbourhood
 	static void deallocateMovement(Movement* mov);
