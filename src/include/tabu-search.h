@@ -126,6 +126,29 @@ private:
 	static NeighbourStatus delRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			size_t* retEdge);
 
+	//functions responsible for adding edges according to the scenarios
+	//and descriptions given in addRandomEdge()
+	static void addEdgeDel2Deg2(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus* status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit);
+
+	static void addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus* status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit);
+
+	static void addEdgeDftl(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus* status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit);
+
+	static void addEdgeAdd1Deg4(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus* status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit);
+
+	static void addEdgeAdd2Deg4(AdjacencyMatrix<bool>* neighbour,
+			NeighbourStatus* status, size_t* deltdEdge,
+			std::vector<size_t*>* tabuList, bool aspirationCrit);
+
+
 	//Thus function is responsible for mantaining the solutions
 	//feasible (alongside delRandomEdge()). There are 5 scenarios
 	//possible. Their issues and detailed implementation can be
