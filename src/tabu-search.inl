@@ -296,10 +296,23 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 template <class T>
 typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
-	NeighbourStatus status = dflt;
+	NeighbourStatus status = dftl;
 
 	size_t numNodes = neighbour->getNumNodes();
 	size_t numEdges = neighbour->getNumEdges();
+	retEdge = selectRandomEdge(neighbour);
+
+	if (neighbour->getNodeDegree(retEdge[0]) == 2 && 
+			neighbour->getNodeDegree(retEdge[1]) == 2) {
+		status = del2deg2;
+	}
+	
+	if (neighbour->getNodeDegree(retEdge[0]) == 2 ||
+			neighbour->getNodeDegree(retEdge[1]) == 2) {
+		status = del1deg2;
+	}
+
+	neighbour->delEdge(retEdge[0], retEdge[1]);
 
 	return status;
 }
