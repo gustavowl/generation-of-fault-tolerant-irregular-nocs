@@ -18,7 +18,8 @@ std::mt19937 rng(
 template <class T>
 class TabuSearch {
 private:
-	//TODO: const size_t MIN_DEGREE and MAX_DEGREE
+	static const size_t MIN_DEGREE = 2;
+	static const size_t MAX_DEGREE = 4;
 
 	//movement used for neighbourhood search: edge position
 	//swap. Movements are also added to tabuList (actually,

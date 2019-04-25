@@ -56,7 +56,7 @@ bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* sol) {
 	size_t degree = 0;
 	for (size_t i = 0; i < size; i++) {
 		degree = sol->getNodeDegree(i);
-		if (degree < 2 || degree > 4)
+		if (degree < MIN_DEGREE || degree > MAX_DEGREE)
 			return false;
 	}
 	return true;
@@ -160,8 +160,8 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 	//i.e. if it is possible to generate a graph such that
 	//for all nodes, degree(node) in [2, 4]
 	//REFER TO: degree sum formula / handshaking lemma
-	if ((2*epsilon) / tg->getNumNodes() < 2 ||
-			(2*epsilon) / tg->getNumNodes() > 4) {
+	if ((2*epsilon) / tg->getNumNodes() < MIN_DEGREE ||
+			(2*epsilon) / tg->getNumNodes() > MAX_DEGREE) {
 
 		return NULL;
 	}
@@ -302,13 +302,13 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 	size_t numEdges = neighbour->getNumEdges();
 	retEdge = selectRandomEdge(neighbour);
 
-	if (neighbour->getNodeDegree(retEdge[0]) == 2 && 
-			neighbour->getNodeDegree(retEdge[1]) == 2) {
+	if (neighbour->getNodeDegree(retEdge[0]) == MIN_DEGREE && 
+			neighbour->getNodeDegree(retEdge[1]) == MIN_DEGREE) {
 		status = del2deg2;
 	}
 	
-	if (neighbour->getNodeDegree(retEdge[0]) == 2 ||
-			neighbour->getNodeDegree(retEdge[1]) == 2) {
+	if (neighbour->getNodeDegree(retEdge[0]) == MIN_DEGREE ||
+			neighbour->getNodeDegree(retEdge[1]) == MIN_DEGREE) {
 		status = del1deg2;
 	}
 
