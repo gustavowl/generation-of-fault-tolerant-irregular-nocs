@@ -121,8 +121,36 @@ private:
 	//	their incident nodes will be swaped. For instance, (1, 2),
 	//	(3, 4) may be swapped to (1, 4), (3, 2).
 	//2 - The deleted edge was incident to one node of degree 2;
-	//	Solution: ... TODO
-	//	Note: it may rise scenario 4.
+	//	Solution: An edge will be added incident to the degree 2
+	//	node and a random one. For example:
+	//	delete edge (1, 2) - nodes' degrees: 2 and 4, respectively,
+	//	add edge (1, random( {nodes} - 2 ))
+	//	Note: scenario 4 may be raisen.
+	//3 - Default. The deleted edge is incident to nodes with
+	//	degrees > 2; and the added edge is incident to nodes
+	//	with degrees < 4.
+	//4 - The added edge is incident to one node of degree 4.
+	//	Solution: Swap a random edge of the node with another
+	//	of degree < 4. For example, consider that edge (0, 5)
+	//	will be added. However, node 1 has degree 4: (0, 1),
+	//	(0, 2), (0, 3), and (0, 4). Choose one of these edges
+	//	randomly to be deleted. Choose another random node
+	//	n with degree < 4 and add the edge (0, n).
+	//	Note that allowing the degree of n to be 4 would trigger
+	//	scenario 5. As a consequence, scenario 5 could be triggered
+	//	multiple times depending on the current solution. This
+	//	would cause a far step in the neighbourhood search space,
+	//	(a leap, not a step) which is not desired.
+	//5 - The added edge is incident to two nodes of degree 4.
+	//	Solution: it basically activates scenario 4 twice.
+	//	For example, attempt to add the edge (0, 1), but
+	//	degree(0) = degree(1) = 4. Then,
+	//		delete random edge (0, x);
+	//		delete random edge (1, y);
+	//		add edge (0, random node n1) where degree(n1) < 4;
+	//		add edge (1, random node n2) where degree(n2) < 4.
+	//	Depending on the current solution, it may be necessary
+	//	to rechoose the random edges (0, x) and (1, y).
 	static void addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			NeighbourStatus status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit=true);
