@@ -218,6 +218,7 @@ private:
 	//There are 5 scenarios possible.
 	//Their issues and detailed implementation can be
 	//found in the tabu-search.inl file.
+	//returns if the movement in the argument mov should be executed or not.
 	//1 - The deleted edge was incident to two nodes of degree 2;
 	//2 - The deleted edge was incident to one node of degree 2;
 	//	Solution: An edge will be added incident to the degree 2
@@ -254,7 +255,11 @@ private:
 	//If aspirationCrit is set to false, the tabuList is considered
 	//when adding edges (tabuList contains deleted edges, refer to
 	//isInTabuList() and addToTabuList()).
-	static void guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
+	//
+	//If false is returnedd, it does not necessarily mean that the step will
+	//generate an unfeasible solution. Maybe the movement was already made,
+	//e.g. Scenario 1.
+	static bool guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//makes movement specified by mov.

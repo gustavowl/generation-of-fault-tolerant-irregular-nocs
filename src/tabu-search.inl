@@ -556,12 +556,13 @@ void TabuSearch<T>::rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 			//undoes neighbourhood step
 			makeMovement(neighbour, moves[0], true);
 			makeMovement(neighbour, moves[1], true);
+			continue;
 		}
 	}
 }
 
 template <class T>
-void TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
+bool TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
 	//diferent feasibleness procedures are triggered depending on the movement
 	NeighbourStatus delStatus = predictActionStatus(neighbour, mov.edgeDeltd);
@@ -569,14 +570,21 @@ void TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 
 	if (delStatus == del2deg2) {
 		rearrangeEdgesNodes(neighbour, mov, tabuList, aspirationCrit);
-		return;
+		return false;
 	}
 }
 
 template <class T>
-void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* graph, Movement mov) {
-	graph->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
-	graph->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
+void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* graph, Movement mov,
+		bool undo) {
+	if (undo) {
+		graph->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
+		graph->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
+				! graph->getNullEdgeValue());
+		return;
+	}
+	graph->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
+	graph->addEdge(mov.edgeAdded[0], mov.edgeAdded[1],
 			! graph->getNullEdgeValue());
 }
 
@@ -584,8 +592,9 @@ template <class T>
 void TabuSearch<T>::generateNeighbour(AdjacencyMatrix<bool>* neighbour,
 		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
 	//before making movement, ensurres that the result will be feasible
-	guaranteeFeasibleStep(neighbour, mov, tabuList, aspirationCrit);
-	makeMovement(neighbour, mov);
+	if (guaranteeFeasibleStep(neighbour, mov, tabuList, aspirationCrit)) {
+		makeMovement(neighbour, mov);
+	}
 }
 
 template <class T>
