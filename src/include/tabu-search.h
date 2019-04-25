@@ -6,8 +6,14 @@
 #include "adjacency-matrix.h"
 #include "dijkstra.h"
 #include <vector>
-#include <cstdlib>
+//#include <cstdlib>
 #include <iostream> //TODO: DELETEME (DEBUG)
+#include <time.h> //rng
+#include <chrono> //rng
+#include <random> //rng 
+//rng macro
+std::mt19937 rng(
+		std::chrono::steady_clock::now().time_since_epoch().count());
 
 template <class T>
 class TabuSearch {
@@ -83,13 +89,14 @@ private:
 
 	static bool areEdgesEqual(size_t* edge1, size_t* edge2);
 
-	static bool isInTabuList(const std::vector<size_t*>* tabuList, Movement mov);
+	static bool isInTabuList(const std::vector<size_t*>* tabuList,
+			Movement mov);
 
 	//deleted edges are added to tabu list.
 	//Thus, the algorithm searches the neighbourhood for solutions
 	//WITHOUT that edge
-	static void addToTabuList(std::vector<size_t*>* tabuList, size_t* tabuIndex,
-			Movement mov);
+	static void addToTabuList(std::vector<size_t*>* tabuList,
+			size_t* tabuIndex, Movement mov);
 
 	//this enum is used for neighbourhood search.
 	//Thus, used by delRandomEdge(), addRandomEdge(), and
@@ -151,6 +158,10 @@ private:
 	//		add edge (1, random node n2) where degree(n2) < 4.
 	//	Depending on the current solution, it may be necessary
 	//	to rechoose the random edges (0, x) and (1, y).
+	//
+	//If aspirationCrit is set to false, the tabuList is considered
+	//when adding edges (tabuList contains deleted edges, refer to
+	//isInTabuList() and addToTabuList()).
 	static void addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			NeighbourStatus status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit=true);
@@ -159,7 +170,9 @@ private:
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
 	//edge, and adds another edge randomly. This method is aided by
-	//delRandomEdge(), and addRandomEdge().
+	//delRandomEdge(), and addRandomEdge(). These two methods are
+	//responsible for ensuring that the generate solution is feasible.
+	//In other words, that every node has degree in the [2, 4] range.
 	//The number of edges is fixed by the epsilon value passed to
 	//start(). Thus, this method shall not interfere in the number
 	//of edges. TODO: ASSERT.
@@ -174,7 +187,8 @@ private:
 	//used if aspirationCrit is set to false.
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
-	static Movement getRandomNeighbour(const AdjacencyMatrix<bool>* currSol,
+	static Movement getRandomNeighbour(
+			const AdjacencyMatrix<bool>* currSol,
 			size_t epsilon, const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
 

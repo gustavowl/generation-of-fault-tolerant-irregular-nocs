@@ -266,6 +266,9 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
 	NeighbourStatus status = dflt;
 
+	size_t numNodes = neighbour->getNumNodes();
+	size_t numEdges = neighbour->getNumEdges();
+
 	return status;
 }
 
@@ -291,8 +294,8 @@ typename TabuSearch<T>::Movement TabuSearch<T>::getRandomNeighbour(
 
 	do {
 		//search process
-		delRandom = rand() % (epsilon);
-		addRandom = rand() % (uniqueEdges - epsilon);
+		delRandom = rng() % (epsilon);
+		addRandom = rng() % (uniqueEdges - epsilon);
 		delCount = addCount = 0;
 		bool edgeExists, stop = false;
 
@@ -369,6 +372,8 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 		const GraphRepresentation<T>* tg, T valueLimit,
 		size_t tabuListSize, size_t stopCriteria,
 		size_t epsilon) {
+
+	srand(time(NULL)); //TODO: print/save seed
 
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
@@ -458,8 +463,10 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 				if (isInTabuList(&tabuList, currMov)) {
 					//tabu solution, search for next best neighbour
 					deallocateMovement(&neighboursMov[bestIndex]);
-					neighboursMov.erase(neighboursMov.begin() + bestIndex);
-					neighboursFit.erase(neighboursFit.begin() + bestIndex);
+					neighboursMov.erase(neighboursMov.begin() +
+							bestIndex);
+					neighboursFit.erase(neighboursFit.begin() +
+							bestIndex);
 					continue;
 				}
 				break; //non tabu best neighbour found
@@ -467,7 +474,8 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 
 			//if all are tabu, generate non tabu neighbour
 			if (neighboursMov.empty()) {
-				currMov = getRandomNeighbour(currSol, epsilon, &tabuList, false);
+				currMov = getRandomNeighbour(currSol, epsilon,
+						&tabuList, false);
 				//computes neighbours' fitness
 				makeMovement(currSol, currMov);
 				currFit = fitness(tg, currSol, valueLimit);
