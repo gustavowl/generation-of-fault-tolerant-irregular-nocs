@@ -109,6 +109,13 @@ private:
 		add2deg4 //add edge with 2 degree 4 nodes
 	};
 
+	//returns a randomly chosen edge.
+	//if exists is set to false, returns a edge that is NOT
+	//in the graph.
+	//Remember to deallocate the returned pointer.
+	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
+			bool exists=true);
+
 	//Thus function is responsible for mantaining the solutions
 	//feasible (alongside addRandomEdge()).
 	//There are three possible scenarios when deleting edges:

@@ -262,6 +262,38 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 }
 
 template <class T>
+size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
+		bool exists) {
+	size_t count = 0, selected;
+	if (exists)
+		selected = rng() % graph->getNumEdges();
+	else
+		//there are a total of (n^2 - n) / 2 possible (unique) edges
+		//since the matrix is symmetric and triangular and
+		//no self-loops are allowed
+		//This result can be obtained through arithmetic progression
+		selected = rng() % ((graph->getNumNodes() * graph->getNumNodes() -
+					graph->getNumNodes())/2 - graph->getNumEdges());
+
+	//searches triangular matrix
+	for (size_t i = 1; i < graph->getNumEdges(); i++) {
+		for (size_t j = 0; j < i; j++) {
+			if ( (exists && graph->edgeExists(i, j)) ||
+				(!exists && !graph->edgeExists(i, j)) ) {
+
+				if (count == selected) {
+					size_t* ret = new size_t[2] {i, j};
+					return ret;
+				}
+				count++;
+			}
+		}
+	}
+
+	return NULL;
+}
+
+template <class T>
 typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::delRandomEdge(
 		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
 	NeighbourStatus status = dflt;
