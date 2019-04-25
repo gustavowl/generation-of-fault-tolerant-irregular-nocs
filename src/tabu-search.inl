@@ -183,7 +183,7 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 
 template <class T>
 T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
-		const AdjacencyMatrix<bool>* sol) {
+		const AdjacencyMatrix<bool>* sol, T valueLimit) {
 	//computes QAP function:
 	//for all edge(i, j) in tg
 	//\sum min_hops(node_i, node_j) * weightOf(edge(i, j))
@@ -197,6 +197,9 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 
 				size_t numHops = Dijkstra<bool>::dijkstra(
 						sol, i, j, true, false).hops;
+
+				if (numHops == HOP_INF)
+					return valueLimit;
 
 				T qap = numHops * tg->getEdgeValue(i, j);
 
@@ -363,8 +366,9 @@ void TabuSearch<T>::deallocateTabuList(std::vector<size_t*>* tabuList) {
 
 template <class T>
 AdjacencyMatrix<T>* TabuSearch<T>::start(
-		const GraphRepresentation<T>* tg, size_t tabuListSize,
-		size_t stopCriteria, size_t epsilon) {
+		const GraphRepresentation<T>* tg, T valueLimit,
+		size_t tabuListSize, size_t stopCriteria,
+		size_t epsilon) {
 
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
@@ -376,7 +380,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
-	T currFit = fitness(tg, currSol);
+	T currFit = fitness(tg, currSol, valueLimit);
 	Movement currMov;
 
 
@@ -399,6 +403,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	
 	while(count < stopCriteria) {
 		currSol->print();
+		std::cout << "Fit: " << currFit << '\n';
 		std::cout << count << '/' << stopCriteria << std::endl;
 
 		//searches neighbourhood
@@ -411,7 +416,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 						epsilon, &tabuList));
 			//computes neighbours' fitness
 			makeMovement(currSol, neighboursMov[i]);
-			neighboursFit.push_back(fitness(tg, currSol));
+			neighboursFit.push_back(fitness(tg, currSol, valueLimit));
 			makeMovement(currSol, neighboursMov[i], true);
 		}
 
@@ -465,7 +470,7 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 				currMov = getRandomNeighbour(currSol, epsilon, &tabuList, false);
 				//computes neighbours' fitness
 				makeMovement(currSol, currMov);
-				currFit = (fitness(tg, currSol));
+				currFit = fitness(tg, currSol, valueLimit);
 				makeMovement(currSol, currMov, true);
 			}
 		}
@@ -495,8 +500,10 @@ AdjacencyMatrix<T>* TabuSearch<T>::start(
 	delete currSol;
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
+	std::cout << "\n\nBEST SOLUTION\n";
 	bestSol->print();
-	std::cout << "Total iterations: " << totalCount << std::endl;
+	std::cout << "Fitness: " << bestFit;
+	std::cout << "\nTotal iterations: " << totalCount << std::endl;
 	AdjacencyMatrix<T>* ret = NULL;
 	delete bestSol;
 

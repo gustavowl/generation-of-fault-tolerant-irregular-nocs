@@ -66,10 +66,20 @@ private:
 			const GraphRepresentation<T>* tg, size_t epsilon);
 
 	//Computes QAP. The tg nodes are mapped to sol nodes.
+	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)
+	//for all edges e_{ij} in tg.
+	//
+	//This method returns a T value. If a path does
+	//not exist from i to j in the solution, then
+	//valueLimit is returned, indicating that sol is
+	//unfiasible (and disconnected).
+	//tg.value is an alias for the edge's weight.
+	//
 	//tg: task graph
 	//sol: solution
+	//valueLimit: max value for T
 	static T fitness(const GraphRepresentation<T>* tg,
-			const AdjacencyMatrix<bool>* sol);
+			const AdjacencyMatrix<bool>* sol, T valueLimit);
 
 	static bool areEdgesEqual(size_t* edge1, size_t* edge2);
 
@@ -178,7 +188,7 @@ public:
 	//	(there exists a node for which degree(node) not in [2, 4].
 	//	TODO: return set of solutions.
 	static AdjacencyMatrix<T>* start(const GraphRepresentation<T>* tg,
-			size_t tabuListSize, size_t stopCriteria,
+			T valueLimit, size_t tabuListSize, size_t stopCriteria,
 			size_t epsilon);
 };
 
