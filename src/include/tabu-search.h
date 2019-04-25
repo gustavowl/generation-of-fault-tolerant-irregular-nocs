@@ -116,22 +116,14 @@ private:
 	//in the graph.
 	//Remember to deallocate the returned pointer.
 	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
-			bool exists=true);
+			bool existent=true);
 
 	//returns a randomly chosen edge incident to incidentNode.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph AND incident to incidentNode.
 	//Remember to deallocate the returned pointer.
 	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
-			size_t incidentNode, bool exists=true);
-
-	//There are three possible scenarios when deleting edges:
-	//1 - Delete an edge incident to 2 nodes of degree 2;
-	//2 - Delete an edge incident to 1 node of degree 2;
-	//3 - Otherwise.
-	//The return type is one of these three status.
-	static NeighbourStatus selectEdgeToDel(
-			AdjacencyMatrix<bool>* neighbour, size_t* retEdge);
+			size_t incidentNode, bool existent=true);
 
 	//functions responsible for adding edges according to the scenarios
 	//and descriptions given in addRandomEdge()
@@ -202,6 +194,25 @@ private:
 	static void addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 			NeighbourStatus status, size_t* deltdEdge,
 			std::vector<size_t*>* tabuList, bool aspirationCrit=true);
+
+	//randomly selects an edge to be deleted.
+	//It is called by randomNeighbourhoodStep().
+	//returns the chosen edge.
+	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
+
+	//There are three possible scenarios when deleting edges (add=false):
+	//1 - Delete an edge incident to 2 nodes of degree 2;
+	//2 - Delete an edge incident to 1 node of degree 2;
+	//3 - Otherwise.
+	//There are three possible scenarios when adding edges (add=true):
+	//1 - Add an edge incident to 1 node of degree 4;
+	//2 - Add an edge incident to 2 nodes of degree 4;
+	//3 - otherwise
+	//The return type is one of these six status, listed in the
+	//NeighbourStatus enum.
+	static size_t* NeighbourStatus predictActionStatus(
+			AdjacencyMatrix<bool>* graph, size_t* edge,
+			bool add);
 
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically

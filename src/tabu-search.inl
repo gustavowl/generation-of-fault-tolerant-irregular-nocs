@@ -263,9 +263,9 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 
 template <class T>
 size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
-		bool exists) {
+		bool existent) {
 	size_t count = 0, selected;
-	if (exists)
+	if (existent)
 		selected = rng() % graph->getNumEdges();
 	else
 		//there are a total of (n^2 - n) / 2 possible (unique) edges
@@ -278,8 +278,8 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 	//searches triangular matrix
 	for (size_t i = 1; i < graph->getNumEdges(); i++) {
 		for (size_t j = 0; j < i; j++) {
-			if ( (exists && graph->edgeExists(i, j)) ||
-				(!exists && !graph->edgeExists(i, j)) ) {
+			if ( (existent && graph->edgeExists(i, j)) ||
+				(!existent && !graph->edgeExists(i, j)) ) {
 
 				if (count == selected) {
 					size_t* ret = new size_t[2] {i, j};
@@ -295,9 +295,9 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 
 template <class T>
 size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
-		size_t incidentNode, bool exists) {
+		size_t incidentNode, bool existent) {
 	size_t count = 0; selected;
-	if (exists) {
+	if (existent) {
 		selected = rng() % graph->getNodeDegree(incidentNode);
 	}
 	else {
@@ -309,8 +309,8 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 	//searches triangular matrix
 	for (size_t i = 0; i < graph->getNumNodes(); i++) {
 		if (i != incidentNode) {
-			if ( (exists && graph->edgeExists(i, incidentNode)) ||
-				(!exists && !graph->edgeExists(i, incidentNode)) ) {
+			if ( (existent && graph->edgeExists(i, incidentNode)) ||
+				(!existent && !graph->edgeExists(i, incidentNode)) ) {
 
 				if (count == selected) {
 					size_t* ret = new size_t[2] {i, incidentNode};
@@ -325,25 +325,34 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 }
 
 template <class T>
-typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::selectEdgeToDel(
-		AdjacencyMatrix<bool>* neighbour, size_t* retEdge) {
+typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
+		AdjacencyMatrix<bool>* graph, size_t* edge, bool add) {
 	NeighbourStatus status = dflt;
 
-	size_t numNodes = neighbour->getNumNodes();
-	size_t numEdges = neighbour->getNumEdges();
-	retEdge = selectRandomEdge(neighbour);
-
-	if (neighbour->getNodeDegree(retEdge[0]) == MIN_DEGREE && 
-			neighbour->getNodeDegree(retEdge[1]) == MIN_DEGREE) {
-		status = del2deg2;
+	if (add) {
+		//add action
+		if (graph->getNodeDegree(edge[0]) == MAX_DEGREE && 
+				graph->getNodeDegree(edge[1]) == MAX_DEGREE) {
+			status = add2deg4;
+		}
+		
+		if (graph->getNodeDegree(edge[0]) == MAX_DEGREE ||
+				graph->getNodeDegree(edge[1]) == MAX_DEGREE) {
+			status = add1deg4;
+		}
 	}
-	
-	if (neighbour->getNodeDegree(retEdge[0]) == MIN_DEGREE ||
-			neighbour->getNodeDegree(retEdge[1]) == MIN_DEGREE) {
-		status = del1deg2;
+	else {
+		//delete action
+		if (graph->getNodeDegree(edge[0]) == MIN_DEGREE && 
+				graph->getNodeDegree(edge[1]) == MIN_DEGREE) {
+			status = del2deg2;
+		}
+		
+		if (graph->getNodeDegree(edge[0]) == MIN_DEGREE ||
+				graph->getNodeDegree(edge[1]) == MIN_DEGREE) {
+			status = del1deg2;
+		}
 	}
-
-	neighbour->delEdge(retEdge[0], retEdge[1]);
 
 	return status;
 }
@@ -490,6 +499,11 @@ void TabuSearch<T>::addRandomEdge(AdjacencyMatrix<bool>* neighbour,
 }
 
 template <class T>
+size_t* TabuSearch<T>::selectEdgeToDel(AdjacencyMatrix<bool>* neighbour) {
+	return selectRandomEdge(neighbour);
+}
+
+template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 		const AdjacencyMatrix<bool>* currSol,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
@@ -497,11 +511,11 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 
 	//selects and edge to be deleted
 	size_t* edgeToDel = selectEdgeToDel(neighbour);
-	NeighbourStatus delStatus = getActionStatus(neighbour, edgeToDel,
+	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
 			false);
 	size_t* edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
 			tabuList, aspirationCrit);
-	NeighbourStatus addStatus = getActionStatus(neighbour, edgeToAdd,
+	NeighbourStatus addStatus = predictActionStatus(neighbour, edgeToAdd,
 			true);
 
 	return Movement{edgeToDel, edgeToAdd};
