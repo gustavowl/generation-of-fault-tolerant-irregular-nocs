@@ -358,147 +358,6 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
 }
 
 template <class T>
-void TabuSearch<T>::addEdgeDel2Deg2( AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-	size_t* selecEdge = NULL;
-	bool chooseAnotherEdge = true;
-
-	while (chooseAnotherEdge) {
-		if (selecEdge != NULL) {
-			delete[] selecEdge;
-		}
-		selecEdge = selectRandomEdge(neighbour);
-
-		if (areEdgesEqual(selecEdge, deltdEdge))
-			continue;
-
-		//edges are different. There are two possible combinations
-		//for edges (a, b), (c, d):
-		//	(a, d), (c, b), and (a, c), (b, d)
-		//chooses one of these combinations randomly.
-		int combination = rng() % 2;
-
-		for (int i = 0; i < 2; i++) {
-			size_t swap;
-			//copies edges for swapping
-			size_t swapDeltd[2] = {deltdEdge[0], deltdEdge[1]};
-			size_t swapSelec[2] = {selecEdge[0], selecEdge[1]};
-
-			if (combination == 0) {
-				//(a, b), (c, d) -> (a, d), (c, b)
-				swap = swapSelec[1];
-				swapSelec[1] = swapDeltd[1];
-				swapDeltd[1] = swap;
-			}
-			else {
-				//(a, b), (c, d) -> (a, c), (b, d)
-				swap = swapSelec[0];
-				swapSelec[0] = swapDeltd[1];
-				swapDeltd[1] = swap;
-			}
-			combination = (combination + 1) % 2;
-			//checks if edges are valid (not in tabu list) if necessary
-			if ( !aspirationCrit && (
-						isInTabuList(tabuList, swapSelec) ||
-						isInTabuList(tabuList, swapDeltd)) ) {
-				//attempts next possible swap
-				continue;
-			}
-
-			Movement moves[2] = {Movement {deltdEdge, swapDeltd},
-				Movement {selecEdge, swapSelec}};
-			//neighbourhood step
-			makeMovement(neighbour, moves[0]);
-			makeMovement(neighbour, moves[1]);
-
-			if (!isFeasible(neighbour)) {
-				//undoes neighbourhood step
-				makeMovement(neighbour, moves[0], true);
-				makeMovement(neighbour, moves[1], true);
-				continue;
-			}
-
-			chooseAnotherEdge = false;
-			break;
-		}
-	}
-
-	delete[] selecEdge;
-}
-
-template <class T>
-void TabuSearch<T>::addEdgeDel1Deg2(AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-	//saves node of degree 2 id
-	size_t deg2Node = (neighbour->getNodeDegree(deltdEdge[0]) ==
-			MIN_DEGREE) ? deltdEdge[0] : delEdge[1];
-	size_t* selecEdge = selectRandomEdge(neighbour, deg2Node,
-			false);
-
-	if (graph->getNodeDegree(selecEdge[0]) == MAX_DEGREE ||
-			graph->getNodeDegree(selecEdge[1]) == MAX_DEGREE)
-		*status = add1deg4; //trigger scenario 4
-
-	Movement mov = { delEdge, selecEdge };
-	makeMovement(neighbour, mov);
-
-	delete[] selecEdge;
-}
-
-template <class T>
-void TabuSearch<T>::addEdgeDflt(AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-}
-
-template <class T>
-void TabuSearch<T>::addEdgeAdd1Deg4(AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-}
-
-template <class T>
-void TabuSearch<T>::addEdgeAdd2Deg4(AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus* status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-}
-
-
-template <class T>
-void TabuSearch<T>::addRandomEdge(AdjacencyMatrix<bool>* neighbour,
-		NeighbourStatus status, size_t* deltdEdge,
-		std::vector<size_t*>* tabuList, bool aspirationCrit) {
-
-	switch (status) {
-		case del2deg2:
-			addEdgeDel2Deg2(neighbour, &status, deltdEdge,
-					tabuList, aspirationCrit);
-			return;
-		case del1deg2:
-			addEdgeDel1Deg2(neighbour, &status, deltdEdge,
-					tabuList, aspirationCrit);
-			//POINT OF kNOw RETURN
-			//Scenario 4 (add1deg4) may be triggered
-		case dflt:
-			addEdgeDflt(neighbour, &status, deltdEdge,
-					tabuList, aspirationCrit);
-			return;
-		case add1deg4:
-			addEdgeAdd1Deg4(neighbour, &status, deltdEdge,
-					tabuList, aspirationCrit);
-			return;
-		case add2deg4:
-			addEdgeAdd2Deg4(neighbour, &status, deltdEdge, 
-					tabuList, aspirationCrit);
-			return;
-		default:
-			return;			
-	}
-}
-
-template <class T>
 size_t* TabuSearch<T>::selectEdgeToDel(AdjacencyMatrix<bool>* neighbour) {
 	return selectRandomEdge(neighbour);
 }
@@ -564,6 +423,16 @@ void TabuSearch<T>::swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 			continue;
 		}
 	}
+}
+
+template <class T>
+void TabuSearch<T>::spinEdge(AdjacencyMatrix<bool>* neighbour,
+		size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit) {
+}
+
+template <class T>
+void TabuSearch<T>::spinEdge(AdjacencyMatrix<bool>* neighbour,
+		size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
