@@ -235,7 +235,7 @@ bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
 		tabuEdge[1] = tabuList->at(i)[1];
 		
 		//checks if any edge in movement is is tabuList
-		if (areEdgesEqual(tabuEdge, mov.edgeAdded)) {
+		if (areEdgesEqual(tabuEdge, mov.edgeToAdd)) {
 			return true;
 		}
 	}
@@ -248,16 +248,16 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 		size_t* tabuIndex, Movement mov) {
 	if (tabuList->size() == tabuList->capacity()) {
 		//cycle
-		tabuList->at(*tabuIndex)[0] = mov.edgeDeltd[0];
-		tabuList->at(*tabuIndex)[1] = mov.edgeDeltd[1];
+		tabuList->at(*tabuIndex)[0] = mov.edgeToDel[0];
+		tabuList->at(*tabuIndex)[1] = mov.edgeToDel[1];
 		*tabuIndex = (*tabuIndex + 1) % tabuList->size();
 
 		return;
 	}
 	//tabuList is not full, no need to cycle
 	size_t* newEdge = new size_t[2];
-	newEdge[0] = mov.edgeDeltd[0];
-	newEdge[1] = mov.edgeDeltd[1];
+	newEdge[0] = mov.edgeToDel[0];
+	newEdge[1] = mov.edgeToDel[1];
 	tabuList->push_back(newEdge);
 }
 
@@ -507,18 +507,23 @@ template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 		const AdjacencyMatrix<bool>* currSol,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
-	//selects and edge to be deleted
-	size_t* edgeToDel = selectEdgeToDel(neighbour);
-	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
-			false);
-	size_t* edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
-			tabuList, aspirationCrit);
+	size_t* edgeToDel = NULL, edgeToAdd = NULL;
+	while (edgeToAdd == NULL) {
+		if (edgeToDel != NULL)
+			delete[] edgeToDel;
+
+		edgeToDel = selectEdgeToDel(neighbour);
+		NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
+				false);
+		edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
+				tabuList, aspirationCrit);
+	}
 
 	return Movement{edgeToDel, edgeToAdd};
 }
 
 template <class T>
-void TabuSearch<T>::rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 		Movement mov, std::vector<size_t>* tabuList) {
 	//There are two possible combinations
 	//for edges (a, b), (c, d):
@@ -529,8 +534,8 @@ void TabuSearch<T>::rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 	for (int i = 0; i < 2; i++) {
 		size_t swap;
 		//copies edges for swapping
-		size_t swapDeltd[2] = {mov.edgeDeltd[0], mov.edgeDeltd[1]};
-		size_t swapAdded[2] = {mov.edgeAdded[0], mov.edgeAdded[1]};
+		size_t swapDeltd[2] = {mov.edgeToDel[0], mov.edgeToDel[1]};
+		size_t swapAdded[2] = {mov.edgeToAdd[0], mov.edgeToAdd[1]};
 
 		if (combination == 0) {
 			//(a, b), (c, d) -> (a, d), (c, b)
@@ -546,8 +551,8 @@ void TabuSearch<T>::rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 		}
 		combination = (combination + 1) % 2;
 
-		Movement moves[2] = {Movement {mov.edgeDeltd, swapDeltd},
-			Movement {mov.edgeAdded, swapAdded}};
+		Movement moves[2] = {Movement {mov.edgeToDel, swapDeltd},
+			Movement {mov.edgeToAdd, swapAdded}};
 		//neighbourhood step
 		makeMovement(neighbour, moves[0]);
 		makeMovement(neighbour, moves[1]);
@@ -565,26 +570,40 @@ template <class T>
 bool TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
 	//diferent feasibleness procedures are triggered depending on the movement
-	NeighbourStatus delStatus = predictActionStatus(neighbour, mov.edgeDeltd);
-	NeighbourStatus addStatus = predictActionStatus(neighbour, mov.edgeAdded);
+	NeighbourStatus delStatus = predictActionStatus(neighbour, mov.edgeToDel);
+	NeighbourStatus addStatus = predictActionStatus(neighbour, mov.edgeToAdd);
 
 	if (delStatus == del2deg2) {
-		rearrangeEdgesNodes(neighbour, mov, tabuList, aspirationCrit);
+		swapEdgesNodes(neighbour, mov, tabuList, aspirationCrit);
 		return false;
+		//the mov.edgeToAdd was previously choosen accordingly to
+		//delStatus in method selectNeighbourhoodStep() and selectEdgeToAdd().
+		//There is no need to verify the remaining delStatus possibilities
 	}
+
+	switch (addStatus) {
+		case add1deg4:
+			spinEdge(neighbour, mov.edgeToAdd, tabuList, aspirationCrit);
+			break;
+		case add2deg4:
+			spinEdges(neighbour, mov.edgeToAdd, tabuList, aspirationCrit);
+		default:
+			break; //mov will generate a feasible solution
+	}
+	return true;
 }
 
 template <class T>
 void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* graph, Movement mov,
 		bool undo) {
 	if (undo) {
-		graph->delEdge(mov.edgeAdded[0], mov.edgeAdded[1]);
-		graph->addEdge(mov.edgeDeltd[0], mov.edgeDeltd[1],
+		graph->delEdge(mov.edgeToAdd[0], mov.edgeToAdd[1]);
+		graph->addEdge(mov.edgeToDel[0], mov.edgeToDel[1],
 				! graph->getNullEdgeValue());
 		return;
 	}
-	graph->delEdge(mov.edgeDeltd[0], mov.edgeDeltd[1]);
-	graph->addEdge(mov.edgeAdded[0], mov.edgeAdded[1],
+	graph->delEdge(mov.edgeToDel[0], mov.edgeToDel[1]);
+	graph->addEdge(mov.edgeToAdd[0], mov.edgeToAdd[1],
 			! graph->getNullEdgeValue());
 }
 

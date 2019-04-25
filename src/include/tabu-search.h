@@ -28,8 +28,8 @@ private:
 	//of an edge: Deletes a random existing edge, and adds
 	//another edge randomly.
 	struct Movement{
-		size_t* edgeDeltd; //edge deleted
-		size_t* edgeAdded; //edge added
+		size_t* edgeToDel; //edge to delete
+		size_t* edgeToAdd;
 	};
 
 	//removes/adds edges until |E| = epsilon.
@@ -156,7 +156,8 @@ private:
 	//returns the chosen edge.
 	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
 
-	//TODO: guarantee tabuList fesibleness, etc.
+	//TODO: guarantee tabuList feasibleness, etc.
+	//if not tabulist feasible, return NULL
 	static size_t* selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
 			size_t* edgeToDel, NeighbourStatus delStatus,
 			std::vector<size_t>* tabuList, bool aspirationCrit);
@@ -196,7 +197,7 @@ private:
 	//used if aspirationCrit is set to false.
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
-	static AdjacencyMatrix<bool>* randomNeighbourhoodStep(
+	static Movement randomNeighbourhoodStep(
 			const AdjacencyMatrix<bool>* currSol,
 			const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
@@ -206,11 +207,8 @@ private:
 	//	their incident nodes will be swaped. For instance, (1, 2),
 	//	(3, 4) may be swapped to (1, 4), (3, 2).
 	//Due to the implementation of selectEdgeToAdd(), mov contains the
-	//two original edges that shall be randomly rearranged.
-	//This method will change the nodes of one edge; and change the values
-	//of mov. The remaining edge will then be automatically rearranged by
-	//makeMovement() when the software stack is popped.
-	static void rearrangeEdgesNodes(AdjacencyMatrix<bool>* neighbour,
+	//two original edges that shall be randomly swapped.
+	static void swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//it changes the neighbour graph to a feasible solution if needed.
