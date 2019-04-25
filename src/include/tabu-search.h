@@ -18,6 +18,7 @@ std::mt19937 rng(
 template <class T>
 class TabuSearch {
 private:
+	//TODO: const size_t MIN_DEGREE and MAX_DEGREE
 
 	//movement used for neighbourhood search: edge position
 	//swap. Movements are also added to tabuList (actually,
@@ -38,8 +39,8 @@ private:
 	//returns whether initSol is feasible or not.
 	//A solution is feasible if the degree of all of its nodes
 	//is in the range [2, 4].
-	//called by generateInitSol.
-	static bool isFeasible(AdjacencyMatrix<bool>* initSol);
+	//called by generateInitSol, and addEdgeDel2Deg2().
+	static bool isFeasible(AdjacencyMatrix<bool>* sol);
 
 	//swaps the edges until degree(node) is in [2, 4] range for
 	//all nodes. The algorithm is divided in 3 main steps and works

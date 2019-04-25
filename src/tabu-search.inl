@@ -51,11 +51,11 @@ void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol,
 }
 
 template <class T>
-bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* initSol) {
-	size_t size = initSol->getNumNodes();
+bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* sol) {
+	size_t size = sol->getNumNodes();
 	size_t degree = 0;
 	for (size_t i = 0; i < size; i++) {
-		degree = initSol->getNodeDegree(i);
+		degree = sol->getNodeDegree(i);
 		if (degree < 2 || degree > 4)
 			return false;
 	}
@@ -321,6 +321,70 @@ template <class T>
 void TabuSearch<T>::addEdgeDel2Deg2( AdjacencyMatrix<bool>* neighbour,
 		NeighbourStatus* status, size_t* deltdEdge,
 		std::vector<size_t*>* tabuList, bool aspirationCrit) {
+	size_t* selecEdge = NULL;
+	bool chooseAnotherEdge = true;
+
+	while (chooseAnotherEdge) {
+		if (selecEdge != NULL) {
+			delete[] selecEdge;
+		}
+		selecEdge = selectRandomEdge(neighbour);
+
+		if (areEdgesEqual(selecEdge, deltdEdge))
+			continue;
+
+		//edges are different. There are two possible combinations
+		//for edges (a, b), (c, d):
+		//	(a, d), (c, b), and (a, c), (b, d)
+		//chooses one of these combinations randomly.
+		int combination = rng() % 2;
+
+		for (int i = 0; i < 2; i++) {
+			size_t swap;
+			//copies edges for swapping
+			size_t swapDeltd[2] = {deltdEdge[0], deltdEdge[1]};
+			size_t swapSelec[2] = {selecEdge[0], selecEdge[1]};
+
+			if (combination == 0) {
+				//(a, b), (c, d) -> (a, d), (c, b)
+				swap = swapSelec[1];
+				swapSelec[1] = swapDeltd[1];
+				swapDeltd[1] = swap;
+			}
+			else {
+				//(a, b), (c, d) -> (a, c), (b, d)
+				swap = swapSelec[0];
+				swapSelec[0] = swapDeltd[1];
+				swapDeltd[1] = swap;
+			}
+			combination = (combination + 1) % 2;
+			//checks if edges are valid (not in tabu list) if necessary
+			if ( !aspirationCrit && (
+						isInTabuList(tabuList, swapSelec) ||
+						isInTabuList(tabuList, swapDeltd)) ) {
+				//attempts next possible swap
+				continue;
+			}
+
+			Movement moves[2] = {Movement {deltdEdge, swapDeltd},
+				Movement {selecEdge, swapSelec}};
+			//neighbourhood step
+			makeMovement(neighbour, moves[0]);
+			makeMovement(neighbour, moves[1]);
+
+			if (!isFeasible(neighbour)) {
+				//undoes neighbourhood step
+				makeMovement(neighbour, moves[0], true);
+				makeMovement(neighbour, moves[1], true);
+				continue;
+			}
+
+			chooseAnotherEdge = false;
+			break;
+		}
+	}
+
+	delete[] selecEdge;
 }
 
 template <class T>
