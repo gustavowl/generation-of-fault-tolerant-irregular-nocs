@@ -16,6 +16,14 @@ protected:
 	// is deleted, i.e. does not exist.
 	T nullEdgeValue;
 public:
+	//struct used to represent an edge.
+	//The sons may not necessarilly represent matrices using this
+	//struct. But it is used for methods invocations.
+	struct Edge {
+		size_t orig; //origin node
+		size_t dest; //destination node
+		T value; //node weight
+	};
 	// Constructor
 	GraphRepresentation();
 
@@ -25,13 +33,13 @@ public:
 	size_t getNumNodes() const;
 	size_t getNumEdges() const;
 
-	virtual void addEdge(size_t origin, size_t destination, T value) = 0;
+	virtual void addEdge(Edge edge) = 0;
 
-	virtual void delEdge(size_t origin, size_t destination) = 0;
+	virtual void delEdge(Edge edge) = 0;
 
-	virtual bool edgeExists(size_t origin, size_t destination) const = 0;
+	virtual bool edgeExists(Edge edge) const = 0;
 
-	virtual T getEdgeValue(size_t origin, size_t destination) const = 0;
+	virtual T getEdgeValue(Edge edge) const = 0;
 
 	virtual size_t getNodeDegree(size_t node) const = 0;
 
@@ -46,28 +54,30 @@ public:
 	//	getneighbours(b) shall return the list [c]
 	virtual std::vector<size_t> getNeighbours(size_t node) const;
 
-	virtual bool areEdgesEqual(size_t orig1, size_t dest1,
-			size_t orig2, size_t dest2) = 0;
+	virtual bool areEdgesEqual(Edge edge1, Edge edge2) = 0;
 
 	//returns a randomly chosen edge.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
 	//Remember to deallocate the returned pointer.
-	size_t* selectRandomEdge(bool existent=true) = 0;
+	Edge selectRandomEdge(bool existent=true) = 0;
 
 	//returns a randomly chosen edge incident to incidentNode.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph AND incident to incidentNode.
 	//Remember to deallocate the returned pointer.
-	size_t* selectRandomEdge(size_t incidentNode,
+	Edge selectRandomEdge(size_t incidentNode,
 			bool existent=true) = 0;
 
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
 	//For instance, (1, 2), (3, 4) may be swapped to
 	//(1, 4), (3, 2) or (1, 3), (4, 2), etc.
-	static void swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
-			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
+	//
+	//The parameters are pointers because they will receive
+	//the edges to be deleted and will have the value of
+	//the added (swapped )edges by the end of the method.
+	void swapEdgesNodes(Edge* edge1, Edge* edge2) = 0;
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)
@@ -77,7 +87,12 @@ public:
 	//Choose another random node n and add the edge ([1, 2, 3, 4], n).
 	//This process is hereby called "spin" since one node is fixed while
 	//the other changes, like spinning a clock pointer.
-	static void spinEdge(size_t* edge, size_t fixedNode);
+	//
+	//edge: the edge to be spinned. By the end of the method it will
+	//	contain the values after the spinning process.
+	//fixedNode: central node. The spinning process will change the
+	//	edge's remaining node.
+	void spinEdge(Edge* edge, size_t fixedNode) = 0;
 	
 	//alias to isZeroOrder.
 	bool isValid() const;

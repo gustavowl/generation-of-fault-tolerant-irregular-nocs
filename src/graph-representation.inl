@@ -25,7 +25,7 @@ std::vector<size_t> GraphRepresentation<T>::getNeighbours(
 	std::vector<size_t> neighbours (this->numNodes);
 
 	for (size_t dest = 0; dest < this->numNodes; dest++) {
-		if (this->edgeExists(node, dest))
+		if (this->edgeExists( Edge{.orig = node, .dest = dest} ))
 			neighbours[ncount++] = dest;
 	}
 
@@ -51,7 +51,7 @@ void GraphRepresentation<T>::print() const {
 	std::cout << numNodes << " nodes, " << numEdges << " edges\n\n";
 	for (size_t orig = 0; orig < numNodes; orig++) {
 		for (size_t dest = 0; dest < numNodes; dest++) {
-			if (!edgeExists(orig, dest))
+			if (!edgeExists( Edge{.orig = orig, .dest = dest} ))
 				continue;
 			std::cout << "Edge from " << orig <<
 				" to " << dest << ". " <<

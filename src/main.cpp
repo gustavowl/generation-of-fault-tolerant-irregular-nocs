@@ -1,14 +1,13 @@
 //TODO: clean includes
-#include <iostream>
-#include "include/file-manager.h"
-#include "include/graph-converter.h"
+//#include <iostream>
+//#include "include/file-manager.h"
+//#include "include/graph-converter.h"
 #include "include/graph-representation.h"
-#include "include/adjacency-matrix.h"
-#include "include/tabu-search.h"
+//#include "include/adjacency-matrix.h"
+//#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
-	std::cout << "Hello World" << std::endl;
-
+	/*
 	if (argc != 6) {
 		std::cout << "Invalid number of arguments! Five expected:\n" <<
 			"\t1 - Path to .adjl file;\n" <<
@@ -64,7 +63,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	delete res;
+	delete res;*/
 
 	return 0;
 }

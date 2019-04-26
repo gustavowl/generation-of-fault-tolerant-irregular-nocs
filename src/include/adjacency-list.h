@@ -9,14 +9,6 @@
 template <class T>
 class AdjacencyList : public GraphRepresentation<T> {
 private:
-	//Struct used locally to represent an edge.
-	//It has two fields: destination and weight.
-	//The information about the origin is implicit
-	//inside adjl vector.
-	struct Edge {
-		size_t dest; 
-		T value;
-	};
 	// The adjacency list itself
 	std::vector<std::vector<Edge>> adjl;
 
