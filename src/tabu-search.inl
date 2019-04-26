@@ -386,7 +386,7 @@ size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
 					continue;
 				}
 
-				if (!aspirationCrit && isInTabuList(tabuList, edgeToAdd)) {
+				if (!aspirationCrit && isInTabuList(tabuList, TODO CHECK SWAP)) {
 					delete[] edgeToAdd;
 					continue;
 				}
@@ -433,8 +433,8 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 			delete[] edgeToDel;
 
 		edgeToDel = selectEdgeToDel(neighbour);
-		edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
-				tabuList, aspirationCrit);
+		edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, tabuList,
+				aspirationCrit);
 	}
 
 	return Movement{edgeToDel, edgeToAdd};
@@ -543,6 +543,7 @@ template <class T>
 void TabuSearch<T>::generateNeighbour(AdjacencyMatrix<bool>* neighbour,
 		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
 	//before making movement, ensurres that the result will be feasible
+	//TODO: loop to verify feasibleness
 	if (guaranteeFeasibleStep(neighbour, mov, tabuList, aspirationCrit)) {
 		makeMovement(neighbour, mov);
 	}
