@@ -89,8 +89,6 @@ private:
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol, T valueLimit);
 
-	static bool areEdgesEqual(size_t* edge1, size_t* edge2);
-
 	static bool isInTabuList(const std::vector<size_t*>* tabuList,
 			size_t* edge);
 
@@ -108,20 +106,6 @@ private:
 		add1deg4, //add edge with 1 degree 4 node
 		add2deg4 //add edge with 2 degree 4 nodes
 	};
-
-	//returns a randomly chosen edge.
-	//if exists is set to false, returns a edge that is NOT
-	//in the graph.
-	//Remember to deallocate the returned pointer.
-	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
-			bool existent=true);
-
-	//returns a randomly chosen edge incident to incidentNode.
-	//if exists is set to false, returns a edge that is NOT
-	//in the graph AND incident to incidentNode.
-	//Remember to deallocate the returned pointer.
-	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
-			size_t incidentNode, bool existent=true);
 
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
@@ -173,50 +157,6 @@ private:
 			const AdjacencyMatrix<bool>* currSol,
 			const std::vector<size_t*>* tabuList,
 			bool aspirationCrit=true);
-
-	//Called by guaranteeFeasibleStep when scenarion 1 occurs.
-	//Scenario 1 Solution: another random existing edge will be chosen and
-	//	their incident nodes will be swaped. For instance, (1, 2),
-	//	(3, 4) may be swapped to (1, 4), (3, 2).
-	//Due to the implementation of selectEdgeToAdd(), mov contains the
-	//two original edges that shall be randomly swapped.
-	static void swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
-			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
-	
-	//Called by guaranteeFeasibleStep when Scenario 4 happens.
-	//Scenario 4 Solution: Swap a random edge of the node with another
-	//	of degree < 4. For example, consider that edge (0, 5)
-	//	will be added. However, node 0 has degree 4: (0, 1),
-	//	(0, 2), (0, 3), and (0, 4). Choose one of these edges
-	//	randomly to be deleted (0, [1, 2, 3, 4]). Choose another random node
-	//	n with degree < 4 and add the edge ([1, 2, 3, 4], n).
-	//	This process is hereby called "spin" since one node is fixed while
-	//	the other changes, like the spinning of a clock pointer.
-	//	Note that allowing the degree of n to be 4 would trigger
-	//	scenario 5. As a consequence, scenario 5 could be triggered
-	//	multiple times depending on the current solution. This
-	//	would cause a far step in the neighbourhood search space,
-	//	(a leap, not a step) which is not desired.
-	static void spinEdge(AdjacencyMatrix<bool>* neighbour,
-			size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit);
-
-	//Called by guaranteeFeasibleStep when Scenario 5 happens.
-	//Scenario 5 Solution: it basically activates scenario 4 twice.
-	//	For example, attempt to add the edge (0, 1), but
-	//	degree(0) = degree(1) = 4. Then spin edges on nodes 0 and 1:
-	//		delete random edge (0, x);
-	//		delete random edge (1, y);
-	//		add edge (0, random node n1) where degree(n1) < 4;
-	//		add edge (1, random node n2) where degree(n2) < 4.
-	//	Depending on the current solution, it may be necessary
-	//	to rechoose the random edges (0, x) and (1, y).
-	//	For instance, the algorithm may attempt to add edge
-	//	(0, 1), (1, 0). This would reduce the number of edges
-	//	in the graph, which is not desired in this tabu search
-	//	since it would cause the fault tolerance to reduce.
-	static void spinEdges(AdjacencyMatrix<bool>* neighbour,
-			size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit);
-
 
 	//it changes the neighbour graph to a feasible solution if needed.
 	//This function is responsible for mantaining the solutions feasible.

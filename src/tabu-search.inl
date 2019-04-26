@@ -217,15 +217,6 @@ T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
 }
 
 template <class T>
-bool TabuSearch<T>::areEdgesEqual(size_t* edge1, size_t* edge2) {
-	if ((edge1[0] == edge2[0] && edge1[1] == edge2[1]) ||
-			(edge1[0] == edge2[1] && edge1[1] == edge2[0])) {
-		return true;
-	}
-	return false;
-}
-
-template <class T>
 bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
 		size_t* edge) {
 	//searches tabuList
@@ -258,69 +249,6 @@ void TabuSearch<T>::addToTabuList(std::vector<size_t*>* tabuList,
 	newEdge[0] = mov.edgeToDel[0];
 	newEdge[1] = mov.edgeToDel[1];
 	tabuList->push_back(newEdge);
-}
-
-template <class T>
-size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
-		bool existent) {
-	size_t count = 0, selected;
-	if (existent)
-		selected = rng() % graph->getNumEdges();
-	else
-		//there are a total of (n^2 - n) / 2 possible (unique) edges
-		//since the matrix is symmetric and triangular and
-		//no self-loops are allowed
-		//This result can be obtained through arithmetic progression
-		selected = rng() % ((graph->getNumNodes() * graph->getNumNodes() -
-					graph->getNumNodes())/2 - graph->getNumEdges());
-
-	//searches triangular matrix
-	for (size_t i = 1; i < graph->getNumEdges(); i++) {
-		for (size_t j = 0; j < i; j++) {
-			if ( (existent && graph->edgeExists(i, j)) ||
-				(!existent && !graph->edgeExists(i, j)) ) {
-
-				if (count == selected) {
-					size_t* ret = new size_t[2] {i, j};
-					return ret;
-				}
-				count++;
-			}
-		}
-	}
-
-	return NULL;
-}
-
-template <class T>
-size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
-		size_t incidentNode, bool existent) {
-	size_t count = 0; selected;
-	if (existent) {
-		selected = rng() % graph->getNodeDegree(incidentNode);
-	}
-	else {
-		//|V| - existing_incident_edges - self_loop
-		selected = rng() % (graph->getNumNodes() - 
-				graph->getNodeDegree(incidentNode) - 1);
-	}
-
-	//searches triangular matrix
-	for (size_t i = 0; i < graph->getNumNodes(); i++) {
-		if (i != incidentNode) { //no self-loops
-			if ( (existent && graph->edgeExists(i, incidentNode)) ||
-				(!existent && !graph->edgeExists(i, incidentNode)) ) {
-
-				if (count == selected) {
-					size_t* ret = new (std::nothrow) size_t[2] {i, incidentNode};
-					return ret;
-				}
-				count++;
-			}
-		}
-	}
-
-	return NULL;
 }
 
 template <class T>
@@ -438,63 +366,6 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 	}
 
 	return Movement{edgeToDel, edgeToAdd};
-}
-
-template <class T>
-void TabuSearch<T>::swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
-		Movement mov, std::vector<size_t>* tabuList) {
-	//There are two possible combinations
-	//for edges (a, b), (c, d):
-	//	(a, d), (c, b), and (a, c), (b, d)
-	//chooses one of these combinations randomly.
-	int combination = rng() % 2;
-
-	for (int i = 0; i < 2; i++) {
-		size_t swap;
-		//copies edges for swapping
-		size_t swapDeltd[2] = {mov.edgeToDel[0], mov.edgeToDel[1]};
-		size_t swapAdded[2] = {mov.edgeToAdd[0], mov.edgeToAdd[1]};
-
-		if (combination == 0) {
-			//(a, b), (c, d) -> (a, d), (c, b)
-			swap = swapAdded[1];
-			swapAdded[1] = swapDeltd[1];
-			swapDeltd[1] = swap;
-		}
-		else {
-			//(a, b), (c, d) -> (a, c), (b, d)
-			swap = swapAdded[0];
-			swapAdded[0] = swapDeltd[1];
-			swapDeltd[1] = swap;
-		}
-		combination = (combination + 1) % 2;
-
-		//if any of the swapped edges is equal to one of the
-		//previously chosen, a disconnected graph may be obtained
-		//and it would no be possible to undo the movement
-		if (areEdgesEqual(mov.edgeToDel, swapDeltd) ||
-				areEdgesEqual(mov.edgeToDel, swapAdded) ||
-				areEdgesEqual(mov.edgeToAdd, swapDeltd) ||
-				areEdgesEqual(mov.edgeToAdd, swapAdded)) {
-			continue;
-		}
-
-		Movement moves[2] = {Movement {mov.edgeToDel, swapDeltd},
-			Movement {mov.edgeToAdd, swapAdded}};
-		//neighbourhood step
-		makeMovement(neighbour, moves[0]);
-		makeMovement(neighbour, moves[1]);
-	}
-}
-
-template <class T>
-void TabuSearch<T>::spinEdge(AdjacencyMatrix<bool>* neighbour,
-		size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit) {
-}
-
-template <class T>
-void TabuSearch<T>::spinEdges(AdjacencyMatrix<bool>* neighbour,
-		size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit) {
 }
 
 template <class T>
