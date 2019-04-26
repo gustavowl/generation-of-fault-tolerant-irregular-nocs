@@ -375,7 +375,7 @@ size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
 			//to whichever node in edgeToDel. This would cause a
 			//disconnected graph to be generated
 			while (true) {
-
+				//chooses edge to swap
 				edgeToAdd = selectRandomEdge(neighbour);
 
 				if (edgeToDel[0] == edgeToAdd[0] ||
@@ -395,10 +395,32 @@ size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
 			}
 			//POINT OF kNOw RETURN
 		case del1deg2:
-			break;
-	}
+			size_t node = (neighbour->getNodeDegree(edgeToDel[0]) == MIN_DEGREE)?
+				edgeToDel[0] : edgeToDel[1];
 
-	return NULL;
+			while (true) {
+				edgeToAdd = selectRandomEdge(neighbour, node, false);
+
+				if (!aspirationCrit && isInTabuList(tabuList, edgeToAdd)) {
+					delete[] edgeToAdd;
+					continue;
+				}
+				
+				return edgeToAdd;
+			}
+			//POINT OF kNOw RETURN
+		default:
+			while (true) {
+				edgeToAdd = selectRandomEdge(neighbour, false);
+
+				if (!aspirationCrit && isInTabuList(tabuList, edgeToAdd)) {
+					delete[] edgeToAdd;
+					continue;
+				}
+
+				return edgeToAdd;
+			}
+	}
 }
 
 template <class T>
