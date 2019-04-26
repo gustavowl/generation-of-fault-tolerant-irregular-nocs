@@ -92,7 +92,7 @@ private:
 	static bool areEdgesEqual(size_t* edge1, size_t* edge2);
 
 	static bool isInTabuList(const std::vector<size_t*>* tabuList,
-			Movement mov);
+			size_t* edge);
 
 	//deleted edges are added to tabu list.
 	//Thus, the algorithm searches the neighbourhood for solutions
@@ -123,17 +123,6 @@ private:
 	static size_t* selectRandomEdge(AdjacencyMatrix<bool>* graph,
 			size_t incidentNode, bool existent=true);
 
-	//randomly selects an edge to be deleted.
-	//It is called by randomNeighbourhoodStep().
-	//returns the chosen edge.
-	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
-
-	//TODO: guarantee tabuList feasibleness, etc.
-	//if not tabulist feasible, return NULL
-	static size_t* selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
-			size_t* edgeToDel, NeighbourStatus delStatus,
-			std::vector<size_t>* tabuList, bool aspirationCrit);
-
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
 	//2 - Delete an edge incident to 1 node of degree 2;
@@ -147,6 +136,17 @@ private:
 	static size_t* NeighbourStatus predictActionStatus(
 			AdjacencyMatrix<bool>* graph, size_t* edge,
 			bool add);
+
+	//randomly selects an edge to be deleted.
+	//It is called by randomNeighbourhoodStep().
+	//returns the chosen edge.
+	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
+
+	//TODO: guarantee tabuList feasibleness, etc.
+	//if not tabulist feasible, return NULL
+	static size_t* selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
+			size_t* edgeToDel, std::vector<size_t>* tabuList,
+			bool aspirationCrit);
 
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically

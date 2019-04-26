@@ -227,15 +227,14 @@ bool TabuSearch<T>::areEdgesEqual(size_t* edge1, size_t* edge2) {
 
 template <class T>
 bool TabuSearch<T>::isInTabuList(const std::vector<size_t*>* tabuList,
-		Movement mov) {
+		size_t* edge) {
 	//searches tabuList
 	size_t tabuEdge[2];
 	for (size_t i = 0; i < tabuList->size(); i++) {
 		tabuEdge[0] = tabuList->at(i)[0];
 		tabuEdge[1] = tabuList->at(i)[1];
 		
-		//checks if any edge in movement is is tabuList
-		if (areEdgesEqual(tabuEdge, mov.edgeToAdd)) {
+		if (areEdgesEqual(tabuEdge, edge)) {
 			return true;
 		}
 	}
@@ -308,12 +307,12 @@ size_t* TabuSearch<T>::selectRandomEdge(AdjacencyMatrix<bool>* graph,
 
 	//searches triangular matrix
 	for (size_t i = 0; i < graph->getNumNodes(); i++) {
-		if (i != incidentNode) {
+		if (i != incidentNode) { //no self-loops
 			if ( (existent && graph->edgeExists(i, incidentNode)) ||
 				(!existent && !graph->edgeExists(i, incidentNode)) ) {
 
 				if (count == selected) {
-					size_t* ret = new size_t[2] {i, incidentNode};
+					size_t* ret = new (std::nothrow) size_t[2] {i, incidentNode};
 					return ret;
 				}
 				count++;
@@ -363,6 +362,46 @@ size_t* TabuSearch<T>::selectEdgeToDel(AdjacencyMatrix<bool>* neighbour) {
 }
 
 template <class T>
+size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
+			size_t* edgeToDel, std::vector<size_t>* tabuList,
+			bool aspirationCrit) {
+	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
+			false);
+	size_t* edgeToAdd = NULL;
+
+	switch (delStatus) {
+		case del2deg2:
+			//selects a random edge and ensurres that it is not incident
+			//to whichever node in edgeToDel. This would cause a
+			//disconnected graph to be generated
+			while (true) {
+
+				edgeToAdd = selectRandomEdge(neighbour);
+
+				if (edgeToDel[0] == edgeToAdd[0] ||
+						edgeToDel[0] == edgeToAdd[1] ||
+						edgeToDel[1] == edgeToAdd[0] ||
+						edgeToDel[1] == edgeToAdd[1]) {
+					delete[] edgeToAdd;
+					continue;
+				}
+
+				if (!aspirationCrit && isInTabuList(tabuList, edgeToAdd)) {
+					delete[] edgeToAdd;
+					continue;
+				}
+					
+				return edgeToAdd;
+			}
+			//POINT OF kNOw RETURN
+		case del1deg2:
+			break;
+	}
+
+	return NULL;
+}
+
+template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 		const AdjacencyMatrix<bool>* currSol,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
@@ -372,8 +411,6 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 			delete[] edgeToDel;
 
 		edgeToDel = selectEdgeToDel(neighbour);
-		NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
-				false);
 		edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, delStatus,
 				tabuList, aspirationCrit);
 	}
@@ -410,18 +447,21 @@ void TabuSearch<T>::swapEdgesNodes(AdjacencyMatrix<bool>* neighbour,
 		}
 		combination = (combination + 1) % 2;
 
+		//if any of the swapped edges is equal to one of the
+		//previously chosen, a disconnected graph may be obtained
+		//and it would no be possible to undo the movement
+		if (areEdgesEqual(mov.edgeToDel, swapDeltd) ||
+				areEdgesEqual(mov.edgeToDel, swapAdded) ||
+				areEdgesEqual(mov.edgeToAdd, swapDeltd) ||
+				areEdgesEqual(mov.edgeToAdd, swapAdded)) {
+			continue;
+		}
+
 		Movement moves[2] = {Movement {mov.edgeToDel, swapDeltd},
 			Movement {mov.edgeToAdd, swapAdded}};
 		//neighbourhood step
 		makeMovement(neighbour, moves[0]);
 		makeMovement(neighbour, moves[1]);
-
-		if (!isFeasible(neighbour)) {
-			//undoes neighbourhood step
-			makeMovement(neighbour, moves[0], true);
-			makeMovement(neighbour, moves[1], true);
-			continue;
-		}
 	}
 }
 
@@ -431,7 +471,7 @@ void TabuSearch<T>::spinEdge(AdjacencyMatrix<bool>* neighbour,
 }
 
 template <class T>
-void TabuSearch<T>::spinEdge(AdjacencyMatrix<bool>* neighbour,
+void TabuSearch<T>::spinEdges(AdjacencyMatrix<bool>* neighbour,
 		size_t* edge, std::vector<size_t>* tabuList, bool aspirationCrit) {
 }
 
@@ -459,6 +499,7 @@ bool TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 		default:
 			break; //mov will generate a feasible solution
 	}
+
 	return true;
 }
 
