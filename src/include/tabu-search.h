@@ -89,15 +89,6 @@ private:
 	static T fitness(const GraphRepresentation<T>* tg,
 			const AdjacencyMatrix<bool>* sol, T valueLimit);
 
-	static bool isInTabuList(const std::vector<size_t*>* tabuList,
-			size_t* edge);
-
-	//deleted edges are added to tabu list.
-	//Thus, the algorithm searches the neighbourhood for solutions
-	//WITHOUT that edge
-	static void addToTabuList(std::vector<size_t*>* tabuList,
-			size_t* tabuIndex, Movement mov);
-
 	//this enum is used for neighbourhood search.
 	enum NeighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
 		del1deg2, //deleted a edge with 1 degree 2 node
