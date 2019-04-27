@@ -1,11 +1,10 @@
 template <class T>
-void AdjacencyMatrix<T>::triangNodeIdSwap(size_t* origin,
-		size_t* destination) const {
+void AdjacencyMatrix<T>::triangNodeIdSwap(grEdge* edge) const {
 
-	if (isTriangular && *origin < *destination) {
-		size_t change = *origin;
-		*origin = *destination;
-		*destination = change;
+	if (isTriangular && edge->orig < edge->dest) {
+		size_t change = edge->orig;
+		edge->orig = *edge->dest;
+		*edge->dest = change;
 	}
 }
 
@@ -82,76 +81,72 @@ AdjacencyMatrix<T>::~AdjacencyMatrix() {
 }
 
 template <class T>
-void AdjacencyMatrix<T>::addEdge(size_t origin,
-		size_t destination, T value) {
+void AdjacencyMatrix<T>::addEdge(grEdge edge) {
 	//check if arguments are valid
-	if (origin >= this->numNodes || destination >= this->numNodes ||
-			value == this->nullEdgeValue)
+	if (edge->orig >= this->numNodes || edge->dest >= this->numNodes ||
+			edge->value == this->nullEdgeValue)
 		return;
 
-	triangNodeIdSwap(&origin, &destination);
+	triangNodeIdSwap(&edge);
 
-	if (this->edgeExists(origin, destination)) {
+	if (this->edgeExists(edge)) {
 		return;
 	}
 
-	adjm[origin][destination] = value;
+	adjm[edge->orig][edge->dest] = edge->value;
 
 	if (isSymmetric && !isTriangular)
-		adjm[destination][origin] = value;
+		adjm[edge->dest][edge->orig] = edge->value;
 
-	degrees[origin]++;
-	degrees[destination]++;
+	degrees[edge->orig]++;
+	degrees[edge->dest]++;
 
 	this->numEdges++;
 }
 
 template <class T>
-void AdjacencyMatrix<T>::delEdge(size_t origin,
-		size_t destination){
+void AdjacencyMatrix<T>::delEdge(grEdge edge){
 	//check if arguments are valid
-	if (origin >= this->numNodes || destination >= this->numNodes)
+	if (edge->orig >= this->numNodes || edge->dest >= this->numNodes)
 		return;
 
-	triangNodeIdSwap(&origin, &destination);
+	triangNodeIdSwap(&edge->orig, &edge->dest);
 
-	if (!this->edgeExists(origin, destination)) {
+	if (!this->edgeExists(edge->orig, edge->dest)) {
 		return;
 	}
 
-	adjm[origin][destination] = this->nullEdgeValue;
+	adjm[edge->orig][edge->dest] = this->nullEdgeValue;
 
 	if (isSymmetric && !isTriangular)
-		adjm[destination][origin] = this->nullEdgeValue;
+		adjm[edge->dest][edge->orig] = this->nullEdgeValue;
 
-	degrees[origin]--;
-	degrees[destination]--;
+	degrees[edge->orig]--;
+	degrees[edge->dest]--;
 
 	this->numEdges--;
 }
 
 template <class T>
-bool AdjacencyMatrix<T>::edgeExists(size_t origin,
-		size_t destination) const {
+bool AdjacencyMatrix<T>::edgeExists(grEdge edge) const {
 
-	if (origin >= this->numNodes || destination >= this->numNodes)
+	if (edge->orig >= this->numNodes || edge->dest >= this->numNodes)
 		return false;
 
-	triangNodeIdSwap(&origin, &destination);
+	triangNodeIdSwap(&edge);
 
-	return adjm[origin][destination] != this->nullEdgeValue;
+	return adjm[edge->orig][edge->dest] != this->nullEdgeValue;
 }
 
 template <class T>
-T AdjacencyMatrix<T>::getEdgeValue(size_t origin,
-		size_t destination) const {
+T AdjacencyMatrix<T>::getEdgeValue(grEdge edge) const {
 
-	if (origin >= this->numNodes || destination >= this->numNodes)
+	if (edge->orig >= this->numNodes || edge->dest >= this->numNodes)
 		return this->nullEdgeValue;
 
-	triangNodeIdSwap(&origin, &destination);
+	triangNodeIdSwap(&edge);
 
-	return adjm[origin][destination];
+	return adjm[edge->orig][edge->dest];
 }
 
 template <class T>
@@ -184,6 +179,22 @@ GraphRepresentation<T>* AdjacencyMatrix<T>::copy() const {
 	}
 
 	return ret;
+}
+
+template <class T>
+bool AdjacencyMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
+	if (isSymmetric) {
+		return edge1.value == edge2.value &&
+			( (edge1.orig == edge2.orig &&
+			  edge1.dest == edge2.dest)
+			 ||
+			 (edge1.orig == edge2.dest &&
+			  edge2.orig == edge1.dest) );
+	}
+
+	return edge1.orig == edge2.orig &&
+		edge1.dest == edge2.orig &&
+		edge1.value == edge2.value;
 }
 
 template <class T>

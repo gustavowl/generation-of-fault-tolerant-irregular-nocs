@@ -35,7 +35,7 @@ private:
 	//swaps the nodes ids if matrix is triangular and
 	//origin < destination (equivalent to attempting to access
 	//the upper triangle matrix)
-	void triangNodeIdSwap(size_t* origin, size_t* destination) const;
+	void triangNodeIdSwap(grEdge* Edge) const;
 
 	//Called when constructor is unable to allocate memory.
 	//If any element (edge or node) was added,
@@ -56,16 +56,16 @@ public:
 	//[0, numNodes). Adds edge if value != nullEdgeValue.
 	//and if an edge from origin to destination does not
 	//exist yet.
-	void addEdge(size_t origin, size_t destination, T value);
+	void addEdge(grEdge edge);
 
 	//deletes edge if origin and destination values are in
 	//the valid range: [0, numNodes).
-	void delEdge(size_t origin, size_t destination);
+	void delEdge(grEdge edge);
 
 	// returns if adjm[origin][destination] != nullEdgeValue
-	bool edgeExists(size_t origin, size_t destination) const;
+	bool edgeExists(grEdge edge) const;
 
-	T getEdgeValue(size_t origin, size_t destination) const;
+	T getEdgeValue(grEdge edge) const;
 
 	//returns the number of incident edges. For both directed (asymmetric)
 	//and undirected (symmetric) graphs. For directed graphs, it computes
@@ -73,6 +73,8 @@ public:
 	size_t getNodeDegree(size_t node) const;
 
 	GraphRepresentation<T>* copy() const;
+
+	bool areEdgesEqual(grEdge edge1, grEdge edge2);
 };
 
 #include "../adjacency-matrix.inl"

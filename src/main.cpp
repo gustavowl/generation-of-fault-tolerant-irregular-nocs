@@ -4,6 +4,7 @@
 //#include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-list.h"
+#include "include/adjacency-matrix.h"
 //#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
