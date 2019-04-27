@@ -1,15 +1,15 @@
 template <class T>
-size_t AdjacencyList<T>::getEdgePos(const Edge edge) const {
+size_t AdjacencyList<T>::getEdgePos(const grEdge edge) const {
 
-	if (edge.orig >= numNodes || edge.dest >= numNodes)
-		return numNodes;
+	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
+		return this->numNodes;
 
 	for (size_t i = 0; i < adjl[edge.orig].size(); i++) {
 		if (adjl[edge.orig][i].dest == edge.dest)
 			return i;
 	}
 
-	return numNodes;
+	return this->numNodes;
 }
 
 template <class T>
@@ -33,7 +33,7 @@ AdjacencyList<T>::~AdjacencyList() {
 }
 
 template <class T>
-void AdjacencyList<T>::addEdge(Edge edge) {
+void AdjacencyList<T>::addEdge(grEdge edge) {
 
 	//check if arguments are valid
 	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes ||
@@ -48,7 +48,7 @@ void AdjacencyList<T>::addEdge(Edge edge) {
 }
 
 template <class T>
-void AdjacencyList<T>::delEdge(Edge edge) {
+void AdjacencyList<T>::delEdge(grEdge edge) {
 
 	if (!this->edgeExists(edge))
 		return;
@@ -60,14 +60,14 @@ void AdjacencyList<T>::delEdge(Edge edge) {
 }
 
 template <class T>
-bool AdjacencyList<T>::edgeExists(Edge edge) const {
+bool AdjacencyList<T>::edgeExists(grEdge edge) const {
 	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
 		return false;
-	return getEdgeValue(origin, destination) != this->nullEdgeValue;
+	return getEdgeValue(edge) != this->nullEdgeValue;
 }
 
 template <class T>
-T AdjacencyList<T>::getEdgeValue(Edge edge) const {
+T AdjacencyList<T>::getEdgeValue(grEdge edge) const {
 
 	size_t pos = getEdgePos(edge);
 
@@ -105,7 +105,7 @@ GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 }
 
 template <class T>
-bool areEdgesEqual(Edge edge1, Edge edge2) {
+bool areEdgesEqual(grEdge edge1, grEdge edge2) {
 	return edge1.orig == edge2.orig &&
 		edge1.dest == edge2.dest &&
 		edge1.value == edge2.value;

@@ -10,12 +10,12 @@ template <class T>
 class AdjacencyList : public GraphRepresentation<T> {
 private:
 	// The adjacency list itself
-	std::vector<std::vector<Edge>> adjl;
+	std::vector<std::vector<grEdge>> adjl;
 
 	//returns edge position.
 	//if edge does not exist, returns a invalid position
 	//(number of nodes)
-	size_t getEdgePos(Edge edge) const;
+	size_t getEdgePos(grEdge edge) const;
 
 public:
 	// Constructors
@@ -31,25 +31,25 @@ public:
 	//Not empty if constructor AdjacencyList(numNodes)
 	//was called with valid arguments
 	//Valid arguments if origin and destination in [0, numNodes)
-	void addEdge(Edge edge);
+	void addEdge(grEdge edge);
 
-	void delEdge(Edge edge);
+	void delEdge(grEdge edge);
 
 	// returns if adjl[origin][destination] != nullEdgeValue
-	bool edgeExists(Edge edge) const;
+	bool edgeExists(grEdge edge) const;
 
-	T getEdgeValue(Edge edge) const;
+	T getEdgeValue(grEdge edge) const;
 
 	//returns the out-degree
 	size_t getNodeDegree(size_t node) const;
 
 	GraphRepresentation<T>* copy() const;
 
-	bool areEdgesEqual(Edge edge1, Edge edge2);
+	bool areEdgesEqual(grEdge edge1, grEdge edge2);
 
 	// This function should be called in order to
 	// save memory usage. It is recommended to call it
-	// after multiple calls to addEdge or delEdge.
+	// after multiple calls to addgrEdge or delEdge.
 	// For instance, it may be called after a loop finishes,
 	// not in each iteration.
 	void shrinkToFit();

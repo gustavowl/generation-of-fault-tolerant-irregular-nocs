@@ -1,13 +1,15 @@
 #ifndef __TRIANG_ADJ_MATRIX__
 #define __TRIANG_ADJ_MATRIX__
 
+#include "graph-representation.h"
+
 //class used by the Tabu Search.
 //It stores the graph as an triangular adjacency matrix.
 //The edges are symmetric and it does not have the
 //identity column sine no self loops are allowed in the
 //tabu search.
 template <class T>
-class TriangAdjMatrix {
+class TriangAdjMatrix : public GraphRepresentation<T>{
 public:
 	// Constructor
 	TriangAdjMatrix();
@@ -72,7 +74,6 @@ public:
 	Edge spinEdge(Edge edge, size_t fixedNode);
 };
 
-#include <iostream> //TODO: DELETEME (DEBUG)
-#include "../graph-representation.inl"
+#include "../triang-adjl-matrix.inl"
 
 #endif

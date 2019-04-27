@@ -8,12 +8,6 @@
 #include <vector>
 //#include <cstdlib>
 #include <iostream> //TODO: DELETEME (DEBUG)
-#include <time.h> //rng
-#include <chrono> //rng
-#include <random> //rng 
-//rng macro
-std::mt19937 rng(
-		std::chrono::steady_clock::now().time_since_epoch().count());
 
 template <class T>
 class TabuSearch {

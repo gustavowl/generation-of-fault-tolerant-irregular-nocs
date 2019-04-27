@@ -1,6 +1,9 @@
 #ifndef __GRAPH_REPRESENTATION__
 #define __GRAPH_REPRESENTATION__
 
+//use this as a shortcut in other classes
+#define grEdge typename GraphRepresentation<T>::Edge
+
 #include <vector>
 #include <time.h> //rng
 #include <chrono> //rng
@@ -25,6 +28,7 @@ public:
 	//struct used to represent an edge.
 	//The sons may not necessarilly represent matrices using this
 	//struct. But it is used for methods invocations.
+	//NOTE: used the grEdge definition as a shortcut in other classes
 	struct Edge {
 		size_t orig; //origin node
 		size_t dest; //destination node
