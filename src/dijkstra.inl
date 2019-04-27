@@ -36,7 +36,10 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 			if (!wasVisited[neighbour]) {
 				if (isWeighted) {
 					relaxWeighted(&selectedNode, &nodes[neighbour],
-							graph->getEdgeValue(selectedNode.nodeId, neighbour));
+							graph->getEdgeValue(grEdge {
+									.orig = selectedNode.nodeId,
+									.dest = neighbour
+								}));
 				}
 				else {
 					relaxUnweighted(&selectedNode, &nodes[neighbour]);

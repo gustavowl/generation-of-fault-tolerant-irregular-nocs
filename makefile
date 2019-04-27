@@ -4,14 +4,14 @@ OBJDIR = $(SRCDIR)/obj
 $(shell mkdir -p $(SRCDIR)/obj)
 
 _DEPS = graph-representation.h rng.h adjacency-list.h adjacency-matrix.h \
-		tabu-adj-matrix.h file-manager.h graph-converter.h #dijkstra.h tabu-search.h
+		tabu-adj-matrix.h file-manager.h graph-converter.h dijkstra.h #\ tabu-search.h
 DEPS = $(patsubst %, $(INCDIR)/%, $(_DEPS))
 
 _OBJS = main.o file-manager.o
 OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 
 _INLS = graph-representation.inl adjacency-list.inl adjacency-matrix.inl \
-		tabu-adj-matrix.inl graph-converter.inl #dijkstra.inl tabu-search.inl
+		tabu-adj-matrix.inl graph-converter.inl dijkstra.inl #tabu-search.inl
 INLS = $(patsubst %, $(SRCDIR)/%, $(_INLS))
 
 GCC = g++

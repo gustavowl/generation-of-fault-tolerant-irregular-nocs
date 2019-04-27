@@ -6,6 +6,7 @@
 #include "include/adjacency-list.h"
 #include "include/adjacency-matrix.h"
 #include "include/tabu-adj-matrix.h"
+#include "include/dijkstra.h"
 //#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
@@ -42,9 +43,15 @@ int main(int argc, char *argv[]) {
 		"==============================" << std::endl;
 	adjm.print();
 
-	TabuAdjMatrix<size_t> tabu = TabuAdjMatrix<size_t>(gr->getNumNodes(), 0);
+	TabuAdjMatrix<bool> tabu = TabuAdjMatrix<bool>(gr->getNumNodes(), 0);
 	GraphConverter::convert(gr, &tabu);
 	tabu.print();
+
+	for (size_t i = 0; i < tabu.getNumNodes(); i++) {
+		Dijkstra<bool>::Node node = Dijkstra<bool>::dijkstra(&tabu, 0, i, 2112, false);
+		std::cout << "0 to " << i << " = " << node.weightSum <<
+			"/" << node.hops << " (weight/hops)" << std::endl;
+	}
 
 	delete gr;
 	//TODO: END DELETE
