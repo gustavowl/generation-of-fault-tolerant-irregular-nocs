@@ -225,4 +225,5 @@ void AdjacencyMatrix<T>::setInvalid() {
 		delete[] this->degrees;
 
 	this->numNodes = 0;
+	this->numEdges = 0;
 }

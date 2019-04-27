@@ -5,9 +5,9 @@
 
 //class used by the Tabu Search.
 //It stores the graph as a lower triangular adjacency matrix.
-//All the elements are below the identity line.
-//The edges are symmetric and it does not have the
-//identity line since no self loops are allowed in the
+//All the elements are below the main diagonal.
+//The edges are symmetric and the matrix does not have the
+//main diagonal since no self loops are allowed in the
 //tabu search.
 template <class T>
 class TabuAdjMatrix : public GraphRepresentation<T>{
@@ -27,10 +27,18 @@ private:
 	//If any element (edge or node) was added, it is destroyed.
 	//Deallocades both adjm and degrees pointers.
 	void setInvalid();
+
+	//returns if an edge is valid.
+	//If the nodes' ids are in the limited range (< numNodes),
+	//if edge is not a self-loop and if edge's value is
+	//valid (!= nullEdgeValue).
+	//If checkValue is set to false, then it does not verify
+	//whether value != nullEdgeValue
+	bool isEdgeInvalid(Edge edge, bool checkValue=true);
 public:
 	// Constructors
 	TabuAdjMatrix();
-	//expects numNodes > 0
+	//expects numNodes > 1
 	TabuAdjMatrix(size_t numNodes, T nullEdgeValue);
 
 	// Destructor

@@ -1,11 +1,52 @@
+template <class T>
+void TabuAdjMatrix<T>::nodeIdSwap(grEdge* edge) const {
+	if (edge->orig < edge->dest) {
+		size_t change = edge->orig;
+		edge->orig = edge->dest;
+		edge->dest = change;
+	}
+}
+
+template <class T>
+void TabuAdjMatrix<T>::setInvalid() {
+	//Set graph as zero-order/invalid.
+	if (this->adjm != NULL) {
+		//then there are some arrays allocated
+		for (size_t i = 0; i < this->numNodes; i++) {
+
+			if (this->adjm[i] != NULL)
+				delete[] this->adjm[i];
+
+		}
+		delete[] this-> adjm;
+	}
+
+	if (this->degrees != NULL)
+		delete[] this->degrees;
+
+	this->numNodes = 0;
+	this->numEdges = 0;
+}
+
+template <class T>
+bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge, bool checkValue) {
+
+	bool ret = edge.orig == edge.dest ||
+			edge.orig >= this->numNodes ||
+			edge.dest >= this->numNodes;
+
+	if (checkValue)
+		return ret || edge.value == this->nullEdgeValue;
+
+	return ret;
+}
+
 //TODO: verify if space to  be allocated is free.
 //Otherwise, process may be killed.
 template <class T>
-TabuAdjMatrix<T>::TabuAdjMatrix(size_t numNodes,
-		bool symmetric, bool triangular, T nullEdgeValue) {
+TabuAdjMatrix<T>::TabuAdjMatrix(size_t numNodes, T nullEdgeValue) {
 
-	// Assert triangular -> symmetric
-	if (numNodes == 0 || (triangular && !symmetric))
+	if (numNodes <= 1)
 		return;
 
 	this->adjm = new (std::nothrow) T* [numNodes];
@@ -27,32 +68,13 @@ TabuAdjMatrix<T>::TabuAdjMatrix(size_t numNodes,
 		this->degrees[i] = 0;
 
 	this->numNodes = numNodes;
-	this->isSymmetric = symmetric;
-	this->isTriangular = triangular;
 	this->nullEdgeValue = nullEdgeValue;
 
-	//resizes adjm columns to triangular matrix
-	if (isTriangular) {
-		for (size_t i = 0; i < numNodes; i++) {
-			//allocates space
-			this->adjm[i] = new (std::nothrow) T [i+1];
-
-			if (this->adjm[i] == NULL) {
-				//failed to allocate memory. Reset
-				setInvalid();
-				return;
-			}
-			//sets all values to nullEdgeValue
-			for (size_t j = 0; j <= i; j++)
-				this->adjm[i][j] = this->nullEdgeValue;
-		}
-		return;
-	}
-	
-	//else, resizes adjm columns to square matrix
-	for (size_t i = 0; i < numNodes; i++) {
+	//resizes adjm columns to triangular matrix w/ no
+	//main diagonal
+	for (size_t i = 1; i < numNodes; i++) {
 		//allocates space
-		this->adjm[i] = new (std::nothrow) T [numNodes];
+		this->adjm[i] = new (std::nothrow) T [i];
 
 		if (this->adjm[i] == NULL) {
 			//failed to allocate memory. Reset
@@ -60,7 +82,7 @@ TabuAdjMatrix<T>::TabuAdjMatrix(size_t numNodes,
 			return;
 		}
 		//sets all values to nullEdgeValue
-		for (size_t j = 0; j < numNodes; j++)
+		for (size_t j = 0; j < i; j++)
 			this->adjm[i][j] = this->nullEdgeValue;
 	}
 }
@@ -73,20 +95,16 @@ TabuAdjMatrix<T>::~TabuAdjMatrix() {
 template <class T>
 void TabuAdjMatrix<T>::addEdge(grEdge edge) {
 	//check if arguments are valid
-	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes ||
-			edge.value == this->nullEdgeValue)
+	if (isEdgeInvalid(edge))
 		return;
 
-	triangNodeIdSwap(&edge);
+	nodeIdSwap(&edge);
 
 	if (this->edgeExists(edge)) {
 		return;
 	}
 
 	adjm[edge.orig][edge.dest] = edge.value;
-
-	if (isSymmetric && !isTriangular)
-		adjm[edge.dest][edge.orig] = edge.value;
 
 	degrees[edge.orig]++;
 	degrees[edge.dest]++;
@@ -97,19 +115,16 @@ void TabuAdjMatrix<T>::addEdge(grEdge edge) {
 template <class T>
 void TabuAdjMatrix<T>::delEdge(grEdge edge){
 	//check if arguments are valid
-	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
+	if (isEdgeInvalid(edge, false))
 		return;
 
-	triangNodeIdSwap(&edge);
+	nodeIdSwap(&edge);
 
 	if (!this->edgeExists(edge)) {
 		return;
 	}
 
 	adjm[edge.orig][edge.dest] = this->nullEdgeValue;
-
-	if (isSymmetric && !isTriangular)
-		adjm[edge.dest][edge.orig] = this->nullEdgeValue;
 
 	degrees[edge.orig]--;
 	degrees[edge.dest]--;
@@ -120,10 +135,10 @@ void TabuAdjMatrix<T>::delEdge(grEdge edge){
 template <class T>
 bool TabuAdjMatrix<T>::edgeExists(grEdge edge) const {
 
-	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
+	if (isEdgeInvalid(edge, false))
 		return false;
 
-	triangNodeIdSwap(&edge);
+	nodeIdSwap(&edge);
 
 	return adjm[edge.orig][edge.dest] != this->nullEdgeValue;
 }
@@ -134,7 +149,7 @@ T TabuAdjMatrix<T>::getEdgeValue(grEdge edge) const {
 	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
 		return this->nullEdgeValue;
 
-	triangNodeIdSwap(&edge);
+	nodeIdSwap(&edge);
 
 	return adjm[edge.orig][edge.dest];
 }
@@ -150,7 +165,7 @@ template <class T>
 GraphRepresentation<T>* TabuAdjMatrix<T>::copy() const {
 	//calls constructor to reserve mem space and initial instantiation
 	TabuAdjMatrix<T>* ret = new TabuAdjMatrix(this->numNodes,
-			this->isSymmetric, this->isTriangular, this->nullEdgeValue);
+			this->nullEdgeValue); //TODO (std::nothrow) and check
 
 	//checks if matrix if valid
 	if (ret->numNodes == 0)
@@ -158,15 +173,12 @@ GraphRepresentation<T>* TabuAdjMatrix<T>::copy() const {
 
 	grEdge edge;
 	//copies edges
-	for (size_t i = 0; i < ret->numNodes; i++) {
-		size_t max_j = ret->numNodes - 1;
+	for (size_t i = 1; i < ret->numNodes; i++) {
 		edge.orig = i;
 
-		if (ret->isSymmetric)
-			max_j = i;
-		
-		for(size_t j = 0; j <= max_j; j++) {
+		for(size_t j = 0; j < i; j++) {
 			edge.dest = j;
+
 			if (this->edgeExists(edge)) {
 				edge.value = this->getEdgeValue(edge);
 				ret->addEdge(edge);
@@ -179,42 +191,12 @@ GraphRepresentation<T>* TabuAdjMatrix<T>::copy() const {
 
 template <class T>
 bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
-	if (isSymmetric) {
-		return edge1.value == edge2.value &&
-			( (edge1.orig == edge2.orig &&
-			  edge1.dest == edge2.dest)
-			 ||
-			 (edge1.orig == edge2.dest &&
-			  edge2.orig == edge1.dest) );
-	}
+	nodeIdSwap(&edge1);
+	nodeIdSwap(&edge2);
 
 	return edge1.orig == edge2.orig &&
-		edge1.dest == edge2.orig &&
+		edge1.dest == edge2.dest &&
 		edge1.value == edge2.value;
-}
-
-template <class T>
-void TabuAdjMatrix<T>::setInvalid() {
-	//Set graph as zero-order/invalid.
-	if (this->adjm != NULL) {
-		//then there are some arrays allocated
-		for (size_t i = 0; i < this->numNodes; i++) {
-
-			if (this->adjm[i] == NULL) {
-				//by the way the constructor works,
-				//all pointers from here on are also NULL
-				break;
-			}
-
-			delete[] this->adjm[i];
-		}
-		delete[] this-> adjm;
-	}
-
-	if (this->degrees != NULL)
-		delete[] this->degrees;
-
-	this->numNodes = 0;
 }
 
 template <class T>
@@ -323,14 +305,4 @@ template <class T>
 typename TabuAdjMatrix<T>::Edge
 TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode) {
 	return Edge {.orig = 0, .dest = 0};
-}
-
-template <class T>
-void TabuAdjMatrix<T>::triangNodeIdSwap(grEdge* edge) const {
-
-	if (isTriangular && edge->orig < edge->dest) {
-		size_t change = edge->orig;
-		edge->orig = edge->dest;
-		edge->dest = change;
-	}
 }
