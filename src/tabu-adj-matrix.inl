@@ -29,7 +29,8 @@ void TabuAdjMatrix<T>::setInvalid() {
 }
 
 template <class T>
-bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge, bool checkValue) {
+bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge,
+		bool checkValue)  const {
 
 	bool ret = edge.orig == edge.dest ||
 			edge.orig >= this->numNodes ||
@@ -44,8 +45,8 @@ bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge, bool checkValue) {
 template <class T>
 grEdge TabuAdjMatrix<T>::generateInvalidEdge() {
 	return grEdge {
-		.orig = numNodes + 1,
-		.dest = numNodes + 1,
+		.orig = this->numNodes + 1,
+		.dest = this->numNodes + 1,
 		.value = this->nullEdgeValue
 	};
 }
@@ -209,13 +210,12 @@ bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 }
 
 template <class T>
-typename TabuAdjMatrix<T>::Edge
-TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
+grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
 	grEdge e;
 	size_t randomVal;
 
 	if (existent) {
-		randomVal = rng() % numEdges;
+		randomVal = rng() % this->numEdges;
 	}
 	else {
 		//since the matrix is triangular and has no
@@ -223,14 +223,14 @@ TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
 		//edges. This formula can be easily obtained
 		//via arithmetic progression.
 		randomVal = rng() % (
-				(numNodes*numNodes - numNodes)/2 -
-				numEdges );
+				(this->numNodes*this->numNodes - this->numNodes)/2 -
+				this->numEdges );
 	}
 
 	size_t count = 0;
-	for (e.orig = 1; e.orig < numNodes; e.orig++) {
+	for (e.orig = 1; e.orig < this->numNodes; e.orig++) {
 
-		for (e.dest = 0; e.dest < numNodes; e.dest++) {
+		for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
 
 			if ( (existent && this->edgeExists(e)) ||
 					(!existent && !this->edgeExists(e))) {
@@ -249,13 +249,12 @@ TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
 }
 
 template <class T>
-typename TabuAdjMatrix<T>::Edge
-TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
+grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		bool existent) {
 	grEdge e;
 	size_t randomVal;
 
-	if (incidentNode >= numNodes)
+	if (incidentNode >= this->numNodes)
 		return this->generateInvalidEdge();
 
 	if (existent) {
@@ -264,13 +263,13 @@ TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 	else {
 		//any node has |V| - 1 possible edges since no
 		//self-loops are allowed.
-		randomVal = rng() % (numNodes - 1 -
+		randomVal = rng() % (this->numNodes - 1 -
 				this->getNodeDegree(incidentNode));
 	}
 
 	size_t count = 0;
 	e.orig = incidentNode;
-	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
 
 		if (e.orig == e.dest)
 			continue;
@@ -291,20 +290,19 @@ TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 }
 
 template <class T>
-typename TabuAdjMatrix<T>::Edge
-TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
+grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		size_t upperDegLim, bool existent) {
 	grEdge e;
 	//counts nodes with degree < upperDegLim
 	size_t inLimit = 0;
 
-	if (incidentNode >= numNodes) {
+	if (incidentNode >= this->numNodes) {
 		e = this->generateInvalidEdge();
 		return e;
 	}
 
 	e.orig = incidentNode;
-	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
 
 		if (e.orig == e.dest)
 			continue;
@@ -320,7 +318,7 @@ TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 	size_t randomVal = rng() % inLimit;
 	size_t count = 0;
 
-	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
 
 		if (e.orig == e.dest)
 			continue;
@@ -421,8 +419,7 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2) {
 }
 
 template <class T>
-typename TabuAdjMatrix<T>::Edge
-TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode) {
+grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode) {
 
 	if (!edgeExists(edge) || ( edge.orig != fixedNode &&
 				edge.dest != fixedNode) ) {
@@ -444,8 +441,7 @@ TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode) {
 }
 
 template <class T>
-typename TabuAdjMatrix<T>::Edge
-TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode,
+grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 		size_t upperDegLim) {
 
 	if (!edgeExists(edge) || ( edge.orig != fixedNode &&

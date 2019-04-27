@@ -5,6 +5,7 @@
 #include "include/graph-representation.h"
 #include "include/adjacency-list.h"
 #include "include/adjacency-matrix.h"
+#include "include/tabu-adj-matrix.h"
 //#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
@@ -40,6 +41,10 @@ int main(int argc, char *argv[]) {
 	std::cout << "Converted Graph:\n" <<
 		"==============================" << std::endl;
 	adjm.print();
+
+	TabuAdjMatrix<size_t> tabu = TabuAdjMatrix<size_t>(gr->getNumNodes(), 0);
+	GraphConverter::convert(gr, &tabu);
+	tabu.print();
 
 	delete gr;
 	//TODO: END DELETE

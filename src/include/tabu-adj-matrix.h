@@ -10,7 +10,7 @@
 //main diagonal since no self loops are allowed in the
 //tabu search.
 template <class T>
-class TabuAdjMatrix : public GraphRepresentation<T>{
+class TabuAdjMatrix : public GraphRepresentation<T> {
 private:
 	T** adjm;
 
@@ -20,7 +20,7 @@ private:
 	//swaps the nodes' ids to fit in the format of the
 	//triangular matrix. For instance, (0, 1) is mapped
 	//to (1, 0) while (1, 0) would remain unchanged.
-	void nodeIdSwap(grEdge* edge);
+	void nodeIdSwap(grEdge* edge) const;
 
 	//Called by destructor.
 	//Called when constructors are unable to allocate memory.
@@ -34,7 +34,7 @@ private:
 	//valid (!= nullEdgeValue).
 	//If checkValue is set to false, then it does not verify
 	//whether value != nullEdgeValue
-	bool isEdgeInvalid(Edge edge, bool checkValue=true);
+	bool isEdgeInvalid(grEdge edge, bool checkValue=true) const;
 
 	grEdge generateInvalidEdge();
 public:
@@ -46,19 +46,19 @@ public:
 	// Destructor
 	virtual ~TabuAdjMatrix();
 
-	virtual void addEdge(Edge edge) = 0;
+	virtual void addEdge(grEdge edge);
 
-	virtual void delEdge(Edge edge) = 0;
+	virtual void delEdge(grEdge edge);
 
-	virtual bool edgeExists(Edge edge) const = 0;
+	virtual bool edgeExists(grEdge edge) const;
 
-	virtual T getEdgeValue(Edge edge) const = 0;
+	virtual T getEdgeValue(grEdge edge) const;
 
-	virtual size_t getNodeDegree(size_t node) const = 0;
+	virtual size_t getNodeDegree(size_t node) const;
 
-	virtual TabuAdjMatrix<T>* copy() const = 0;
+	virtual GraphRepresentation<T>* copy() const;
 
-	virtual bool areEdgesEqual(Edge edge1, Edge edge2) = 0;
+	virtual bool areEdgesEqual(grEdge edge1, grEdge edge2);
 
 	//============================================
 	//======= METHODS USED FOR TABU SEARCH =======
@@ -67,7 +67,7 @@ public:
 	//returns a randomly chosen edge.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	Edge selectRandomEdge(bool existent=true);
+	grEdge selectRandomEdge(bool existent=true);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
@@ -75,13 +75,13 @@ public:
 	//NOTE: IT DEPENDS ON THE IMPLEMENTATION OF getNodeDegree():
 	//	it is supposed that it will return the in-degree + out-degree
 	//override this method if necessary.
-	Edge selectRandomEdge(size_t incidentNode,
+	grEdge selectRandomEdge(size_t incidentNode,
 			bool existent=true);
 
 	//Same as selectRandomEdge(incidentNode, existent), but
 	//it selects a target node with degree < degreeUpLim (upper
 	//degree limit)
-	Edge selectRandomEdge(size_t incidentNode, size_t upperDegLim,
+	grEdge selectRandomEdge(size_t incidentNode, size_t upperDegLim,
 			bool existent=true);
 
 	//another random existing edge will be chosen and
@@ -102,7 +102,7 @@ public:
 	//the added (swapped) edges by the end of the method.
 	//If the graph remains unchanged, the final values of edge1, and
 	//edge2 will be invalid.
-	void swapEdgesNodes(Edge* edge1, Edge* edge2);
+	void swapEdgesNodes(grEdge* edge1, grEdge* edge2);
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)
@@ -121,7 +121,7 @@ public:
 	//	edge's remaining node.
 	//returns the edge after spinning. It will be invalid if the
 	//	arguments are invalid as well.
-	Edge spinEdge(Edge edge, size_t fixedNode);
+	grEdge spinEdge(grEdge edge, size_t fixedNode);
 
 	//same as spinEdge, but a node with degree < upperDegLim is chosen.
 	//For instance, consider a graph with 6 nodes and nullEdgeValue = 0:
@@ -141,7 +141,7 @@ public:
 	//	edge's remaining node.
 	//returns the edge after spinning. It there is no valid spin,
 	//	the edge will be invalid.
-	Edge spinEdge(Edge edge, size_t fixedNode, size_t upperDegLim);
+	grEdge spinEdge(grEdge edge, size_t fixedNode, size_t upperDegLim);
 };
 
 #include "../tabu-adj-matrix.inl"
