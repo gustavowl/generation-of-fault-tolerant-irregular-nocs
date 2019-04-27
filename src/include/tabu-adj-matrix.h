@@ -4,18 +4,37 @@
 #include "graph-representation.h"
 
 //class used by the Tabu Search.
-//It stores the graph as an triangular adjacency matrix.
+//It stores the graph as a lower triangular adjacency matrix.
+//All the elements are below the identity line.
 //The edges are symmetric and it does not have the
-//identity column sine no self loops are allowed in the
+//identity line since no self loops are allowed in the
 //tabu search.
 template <class T>
-class TriangAdjMatrix : public GraphRepresentation<T>{
+class TabuAdjMatrix : public GraphRepresentation<T>{
+private:
+	T** adjm;
+
+	//stores the nodes' degree 9refer to getNodeDegree())
+	size_t* degrees;
+
+	//swaps the nodes' ids to fit in the format of the
+	//triangular matrix. For instance, (0, 1) is mapped
+	//to (1, 0) while (1, 0) would remain unchanged.
+	void nodeIdSwap(grEdge* edge);
+
+	//Called by destructor.
+	//Called when constructors are unable to allocate memory.
+	//If any element (edge or node) was added, it is destroyed.
+	//Deallocades both adjm and degrees pointers.
+	void setInvalid();
 public:
-	// Constructor
-	TriangAdjMatrix();
+	// Constructors
+	TabuAdjMatrix();
+	//expects numNodes > 0
+	TabuAdjMatrix(size_t numNodes, T nullEdgeValue);
 
 	// Destructor
-	virtual ~TriangAdjMatrix();
+	virtual ~TabuAdjMatrix();
 
 	virtual void addEdge(Edge edge) = 0;
 
@@ -27,9 +46,13 @@ public:
 
 	virtual size_t getNodeDegree(size_t node) const = 0;
 
-	virtual TriangAdjMatrix<T>* copy() const = 0;
+	virtual TabuAdjMatrix<T>* copy() const = 0;
 
 	virtual bool areEdgesEqual(Edge edge1, Edge edge2) = 0;
+
+	//============================================
+	//======= METHODS USED FOR TABU SEARCH =======
+	//============================================
 
 	//returns a randomly chosen edge.
 	//if exists is set to false, returns a edge that is NOT
@@ -74,6 +97,6 @@ public:
 	Edge spinEdge(Edge edge, size_t fixedNode);
 };
 
-#include "../triang-adjl-matrix.inl"
+#include "../tabu-adj-matrix.inl"
 
 #endif

@@ -28,14 +28,14 @@ private:
 	// adjm[origin][destiny] = weight;
 	T** adjm;
 
-	//stores the degrees of the vertices (reger to getNodeDegree())
+	//stores the degrees of the vertices (refer to getNodeDegree())
 	size_t* degrees;
 
 	//conditional triangular matrix Node Id Swap:
 	//swaps the nodes ids if matrix is triangular and
 	//origin < destination (equivalent to attempting to access
 	//the upper triangle matrix)
-	void triangNodeIdSwap(grEdge* Edge) const;
+	void triangNodeIdSwap(grEdge* edge) const;
 
 	//Called when constructor is unable to allocate memory.
 	//If any element (edge or node) was added,
