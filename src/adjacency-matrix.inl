@@ -3,8 +3,8 @@ void AdjacencyMatrix<T>::triangNodeIdSwap(grEdge* edge) const {
 
 	if (isTriangular && edge->orig < edge->dest) {
 		size_t change = edge->orig;
-		edge->orig = *edge->dest;
-		*edge->dest = change;
+		edge->orig = edge->dest;
+		edge->dest = change;
 	}
 }
 
@@ -110,7 +110,7 @@ void AdjacencyMatrix<T>::delEdge(grEdge edge){
 	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
 		return;
 
-	triangNodeIdSwap(&edge.orig, &edge.dest);
+	triangNodeIdSwap(&edge);
 
 	if (!this->edgeExists(edge)) {
 		return;

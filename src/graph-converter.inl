@@ -9,10 +9,21 @@ void GraphConverter::convert(const GraphRepresentation<ST>* source,
 		return;
 
 	//Copies edges
+	typename GraphRepresentation<ST>::Edge sedge;
+	typename GraphRepresentation<DT>::Edge dedge;
 	for (size_t i = 0; i < snodes; i++) {
+		sedge.orig = i;
+
 		for (size_t j = 0; j < snodes; j++) {
-			if (source->edgeExists(i, j))
-				dest->addEdge(i, j, source->getEdgeValue(i, j));
+			sedge.dest = j;
+
+			if ( source->edgeExists(sedge) ) {
+				dedge.orig = sedge.orig;
+				dedge.dest = sedge.dest;
+				dedge.value = source->getEdgeValue(sedge);
+
+				dest->addEdge(dedge);
+			}
 		}
 	}
 }

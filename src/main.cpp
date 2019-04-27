@@ -1,7 +1,7 @@
 //TODO: clean includes
 //#include <iostream>
 #include "include/file-manager.h"
-//#include "include/graph-converter.h"
+#include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-list.h"
 #include "include/adjacency-matrix.h"
@@ -29,7 +29,18 @@ int main(int argc, char *argv[]) {
 	if (gr == NULL)
 		return -1;
 
+	AdjacencyMatrix<size_t> adjm = AdjacencyMatrix<size_t>(
+			gr->getNumNodes(), true, true, 0);
+	GraphConverter::convert(gr, &adjm);
+	
+	std::cout << "Graph read from file:\n" <<
+		"==============================" << std::endl;
 	gr->print();
+	std::cout << "==============================" << std::endl;
+	std::cout << "Converted Graph:\n" <<
+		"==============================" << std::endl;
+	adjm.print();
+
 	delete gr;
 	//TODO: END DELETE
 
