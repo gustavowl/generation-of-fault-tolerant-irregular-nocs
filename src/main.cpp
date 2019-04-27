@@ -3,7 +3,7 @@
 //#include "include/file-manager.h"
 //#include "include/graph-converter.h"
 #include "include/graph-representation.h"
-//#include "include/adjacency-matrix.h"
+#include "include/adjacency-matrix.h"
 //#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {

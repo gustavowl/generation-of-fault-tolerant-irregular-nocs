@@ -12,13 +12,10 @@ private:
 	// The adjacency list itself
 	std::vector<std::vector<Edge>> adjl;
 
-	// returns a NULL pointer if either origin or destination
-	// are out of the range [0, numNodes); or if
-	// adjl[origin][destination == nullEdgeValue
-	const Edge* searchEdge(size_t origin, size_t destination) const;
-	// returns edge position.
-	// only call this method if edge is in adjl.
-	size_t getEdgePos(size_t origin, const Edge* edge) const;
+	//returns edge position.
+	//if edge does not exist, returns a invalid position
+	//(number of nodes)
+	size_t getEdgePos(Edge edge) const;
 
 public:
 	// Constructors
@@ -34,19 +31,21 @@ public:
 	//Not empty if constructor AdjacencyList(numNodes)
 	//was called with valid arguments
 	//Valid arguments if origin and destination in [0, numNodes)
-	void addEdge(size_t origin, size_t destination, T value);
+	void addEdge(Edge edge);
 
-	void delEdge(size_t origin, size_t destination);
+	void delEdge(Edge edge);
 
 	// returns if adjl[origin][destination] != nullEdgeValue
-	bool edgeExists(size_t origin, size_t destination) const;
+	bool edgeExists(Edge edge) const;
 
-	T getEdgeValue(size_t origin, size_t destination) const;
+	T getEdgeValue(Edge edge) const;
 
 	//returns the out-degree
 	size_t getNodeDegree(size_t node) const;
 
 	GraphRepresentation<T>* copy() const;
+
+	bool areEdgesEqual(Edge edge1, Edge edge2);
 
 	// This function should be called in order to
 	// save memory usage. It is recommended to call it
