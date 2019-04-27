@@ -33,12 +33,12 @@ AdjacencyList<size_t>* FileManager::readAdjList(std::ifstream* file,
 	// expects to read two values in the header (first line):
 	// number of nodes and number of edges.
 	bool header_read = false;
-	const int expected_header_size = 2;
+	const size_t expected_header_size = 2;
 
 	// expects three values in the remaining lines:
 	// origin, destiny, and weight
-	const int expected_size = 3;
-	int values[expected_size] = {};
+	const size_t expected_size = 3;
+	size_t values[expected_size] = {};
 	size_t size = 0;
 
 	AdjacencyList<size_t>* adjl = NULL;
@@ -51,7 +51,12 @@ AdjacencyList<size_t>* FileManager::readAdjList(std::ifstream* file,
 			continue;
 
 		if (header_read && size == 3) {
-			adjl->addEdge(values[0], values[1], values[2]);
+			adjl->addEdge(
+					typename GraphRepresentation<size_t>::Edge{
+						.orig = values[0],
+						.dest = values[1],
+						.value = values[2]
+					});
 			continue;
 		}
 
@@ -88,7 +93,7 @@ AdjacencyMatrix<size_t>* FileManager::readAdjMatrix(std::ifstream* file,
 	return NULL;
 }
 
-size_t FileManager::parseLine(std::string* line, int* values,
+size_t FileManager::parseLine(std::string* line, size_t* values,
 		char separator, char comment) {
 	size_t size = 0;
 	std::size_t index;

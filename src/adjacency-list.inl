@@ -94,8 +94,11 @@ GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 	//copies edges
 	for (size_t i = 0; i < this->numNodes; i++) {
 		for (size_t j = 0; j < this->adjl[i].size(); j++) {
-			ret->addEdge(i, this->adjl[i][j].dest,
-					this->adjl[i][j].value);
+			ret->addEdge(grEdge {
+						.orig = i,
+						.dest = this->adjl[i][j].dest,
+						.value = this->adjl[i][j].value
+						});
 		}
 	}
 
@@ -105,7 +108,8 @@ GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 }
 
 template <class T>
-bool areEdgesEqual(grEdge edge1, grEdge edge2) {
+bool AdjacencyList<T>::areEdgesEqual(grEdge edge1,
+		grEdge edge2) {
 	return edge1.orig == edge2.orig &&
 		edge1.dest == edge2.dest &&
 		edge1.value == edge2.value;

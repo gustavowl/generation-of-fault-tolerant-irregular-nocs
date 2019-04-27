@@ -1,16 +1,11 @@
 #ifndef __GRAPH_REPRESENTATION__
 #define __GRAPH_REPRESENTATION__
 
-//use this as a shortcut in other classes
+//use this as a shortcut in other template classes
 #define grEdge typename GraphRepresentation<T>::Edge
 
 #include <vector>
-#include <time.h> //rng
-#include <chrono> //rng
-#include <random> //rng 
-//rng macro
-std::mt19937 rng(
-		std::chrono::steady_clock::now().time_since_epoch().count());
+#include "rng.h"
 
 // Abstract class for a graph representation.
 // Contains methods that are overwritten by

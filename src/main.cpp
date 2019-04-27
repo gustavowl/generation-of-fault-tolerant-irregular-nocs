@@ -1,6 +1,6 @@
 //TODO: clean includes
 //#include <iostream>
-//#include "include/file-manager.h"
+#include "include/file-manager.h"
 //#include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/adjacency-list.h"

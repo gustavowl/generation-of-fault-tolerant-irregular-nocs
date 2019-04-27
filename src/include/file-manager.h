@@ -45,7 +45,7 @@ private:
 	 *
 	 * The function returns the length of `result`.
 	 */
-	static size_t parseLine(std::string* line, int* values,
+	static size_t parseLine(std::string* line, size_t* values,
 			char separator, char comment);
 };
 
