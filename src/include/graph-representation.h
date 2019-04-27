@@ -2,6 +2,12 @@
 #define __GRAPH_REPRESENTATION__
 
 #include <vector>
+#include <time.h> //rng
+#include <chrono> //rng
+#include <random> //rng 
+//rng macro
+std::mt19937 rng(
+		std::chrono::steady_clock::now().time_since_epoch().count());
 
 // Abstract class for a graph representation.
 // Contains methods that are overwritten by
@@ -59,15 +65,16 @@ public:
 	//returns a randomly chosen edge.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	//Remember to deallocate the returned pointer.
-	Edge selectRandomEdge(bool existent=true) = 0;
+	Edge selectRandomEdge(bool existent=true);
 
-	//returns a randomly chosen edge incident to incidentNode.
+	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
-	//in the graph AND incident to incidentNode.
-	//Remember to deallocate the returned pointer.
+	//in the graph AND is incident to incidentNode.
+	//NOTE: IT DEPENDS ON THE IMPLEMENTATION OF getNodeDegree():
+	//	it is supposed that it will return the in-degree + out-degree
+	//override this method if necessary.
 	Edge selectRandomEdge(size_t incidentNode,
-			bool existent=true) = 0;
+			bool existent=true);
 
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
@@ -77,7 +84,7 @@ public:
 	//The parameters are pointers because they will receive
 	//the edges to be deleted and will have the value of
 	//the added (swapped )edges by the end of the method.
-	void swapEdgesNodes(Edge* edge1, Edge* edge2) = 0;
+	void swapEdgesNodes(Edge* edge1, Edge* edge2);
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)
@@ -88,11 +95,11 @@ public:
 	//This process is hereby called "spin" since one node is fixed while
 	//the other changes, like spinning a clock pointer.
 	//
-	//edge: the edge to be spinned. By the end of the method it will
-	//	contain the values after the spinning process.
-	//fixedNode: central node. The spinning process will change the
+	//edge: the edge to be spinned.
+	//fixedNode: central node. The spinning process will NOT change the
 	//	edge's remaining node.
-	void spinEdge(Edge* edge, size_t fixedNode) = 0;
+	//returns the edge after spinning (Thus, one node is different).
+	Edge spinEdge(Edge edge, size_t fixedNode);
 	
 	//alias to isZeroOrder.
 	bool isValid() const;
