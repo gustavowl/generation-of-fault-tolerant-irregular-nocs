@@ -41,6 +41,15 @@ bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge, bool checkValue) {
 	return ret;
 }
 
+template <class T>
+grEdge TabuAdjMatrix<T>::generateInvalidEdge() {
+	return grEdge {
+		.orig = numNodes + 1,
+		.dest = numNodes + 1,
+		.value = this->nullEdgeValue
+	};
+}
+
 //TODO: verify if space to  be allocated is free.
 //Otherwise, process may be killed.
 template <class T>
@@ -146,7 +155,7 @@ bool TabuAdjMatrix<T>::edgeExists(grEdge edge) const {
 template <class T>
 T TabuAdjMatrix<T>::getEdgeValue(grEdge edge) const {
 
-	if (edge.orig >= this->numNodes || edge.dest >= this->numNodes)
+	if (isEdgeInvalid(edge, false))
 		return this->nullEdgeValue;
 
 	nodeIdSwap(&edge);
@@ -202,27 +211,32 @@ bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 template <class T>
 typename TabuAdjMatrix<T>::Edge
 TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
-	//TODO: TEST
-	Edge e;
+	grEdge e;
 	size_t randomVal;
 
-	if (existent)
+	if (existent) {
 		randomVal = rng() % numEdges;
-	else
-		//2 times considering directed graphs
-		randomVal = rng() % (2*numNodes*numNodes - numEdges);
+	}
+	else {
+		//since the matrix is triangular and has no
+		//main diagonal, it has (n^2 - n)/2 possible
+		//edges. This formula can be easily obtained
+		//via arithmetic progression.
+		randomVal = rng() % (
+				(numNodes*numNodes - numNodes)/2 -
+				numEdges );
+	}
 
 	size_t count = 0;
-	for (size_t i = 0; i < numNodes; i++) {
-		e.orig = i;
+	for (e.orig = 1; e.orig < numNodes; e.orig++) {
 
-		for (size_t j = 0; j < numNodes; j++) {
-			e.dest = j;
+		for (e.dest = 0; e.dest < numNodes; e.dest++) {
 
 			if ( (existent && this->edgeExists(e)) ||
-					(!existent && ! this->edgeExists(e))) {
+					(!existent && !this->edgeExists(e))) {
 
 				if (count == randomVal) {
+					e.value = this->getEdgeValue(e);
 					return e;
 				}
 
@@ -231,57 +245,41 @@ TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
 		}
 	}
 
-	//return invalid edge
-	e.orig = numNodes + 1;
-	e.dest = numNodes + 1;
-	return e;
+	return this->generateInvalidEdge();
 }
 
 template <class T>
 typename TabuAdjMatrix<T>::Edge
 TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		bool existent) {
-	//TODO: TEST
-	Edge e;
+	grEdge e;
 	size_t randomVal;
 
 	if (incidentNode >= numNodes)
-		return Edge {.orig=numNodes+1, .dest=numNodes+1}; 
+		return this->generateInvalidEdge();
 
 	if (existent) {
 		randomVal = rng() % this->getNodeDegree(incidentNode);
 	}
 	else {
-		//2 times considering directed graphs
-		randomVal = rng() % (2 * numNodes -
+		//any node has |V| - 1 possible edges since no
+		//self-loops are allowed.
+		randomVal = rng() % (numNodes - 1 -
 				this->getNodeDegree(incidentNode));
 	}
 
 	size_t count = 0;
-	//nodes with incidentNode as origin
 	e.orig = incidentNode;
-	for (size_t i = 0; i < numNodes; i++) {
-		e.dest = i;
+	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+
+		if (e.orig == e.dest)
+			continue;
 
 		if ( (existent && this->edgeExists(e)) ||
-				(!existent && ! this->edgeExists(e))) {
+				(!existent && !this->edgeExists(e))) {
 
 			if (count == randomVal) {
-				return e;
-			}
-
-			count++;
-		}
-	}
-	//nodes with incidentNode as dest
-	e.dest = incidentNode;
-	for (size_t i = 0; i < numNodes; i++) {
-		e.orig = i;
-
-		if ( (existent && this->edgeExists(e)) ||
-				(!existent && ! this->edgeExists(e))) {
-
-			if (count == randomVal) {
+				e.value = this->getEdgeValue(e);
 				return e;
 			}
 
@@ -289,20 +287,181 @@ TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		}
 	}
 
-	//return invalid edge
-	e.orig = numNodes + 1;
-	e.dest = numNodes + 1;
-	return e;
+	return this->generateInvalidEdge();
 }
 
 template <class T>
-void TabuAdjMatrix<T>::swapEdgesNodes(Edge* edge1, Edge* edge2) {
+typename TabuAdjMatrix<T>::Edge
+TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
+		size_t upperDegLim, bool existent) {
+	grEdge e;
+	//counts nodes with degree < upperDegLim
+	size_t inLimit = 0;
+
+	if (incidentNode >= numNodes) {
+		e = this->generateInvalidEdge();
+		return e;
+	}
+
+	e.orig = incidentNode;
+	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+
+		if (e.orig == e.dest)
+			continue;
+
+		if ( (existent && this->edgeExists(e)) ||
+				(!existent && !this->edgeExists(e)) &&
+				this->getNodeDegree(e.dest) < upperDegLim ) {
+
+			inLimit++;
+		}
+	}
+
+	size_t randomVal = rng() % inLimit;
+	size_t count = 0;
+
+	for (e.dest = 0; e.dest < numNodes; e.dest++) {
+
+		if (e.orig == e.dest)
+			continue;
+
+		if ( (existent && this->edgeExists(e)) ||
+				(!existent && !this->edgeExists(e)) &&
+				this->getNodeDegree(e.dest) < upperDegLim ) {
+
+			if (count == randomVal) {
+				e.value = this->getEdgeValue(e);
+				return e;
+			}
+
+			count++;
+		}
+	}
+
+	return this->generateInvalidEdge();
+}
+
+template <class T>
+void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2) {
 	//there are two possible swap for edges (1, 2), (3, 4)
 	//	(1, 4), (3, 2) or (1, 3), (2, 4)
+	
+	grEdge swapEdge1 = this->generateInvalidEdge();
+	grEdge swapEdge2 = swapEdge1;
+
+	int scenario = rng() % 2;
+	int possibleScenariosCount = 0;
+	size_t swapNode;
+
+	if (!edgeExists(*edge1) || !edgeExists(*edge2)) {
+		possibleScenariosCount = 3;
+	}
+
+
+	for (; possibleScenariosCount < 2; possibleScenariosCount++) {
+
+		swapEdge1 = *edge1;
+		swapEdge2 = *edge2;
+		
+		if (scenario == 0) {
+			//(1, 2), (3, 4) -> (1, 4), (3, 2)
+			swapNode = swapEdge1.dest;
+			swapEdge1.dest = swapEdge2.dest;
+			swapEdge2.dest = swapNode;
+		}
+		else {
+			//(1, 2), (3, 4) -> (1, 3), (2, 4)
+			swapNode = swapEdge1.dest;
+			swapEdge1.dest = swapEdge2.orig;
+			swapEdge2.orig = swapNode;
+		}
+
+		scenario = (scenario + 1) % 2;
+
+		//check if swap is possible
+		if (isEdgeInvalid(swapEdge1, false) ||
+				isEdgeInvalid(swapEdge2, false)) {
+			//this condition is necessary because swapping
+			//edges (0, 1), and (0, 2) may generate edge
+			//(0, 0), which is invalid and would not be
+			//detected by edgeExists()
+			continue;
+		}
+		if (edgeExists(swapEdge1) || edgeExists(swapEdge2)) {
+			//one of the swapped edges already exists.
+			//Thus, the graph cannot be changed
+			continue;
+		}
+
+		//valid swap. Remove edges, choose weights randomly,
+		//and add new swapped edges.
+		this->delEdge(*edge1);
+		this->delEdge(*edge2);
+
+		if (rng() % 2 == 0) {
+			swapEdge1.value = getEdgeValue(*edge1); 
+			swapEdge2.value = getEdgeValue(*edge2); 
+		}
+		else {
+			swapEdge1.value = getEdgeValue(*edge2); 
+			swapEdge2.value = getEdgeValue(*edge1);
+		}
+
+		this->addEdge(swapEdge1);
+		this->addEdge(swapEdge2);
+
+		*edge1 = swapEdge1;
+		*edge2 = swapEdge2;
+		return;
+	}
+	
+	//set edges invalid
+	*edge1 = this->generateInvalidEdge();
+	*edge2 = *edge1;
 }
 
 template <class T>
 typename TabuAdjMatrix<T>::Edge
 TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode) {
-	return Edge {.orig = 0, .dest = 0};
+
+	if (!edgeExists(edge) || ( edge.orig != fixedNode &&
+				edge.dest != fixedNode) ) {
+		return this->generateInvalidEdge();
+	}
+
+	grEdge spinned = selectRandomEdge(fixedNode, false);
+
+	if (this->isEdgeInvalid(spinned)) {
+		//SHOULD BE NEVER REACHED
+		return this->generateInvalidEdge();
+	}
+
+	spinned.value = edge.value;
+	this->delEdge(edge);
+	this->addEdge(spinned);
+
+	return spinned;
+}
+
+template <class T>
+typename TabuAdjMatrix<T>::Edge
+TabuAdjMatrix<T>::spinEdge(Edge edge, size_t fixedNode,
+		size_t upperDegLim) {
+
+	if (!edgeExists(edge) || ( edge.orig != fixedNode &&
+				edge.dest != fixedNode) ) {
+		return this->generateInvalidEdge();
+	}
+
+	grEdge spinned = selectRandomEdge(fixedNode, upperDegLim,
+			false);
+
+	if (this->isEdgeInvalid(spinned))
+		return spinned;
+
+	spinned.value = edge.value;
+	this->delEdge(edge);
+	this->addEdge(spinned);
+
+	return spinned;
 }

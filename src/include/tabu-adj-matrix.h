@@ -35,6 +35,8 @@ private:
 	//If checkValue is set to false, then it does not verify
 	//whether value != nullEdgeValue
 	bool isEdgeInvalid(Edge edge, bool checkValue=true);
+
+	grEdge generateInvalidEdge();
 public:
 	// Constructors
 	TabuAdjMatrix();
@@ -76,17 +78,30 @@ public:
 	Edge selectRandomEdge(size_t incidentNode,
 			bool existent=true);
 
+	//Same as selectRandomEdge(incidentNode, existent), but
+	//it selects a target node with degree < degreeUpLim (upper
+	//degree limit)
+	Edge selectRandomEdge(size_t incidentNode, size_t upperDegLim,
+			bool existent=true);
+
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
 	//For instance, (1, 2), (3, 4) may be swapped to
 	//(1, 4), (3, 2) or (1, 3), (4, 2).
-	//This method is not executed if edge1 or edge2 exist in the graph
-	//or if for all possible scenarios, one of the two swapped edges is
-	//already in the graph (i.e. does not overwrite edges).
+	//This method is does not change the graph if either edge1 or edge2
+	//already exist in the graph or if for all possible scenarios,
+	//one of the two swapped edges is already in the graph
+	//(i.e. does not overwrite edges) or invalid.
+	//The edges values are also considered for swapping. Thus,
+	//swapping edges (1, 2, 2112), and (3, 4, 73) may result
+	//in both (1, 4, 2112), (3, 2, 73) or (1, 4, 73), (3, 2, 2112),
+	//totalling four possible scenarios.
 	//
 	//The parameters are pointers because they will receive
 	//the edges to be deleted and will have the value of
-	//the added (swapped )edges by the end of the method.
+	//the added (swapped) edges by the end of the method.
+	//If the graph remains unchanged, the final values of edge1, and
+	//edge2 will be invalid.
 	void swapEdgesNodes(Edge* edge1, Edge* edge2);
 	
 	//Swap a random edge of the node with another
@@ -97,12 +112,36 @@ public:
 	//Choose another random node n and add the edge ([1, 2, 3, 4], n).
 	//This process is hereby called "spin" since one node is fixed while
 	//the other changes, like spinning a clock pointer.
+	//After this method is called, the resulting graph is different
+	//from the original, unless the values of edge and fixedNode are
+	//invalid.
 	//
 	//edge: the edge to be spinned.
 	//fixedNode: central node. The spinning process will NOT change the
 	//	edge's remaining node.
-	//returns the edge after spinning (Thus, one node is different).
+	//returns the edge after spinning. It will be invalid if the
+	//	arguments are invalid as well.
 	Edge spinEdge(Edge edge, size_t fixedNode);
+
+	//same as spinEdge, but a node with degree < upperDegLim is chosen.
+	//For instance, consider a graph with 6 nodes and nullEdgeValue = 0:
+	//0: NULL
+	//1: 7
+	//2: 0 0
+	//3: 0 0 2
+	//4: 0 0 3 0
+	//5: 0 0 4 5 9
+	//The nodes have degrees [1, 1, 3, 2, 2, 3], respectively.
+	//Spinning edge (1, 0) with fixed node = 0 and degreeUpLim = 3
+	//may result in either edge (0, 3) or (0, 4).
+	//If no spin is possible, the graph will remain unchanged.
+	//
+	//edge: the edge to be spinned.
+	//fixedNode: central node. The spinning process will NOT change the
+	//	edge's remaining node.
+	//returns the edge after spinning. It there is no valid spin,
+	//	the edge will be invalid.
+	Edge spinEdge(Edge edge, size_t fixedNode, size_t upperDegLim);
 };
 
 #include "../tabu-adj-matrix.inl"
