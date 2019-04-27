@@ -55,8 +55,9 @@ void GraphRepresentation<T>::print() const {
 				continue;
 			std::cout << "Edge from " << orig <<
 				" to " << dest << ". " <<
-				" Value = " << getEdgeValue(orig, dest) <<
-				std::endl;
+				" Value = " << getEdgeValue(
+						Edge {.orig=orig, .dest=dest}
+						) << std::endl;
 		}
 	}
 

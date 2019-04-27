@@ -20,8 +20,20 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	std::cout << "Reading \"" << argv[1] << "\" file..." << std::endl;
+	std::cout << "Reading \"" << argv[1] << "\" file..." << std::endl;*/
 
+	//TODO: BEGIN DELETE
+	GraphRepresentation<size_t>* gr = FileManager::readFile(
+			"dijkstra.adjl", FileManager::FileType::adj_list, ' ');
+
+	if (gr == NULL)
+		return -1;
+
+	gr->print();
+	delete gr;
+	//TODO: END DELETE
+
+	/*
 	GraphRepresentation<size_t>* gr = FileManager::readFile(
 			argv[1], FileManager::FileType::adj_list, argv[2][0]);
 
