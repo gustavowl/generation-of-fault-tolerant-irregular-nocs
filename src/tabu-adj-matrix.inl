@@ -217,14 +217,12 @@ bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 }
 
 template <class T>
-grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
-	TabuList<T> empty;
-	return this->selectRandomEdge(&empty, existent);
-}
+grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
+		TabuList<T>* tabuList) {
+	
+	if (tabuList == NULL)
+		tabuList = TabuList<T>();
 
-template <class T>
-grEdge TabuAdjMatrix<T>::selectRandomEdge(std::vector<grEdge>* tabuList,
-		bool existent) {
 	grEdge e;
 	size_t randomVal;
 
@@ -362,9 +360,13 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 }
 
 template <class T>
-void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2) {
+void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
+		TabuList<T> tabuList) {
 	//there are two possible swap for edges (1, 2), (3, 4)
 	//	(1, 4), (3, 2) or (1, 3), (2, 4)
+	
+	if (tabuList == NULL)
+		tabuList = TabuList<T>();
 	
 	grEdge swapEdge1 = this->generateInvalidEdge();
 	grEdge swapEdge2 = swapEdge1;
@@ -413,8 +415,13 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2) {
 			continue;
 		}
 
-		//valid swap. Remove edges, choose weights randomly,
+		//valid swap. Check if edges are in tabuList.
+		//Otherwise, remove edges, choose weights randomly,
 		//and add new swapped edges.
+		
+		if (tabuList->isTabu(*edge1) || tabuList->isTabu(*edge2))
+			continue;
+
 		this->delEdge(*edge1);
 		this->delEdge(*edge2);
 

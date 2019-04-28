@@ -99,51 +99,37 @@ size_t* TabuSearch<T>::selectEdgeToAdd(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
-typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
-		const TabuAdjMatrix<bool>* currSol,
-		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
-	size_t* edgeToDel = NULL, edgeToAdd = NULL;
-	while (edgeToAdd == NULL) {
-		if (edgeToDel != NULL)
-			delete[] edgeToDel;
+typename TabuSearch<T>::Movement TabuSearch<T>::neighbourhoodStep(
+		TabuAdjMatrix<bool>* neighbour, grEdge edgeToDel,
+		TabuList<bool>* tabuList, bool aspirationCrit) {
 
-		edgeToDel = selectEdgeToDel(neighbour);
-		edgeToAdd = selectEdgeToAdd(neighbour, edgeToDel, tabuList,
-				aspirationCrit);
-	}
+	NeighbourStatus delStatus = this->predictActionStatus(
+			neighbour, edgeToDel, false);
 
-	return Movement{edgeToDel, edgeToAdd};
 }
 
 template <class T>
 void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
-		std::vector<size_t>* tabuList, bool aspirationCrit) {
+		TabuList<bool>* tabuList, bool aspirationCrit) {
 	TabuAdjMatrix<bool>* neighbour = currSol->copy();
+	//creates tabuList of edges to be deleted (edges that cannot be
+	//removed without violating the aspiration criteria
+	TabuList<bool> delTabuList;
+
 	grEdge edgeToDel = neighbour->selectRandomEdge();
-	while (true) {
+	grEdge edgeToAdd;
+
+	while (! this->neighbourhoodStep(neighbour, edgeToDel,
+				tabuList, aspirationCrit)) {
+		delete neighbour;
+		delTabuList.add(edgeToDel);
+
+		if (delTabuList.size() == currSol->getNumEdges())
+			return NULL;
+
+		neighbour = currSol->copy();
+		edgeToDel = neighbour->selectRandomEdge(&delTabuList);
 	}
 
-	//diferent feasibleness procedures are triggered depending on the movement
-	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel);
-
-	if (delStatus == del2deg2) {
-		swapEdgesNodes(neighbour, mov, tabuList, aspirationCrit);
-		return false;
-		//the mov.edgeToAdd was previously choosen accordingly to
-		//delStatus in method selectNeighbourhoodStep() and selectEdgeToAdd().
-		//There is no need to verify the remaining delStatus possibilities
-	}
-
-	switch (addStatus) {
-		case add1deg4:
-			spinEdge(neighbour, mov.edgeToAdd, tabuList, aspirationCrit);
-			break;
-		case add2deg4:
-			spinEdges(neighbour, mov.edgeToAdd, tabuList, aspirationCrit);
-		default:
-			break; //mov will generate a feasible solution
-	}
-
-
-	delete neighbour;
+	return neighbour;
 }

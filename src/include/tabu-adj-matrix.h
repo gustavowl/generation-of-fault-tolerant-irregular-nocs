@@ -72,13 +72,10 @@ public:
 	//======= METHODS USED FOR TABU SEARCH =======
 	//============================================
 
-	//returns a randomly chosen edge.
+	//returns a randomly chosen edge not in TabuList.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	grEdge selectRandomEdge(bool existent=true);
-
-	//select a random edge that is not in tabuList
-	grEdge selectRandomEdge(std::vector<grEdge>* tabuList, bool existent=true);
+	grEdge selectRandomEdge(bool existent=true, TabuList<T> tabuList = NULL);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
@@ -113,7 +110,8 @@ public:
 	//the added (swapped) edges by the end of the method.
 	//If the graph remains unchanged, the final values of edge1, and
 	//edge2 will be invalid.
-	void swapEdgesNodes(grEdge* edge1, grEdge* edge2);
+	void swapEdgesNodes(grEdge* edge1, grEdge* edge2,
+			TabuList<T> tabuList=NULL);
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)
