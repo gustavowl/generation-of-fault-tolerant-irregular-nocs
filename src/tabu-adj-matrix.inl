@@ -45,8 +45,8 @@ bool TabuAdjMatrix<T>::isEdgeInvalid(grEdge edge,
 template <class T>
 grEdge TabuAdjMatrix<T>::generateInvalidEdge() {
 	return grEdge {
-		.orig = this->numNodes + 1,
-		.dest = this->numNodes + 1,
+		.orig = this->numNodes,
+		.dest = this->numNodes,
 		.value = this->nullEdgeValue
 	};
 }
@@ -460,4 +460,40 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 	this->addEdge(spinned);
 
 	return spinned;
+}
+
+template <class T>
+size_t TabuAdjMatrix<T>::getNodeWithNthDegree(size_t rankPos,
+		bool largest) {
+
+	if (rankPos >= this->numNodes)
+		return this->numNodes;
+
+
+	std::vector<size_t> nodes;
+	nodes.reserve(this->numNodes);
+	for (size_t i = 0; i < this->numNodes; i++)
+		nodes.push_back(i);
+
+	size_t node; //selected node
+	size_t degree;
+
+	for (; rankPos >= 0; rankPos--) {
+		size_t index = 0; //index of selected node in nodes
+		node = nodes[index];
+		degree = this->getNodeDegree(node);
+
+		for (size_t i = 1; i < nodes.size(); i++) {
+			if ( (largest && this->getNodeDegree(nodes[i]) > degree) ||
+				   (!largest && this->getNodeDegree(nodes[i]) < degree) ) {
+				index = i;
+				node = nodes[index];
+				degree = this->getNodeDegree(node);
+			}	
+		}
+		//removes node to search for other positions
+		nodes.erase(nodes.begin() + index);
+	}
+
+	return selectedNode;
 }

@@ -142,6 +142,17 @@ public:
 	//returns the edge after spinning. It there is no valid spin,
 	//	the edge will be invalid.
 	grEdge spinEdge(grEdge edge, size_t fixedNode, size_t upperDegLim);
+
+	//Returns the node with n-th smallest or largest degree.
+	//The rankPos determines the n-th position in the [0, numNodes - 1]
+	//range. When boolean is set to true, returns the n-th largest, and
+	//n-th smallest otherwise. For instance, consider 10 nodes with the
+	//following degrees: [8, 4, 8, 1, 1, 4, 2, 4, 5, 7].
+	//getNodeWithNthDegree(0, true) = 0;
+	//getNodeWithNthDegree(1, true) = 2;
+	//getNodeWithNthDegree(0, false) = 3;
+	//getNodeWithNthDegree(3, false) = 1.
+	size_t getNodeWithNthDegree(size_t rankPos, bool largest);
 };
 
 #include "../tabu-adj-matrix.inl"
