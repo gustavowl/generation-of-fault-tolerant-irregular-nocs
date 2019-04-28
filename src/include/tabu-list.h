@@ -21,4 +21,6 @@ class TabuList {
 	void add(grEdge edge);
 
 	size_t size();
+
+	grEdge at(size_t index) const;
 };

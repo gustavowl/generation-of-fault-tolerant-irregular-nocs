@@ -29,14 +29,6 @@ private:
 	//Deallocades both adjm and degrees pointers.
 	void setInvalid();
 
-	//returns if an edge is valid.
-	//If the nodes' ids are in the limited range (< numNodes),
-	//if edge is not a self-loop and if edge's value is
-	//valid (!= nullEdgeValue).
-	//If checkValue is set to false, then it does not verify
-	//whether value != nullEdgeValue
-	bool isEdgeInvalid(grEdge edge, bool checkValue=true) const;
-
 	grEdge generateInvalidEdge();
 
 	size_t maxNumEdges();
@@ -46,6 +38,14 @@ private:
 	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
 			size_t rankPos, bool largest);
 public:
+	//returns if an edge is valid.
+	//If the nodes' ids are in the limited range (< numNodes),
+	//if edge is not a self-loop and if edge's value is
+	//valid (!= nullEdgeValue).
+	//If checkValue is set to false, then it does not verify
+	//whether value != nullEdgeValue
+	bool isEdgeInvalid(grEdge edge, bool checkValue=true) const;
+
 	// Constructors
 	TabuAdjMatrix();
 	//expects numNodes > 1
@@ -75,7 +75,7 @@ public:
 	//returns a randomly chosen edge not in TabuList.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	grEdge selectRandomEdge(bool existent=true, TabuList<T> tabuList = NULL);
+	grEdge selectRandomEdge(bool existent=true, TabuList<T>* tabuList = NULL);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
@@ -111,7 +111,7 @@ public:
 	//If the graph remains unchanged, the final values of edge1, and
 	//edge2 will be invalid.
 	void swapEdgesNodes(grEdge* edge1, grEdge* edge2,
-			TabuList<T> tabuList=NULL);
+			TabuList<T>* tabuList=NULL);
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)

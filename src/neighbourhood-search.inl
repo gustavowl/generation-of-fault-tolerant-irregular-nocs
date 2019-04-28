@@ -99,12 +99,60 @@ size_t* TabuSearch<T>::selectEdgeToAdd(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
-typename TabuSearch<T>::Movement TabuSearch<T>::neighbourhoodStep(
-		TabuAdjMatrix<bool>* neighbour, grEdge edgeToDel,
-		TabuList<bool>* tabuList, bool aspirationCrit) {
+bool TabuSearch<T>::swap(TabuAdjMatrix<bool>* neighbour,
+		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
+
+	TabuList<T> tabuSlctdEdges;
+	if (!aspirationCrit) { //populate tabuList
+		for (size_t i = 0; i < tabuList->size(); i++)
+			tabuSlctdEdges.add(tabuList->at(i));
+	}
+
+	//select edge to swap
+	edgeToAdd = neighbour->selectRandomEdge(&tabuSlctdEdges);
+	grEdge edgeToSwap1, edgeToSwap2;
+
+
+	while (true) {
+		if (neighbour->isEdgeInvalid(edgeToAdd))
+			return false;
+
+		edgeToSwap1 = edgeToDel;
+		edgeToSwap2 = edgeToAdd;
+
+		if (aspirationCrit) {
+			neighbour->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2)
+		}
+		else {
+			neighbour->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
+					&tabuList);
+		}
+		//edges swapped may not be valid. Add edgeToAdd to a
+		//tabuList and select another edge.	
+		if (neighbour->isEdgeInvalid(edgeToSwap1) ||
+				neighbour->isEdgeInvalid(edgeToSwap2)) {
+
+			tabuSlctdEdges.push_back(edgeToAdd);
+			edgeToAdd = neighbour->selectRandomEdge(&tabuSlctdEdges);
+			continue;
+		}
+		return true;
+	}
+	//POINT OF kNOw RETURN
+}
+
+template <class T>
+bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
+		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
 
 	NeighbourStatus delStatus = this->predictActionStatus(
 			neighbour, edgeToDel, false);
+	grEdge edgeToAdd;
+
+	switch (delStatus) {
+		case del2mindeg:
+			return this->swap(neighbour, edgeToDel, tabuList, aspirationCrit);
+	}
 
 }
 
@@ -117,7 +165,6 @@ void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
 	TabuList<bool> delTabuList;
 
 	grEdge edgeToDel = neighbour->selectRandomEdge();
-	grEdge edgeToAdd;
 
 	while (! this->neighbourhoodStep(neighbour, edgeToDel,
 				tabuList, aspirationCrit)) {

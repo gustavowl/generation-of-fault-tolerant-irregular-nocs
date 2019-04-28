@@ -6,12 +6,12 @@
 
 class NeighbourhoodSearch {
 	//this enum is used for neighbourhood search.
-	enum NeighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
-		del1deg2, //deleted a edge with 1 degree 2 node
+	enum NeighbourStatus { del2mindeg, //deleted a edge with 2 degree 2 nodes
+		del1mindeg, //deleted a edge with 1 degree 2 node
 		dflt, // (default) delete edge with degree >2 nodes or
 		//		add edge with degree <4 nodes
-		add1deg4, //add edge with 1 degree 4 node
-		add2deg4 //add edge with 2 degree 4 nodes
+		add1maxdeg, //add edge with 1 degree 4 node
+		add2maxdeg //add edge with 2 degree 4 nodes
 	};
 
 	//There are three possible scenarios when deleting edges (add=false):
@@ -61,9 +61,9 @@ class NeighbourhoodSearch {
 	//used if aspirationCrit is set to false.
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
-	static Movement randomNeighbourhoodStep(
+	static Movement neighbourhoodStep(
 			const AdjacencyMatrix<bool>* currSol,
-			const std::vector<size_t*>* tabuList,
+			const TabuList<bool>* tabuList,
 			bool aspirationCrit=true);
 	
 	//it changes the neighbour graph to a feasible solution if needed.

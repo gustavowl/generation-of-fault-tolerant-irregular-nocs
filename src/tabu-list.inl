@@ -39,3 +39,8 @@ template <class T>
 size_t TabuList<T>::size() {
 	return tabuList.size();
 }
+
+template <class T>
+grEdge TabuList<T>::at(size_t index) const {
+	return tabuList.at(index);
+}
