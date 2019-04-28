@@ -37,6 +37,11 @@ private:
 	bool isEdgeInvalid(grEdge edge, bool checkValue=true) const;
 
 	grEdge generateInvalidEdge();
+
+	//returns the n-th node with largest or smallest degree from the
+	//list sent.
+	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
+			size_t rankPos, bool largest);
 public:
 	// Constructors
 	TabuAdjMatrix();
@@ -153,6 +158,11 @@ public:
 	//getNodeWithNthDegree(0, false) = 3;
 	//getNodeWithNthDegree(3, false) = 1.
 	size_t getNodeWithNthDegree(size_t rankPos, bool largest);
+
+	//Similar to getNodeWithNthDegree, but instead of calculating from
+	//all the nodes, it only considers the neighbours of incidentNode.
+	size_t getNeighourWithNthDegree(size_t rankPos, size_t incidentNode,
+			bool largest);
 };
 
 #include "../tabu-adj-matrix.inl"

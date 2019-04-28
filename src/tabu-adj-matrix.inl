@@ -463,17 +463,10 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 }
 
 template <class T>
-size_t TabuAdjMatrix<T>::getNodeWithNthDegree(size_t rankPos,
-		bool largest) {
-
-	if (rankPos >= this->numNodes)
+size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
+		size_t rankPos, bool largest) {
+	if (rankPos >= nodes.size())
 		return this->numNodes;
-
-
-	std::vector<size_t> nodes;
-	nodes.reserve(this->numNodes);
-	for (size_t i = 0; i < this->numNodes; i++)
-		nodes.push_back(i);
 
 	size_t node; //selected node
 	size_t degree;
@@ -494,6 +487,30 @@ size_t TabuAdjMatrix<T>::getNodeWithNthDegree(size_t rankPos,
 		//removes node to search for other positions
 		nodes.erase(nodes.begin() + index);
 	}
+	return node;
+}
 
-	return selectedNode;
+template <class T>
+size_t TabuAdjMatrix<T>::getNodeWithNthDegree(size_t rankPos,
+		bool largest) {
+
+	if (rankPos >= this->numNodes)
+		return this->numNodes;
+
+
+	std::vector<size_t> nodes;
+	nodes.reserve(this->numNodes);
+	for (size_t i = 0; i < this->numNodes; i++)
+		nodes.push_back(i);
+
+	return this->getNodeWithNthDegreeFromList(nodes, rankPos, largest);
+}
+
+template TabuAdjMatrix<T>::getNeighbourWithNthDegree(size_t rankPos,
+		size_t incidentNode, bool largest) {
+	if (incidentNode >= this->numNodes)
+		return this->numNodes;
+	
+	return this->getNodeWithNthDegreeFromList(
+			this->getNeighbours(incidentNode), rankPos, largest);
 }
