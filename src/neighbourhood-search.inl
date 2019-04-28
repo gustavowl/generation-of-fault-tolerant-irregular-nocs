@@ -1,31 +1,42 @@
 template <class T>
-typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
-		const TabuAdjMatrix<bool>* graph, grEdge edge, bool add) {
+typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictDelActionStatus(
+		const TabuAdjMatrix<bool>* graph, grEdge edge) {
 	NeighbourStatus status = dflt;
 
-	if (add) {
-		//add action
-		if (graph->getNodeDegree(edge.orig) == MAX_DEGREE && 
-				graph->getNodeDegree(edge.dest) == MAX_DEGREE) {
-			status = add2deg4;
-		}
-		
-		else if (graph->getNodeDegree(edge.orig) == MAX_DEGREE ||
-				graph->getNodeDegree(edge.dest) == MAX_DEGREE) {
-			status = add1deg4;
-		}
+	//delete action
+	if (graph->getNodeDegree(edge.orig) == MIN_DEGREE && 
+			graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
+		status = del2deg2;
 	}
-	else {
-		//delete action
-		if (graph->getNodeDegree(edge.orig) == MIN_DEGREE && 
-				graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
-			status = del2deg2;
-		}
-		
-		else if (graph->getNodeDegree(edge.orig) == MIN_DEGREE ||
-				graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
-			status = del1deg2;
-		}
+	else if (graph->getNodeDegree(edge.orig) == MIN_DEGREE ||
+			graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
+		status = del1deg2;
+	}
+
+	return status;
+}
+
+template <class T>
+typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictAddActionStatus(
+		const TabuAdjMatrix<bool>* graph, grEdge edgeToDel, grEdge edgeToAdd) {
+
+	NeighbourStatus status = dflt;
+
+	//simulates the degrees after edgeToDel is deleted
+	size_t addOrigDeg = graph->getNodeDegree(edgeToAdd.orig) + 1;
+	size_t addDestDeg = graph->getNodeDegree(edgeToAdd.dest) + 1;
+	if (edgeToAdd.orig == edgeToDel.orig || edgeToAdd.orig == edgeToDel.dest)
+		addOrigDeg--;
+	if (edgeToAdd.dest == edgeToDel.orig || edgeToAdd.dest == edgeToDel.dest)
+		addDestDeg--;
+
+	//add action
+	if (addOrigDeg > MAX_DEGREE && addDestDeg > MAX_DEGREE) {
+		status = add2deg4;
+	}
+	
+	else if (addOrigDeg > MAX_DEGREE || addDestDeg > MAX_DEGREE) {
+		status = add1deg4;
 	}
 
 	return status;
@@ -40,8 +51,7 @@ template <class T>
 size_t* TabuSearch<T>::selectEdgeToAdd(TabuAdjMatrix<bool>* neighbour,
 			size_t* edgeToDel, std::vector<size_t>* tabuList,
 			bool aspirationCrit) {
-	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
-			false);
+	NeighbourStatus delStatus = predictDelActionStatus(neighbour, edgeToDel);
 	size_t* edgeToAdd = NULL;
 
 	switch (delStatus) {
@@ -206,8 +216,8 @@ template <class T>
 bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
 
-	NeighbourStatus delStatus = this->predictActionStatus(
-			neighbour, edgeToDel, false);
+	NeighbourStatus delStatus = this->predictDelActionStatus(neighbour,
+			edgeToDel);
 	grEdge edgeToAdd;
 
 	switch (delStatus) {
@@ -233,7 +243,7 @@ bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 
 	for (; possibilities > 0; possibilities--) {
 		edgeToAdd = neighbour->selectRandomEdge(false, &tabuEdgesToAdd);
-		addStatus = this->predictActionStatus(neighbour,
+		addStatus = this->predictAddActionStatus(neighbour, edgeToDel,
 				edgeToAdd, true);
 
 		switch (addStatus) {

@@ -24,18 +24,20 @@ class NeighbourhoodSearch {
 	//3 - otherwise
 	//The return type is one of these six status, listed in the
 	//NeighbourStatus enum.
-	static size_t* NeighbourStatus predictActionStatus(
-			AdjacencyMatrix<bool>* graph, size_t* edge,
-			bool add);
+	static NeighbourStatus predictDelActionStatus(
+			TabuAdjMatrix<bool>* graph, grEdge edge);
+
+	static NeighbourStatus predictAddActionStatus(TabuAdjMatrix<bool>* graph,
+			grEdge edgeToDel, grEdge edgeToAdd);
 
 	//randomly selects an edge to be deleted.
 	//It is called by randomNeighbourhoodStep().
 	//returns the chosen edge.
-	static size_t* selectEdgeToDel(AdjacencyMatrix<bool>* neighbour);
+	static size_t* selectEdgeToDel(TabuAdjMatrix<bool>* neighbour);
 
 	//TODO: guarantee tabuList feasibleness, etc.
 	//if not tabulist feasible, return NULL
-	static size_t* selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
+	static size_t* selectEdgeToAdd(TabuAdjMatrix<bool>* neighbour,
 			size_t* edgeToDel, std::vector<size_t>* tabuList,
 			bool aspirationCrit);
 
@@ -62,7 +64,7 @@ class NeighbourhoodSearch {
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
 	static Movement neighbourhoodStep(
-			const AdjacencyMatrix<bool>* currSol,
+			const TabuAdjMatrix<bool>* currSol,
 			const TabuList<bool>* tabuList,
 			bool aspirationCrit=true);
 	
@@ -92,7 +94,7 @@ class NeighbourhoodSearch {
 	//If false is returnedd, it does not necessarily mean that the step will
 	//generate an unfeasible solution. Maybe the movement was already made,
 	//e.g. Scenario 1.
-	static bool guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
+	static bool guaranteeFeasibleStep(TabuAdjMatrix<bool>* neighbour,
 			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//This method is called for neighbourhood search.
@@ -100,7 +102,7 @@ class NeighbourhoodSearch {
 	//The neighbour is feasible (within the degree range).
 	//It guarantees that the resulting solution after the movement will
 	//be feasible.
-	static void generateNeighbour(AdjacencyMatrix<bool>* currSol,
+	static void generateNeighbour(TabuAdjMatrix<bool>* currSol,
 			std::vector<size_t>* tabuList, bool aspirationCrit);
 }
 
