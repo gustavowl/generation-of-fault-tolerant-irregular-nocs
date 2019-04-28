@@ -1,5 +1,5 @@
 template <class T>
-void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol) {
+void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 	//saves nodes degrees
 	size_t size = initSol->getNumNodes();
 	size_t degrees[initSol->getNumNodes()];
@@ -50,7 +50,7 @@ void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol) {
 }
 
 template <class T>
-bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* sol) {
+bool TabuSearch<T>::isFeasible(TabuAdjMatrix<bool>* sol) {
 	size_t size = sol->getNumNodes();
 	size_t degree = 0;
 	for (size_t i = 0; i < size; i++) {
@@ -62,7 +62,7 @@ bool TabuSearch<T>::isFeasible(AdjacencyMatrix<bool>* sol) {
 }
 
 template <class T>
-void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
+void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 	//sets initial variables
 	size_t size = initSol->getNumNodes();
 	size_t degrees[size];
@@ -153,18 +153,18 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 }
 
 template <class T>
-AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol() {
+TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	//checks wheter if epsilon is valid or not.
 	//i.e. if it is possible to generate a graph such that
-	//for all nodes, degree(node) in [2, 4]
+	//for all nodes, degree(node) in [minDegree, maxDegree]
 	//REFER TO: degree sum formula / handshaking lemma
-	if ((2*epsilon) / tg->getNumNodes() < MIN_DEGREE ||
-			(2*epsilon) / tg->getNumNodes() > MAX_DEGREE) {
+	if ((2*epsilon) / tg->getNumNodes() < minDegree ||
+			(2*epsilon) / tg->getNumNodes() > maxDegree) {
 
 		return NULL;
 	}
 
-	AdjacencyMatrix<bool>* initSol = new AdjacencyMatrix<bool>(
+	TabuAdjMatrix<bool>* initSol = new TabuAdjMatrix<bool>(
 			tg->getNumNodes(), true, true, tg->getNullEdgeValue());
 	//unable to generate graph
 	if (initSol->getNumNodes() != tg->getNumNodes())
@@ -180,7 +180,7 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol() {
 }
 
 template <class T>
-T TabuSearch<T>::fitness(const AdjacencyMatrix<bool>* sol) {
+T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 	//computes QAP function:
 	//for all edge(i, j) in tg
 	//\sum min_hops(node_i, node_j) * weightOf(edge(i, j))
@@ -214,7 +214,7 @@ T TabuSearch<T>::fitness(const AdjacencyMatrix<bool>* sol) {
 }
 
 template <class T>
-void TabuSearch<T>::makeMovement(AdjacencyMatrix<bool>* graph, Movement mov,
+void TabuSearch<T>::makeMovement(TabuAdjMatrix<bool>* graph, Movement mov,
 		bool undo) {
 	if (undo) {
 		graph->delEdge(mov.edgeToAdd[0], mov.edgeToAdd[1]);
@@ -231,12 +231,6 @@ template <class T>
 void TabuSearch<T>::deallocateMovement(Movement* mov) {
 	delete[] mov->edgeDeltd;
 	delete[] mov->edgeAdded;
-}
-
-template <class T>
-void TabuSearch<T>::deallocateTabuList(std::vector<size_t*>* tabuList) {
-	for (size_t i = 0; i < tabuList->size(); i++)
-		delete[] tabuList->at(i);
 }
 
 template <class T>
@@ -299,7 +293,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 				tg->getNumNodes()) / 2)
 		return NULL; //this would cause an infinite loop
 
-	AdjacencyMatrix<bool>* currSol = generateInitSol(tg, epsilon);
+	TabuAdjMatrix<bool>* currSol = generateInitSol(tg, epsilon);
 	if (currSol == NULL)
 		return NULL;
 	T currFit = fitness(tg, currSol, valueLimit);
@@ -429,10 +423,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	bestSol->print();
 	std::cout << "Fitness: " << bestFit;
 	std::cout << "\nTotal iterations: " << totalCount << std::endl;
-	AdjacencyMatrix<T>* ret = NULL;
+	TabuAdjMatrix<T>* ret = NULL;
 	delete bestSol;
-
-	deallocateTabuList(&tabuList);
 
 	//TODO: return solution set
 	return ret;
