@@ -24,10 +24,17 @@ public:
 	//The sons may not necessarilly represent matrices using this
 	//struct. But it is used for methods invocations.
 	//NOTE: used the grEdge definition as a shortcut in other classes
-	struct Edge {
+	struct Edge { //TODO: move to class file
 		size_t orig; //origin node
 		size_t dest; //destination node
 		T value; //node weight
+
+		bool equalsTo(Edge edge, bool checkValue=true) {
+			bool ret = this->orig == edge.orig && this->dest == edge.dest;
+			if (checkValue)
+				return ret && this->value == edge.value;
+			return ret; 
+		}
 	};
 	// Constructor
 	GraphRepresentation();
@@ -59,6 +66,9 @@ public:
 	//	getneighbours(b) shall return the list [c]
 	virtual std::vector<size_t> getNeighbours(size_t node) const;
 
+	//compares if edges are euqal accordingly to representation,
+	//e.g. edges (0, 1), (1, 0) are different in directed graphs,
+	//but equal in undirected graphs.
 	virtual bool areEdgesEqual(Edge edge1, Edge edge2) = 0;
 	
 	//alias to isZeroOrder.

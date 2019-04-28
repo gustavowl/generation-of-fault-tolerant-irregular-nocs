@@ -1,6 +1,9 @@
 #ifndef __NEIGHBOURHOOD_SEARCH__
 #define __NEIGHBOURHOOD_SEARCH__
 
+#include "tabu-adj-matrix.h"
+#include "tabu-list.h"
+
 class NeighbourhoodSearch {
 	//this enum is used for neighbourhood search.
 	enum NeighbourStatus { del2deg2, //deleted a edge with 2 degree 2 nodes
@@ -93,9 +96,11 @@ class NeighbourhoodSearch {
 			Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit);
 
 	//This method is called for neighbourhood search.
+	//A neighbour is created considering the current solution and returned.
+	//The neighbour is feasible (within the degree range).
 	//It guarantees that the resulting solution after the movement will
 	//be feasible.
-	static void generateNeighbour(AdjacencyMatrix<bool>* neighbour, Movement mov,
+	static void generateNeighbour(AdjacencyMatrix<bool>* currSol,
 			std::vector<size_t>* tabuList, bool aspirationCrit);
 }
 

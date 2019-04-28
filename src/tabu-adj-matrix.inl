@@ -51,6 +51,15 @@ grEdge TabuAdjMatrix<T>::generateInvalidEdge() {
 	};
 }
 
+template <class T>
+size_t maxNumEdges() {
+	//since the matrix is triangular and has no
+	//main diagonal, it has (n^2 - n)/2 possible
+	//edges. This formula can be easily obtained
+	//via arithmetic progression.
+	return (this->numNodes*this->numNodes - this->numNodes) / 2;
+}
+
 //TODO: verify if space to  be allocated is free.
 //Otherwise, process may be killed.
 template <class T>
@@ -204,33 +213,46 @@ bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 	nodeIdSwap(&edge1);
 	nodeIdSwap(&edge2);
 
-	return edge1.orig == edge2.orig &&
-		edge1.dest == edge2.dest &&
-		edge1.value == edge2.value;
+	return edge1.equalsTo(edge2);
 }
 
 template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent) {
+	TabuList<T> empty;
+	return this->selectRandomEdge(&empty, existent);
+}
+
+template <class T>
+grEdge TabuAdjMatrix<T>::selectRandomEdge(std::vector<grEdge>* tabuList,
+		bool existent) {
 	grEdge e;
 	size_t randomVal;
 
+	if ( (existent && tabuList->size() >= this->numEdges) ||
+			(!existent && tabuList->size() >= this->maxNumEdges() -
+			 this->numEdges()) ) {
+		return this->generateInvalidEdge();
+	}
+
 	if (existent) {
-		randomVal = rng() % this->numEdges;
+		randomVal = rng() % (this->numEdges - tabuList->size());
 	}
 	else {
 		//since the matrix is triangular and has no
 		//main diagonal, it has (n^2 - n)/2 possible
 		//edges. This formula can be easily obtained
 		//via arithmetic progression.
-		randomVal = rng() % (
-				(this->numNodes*this->numNodes - this->numNodes)/2 -
-				this->numEdges );
+		randomVal = rng() % (this->maxNumEdges() - tabuList->size() -
+				this->numEdges);
 	}
 
 	size_t count = 0;
 	for (e.orig = 1; e.orig < this->numNodes; e.orig++) {
 
-		for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
+		for (e.dest = 0; e.dest < e.orig; e.dest++) {
+
+			if (tabuList->isTabu(e))
+				continue;
 
 			if ( (existent && this->edgeExists(e)) ||
 					(!existent && !this->edgeExists(e))) {

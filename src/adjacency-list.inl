@@ -110,9 +110,7 @@ GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 template <class T>
 bool AdjacencyList<T>::areEdgesEqual(grEdge edge1,
 		grEdge edge2) {
-	return edge1.orig == edge2.orig &&
-		edge1.dest == edge2.dest &&
-		edge1.value == edge2.value;
+	return edge1.equalsTo(edge2);
 }
 
 template <class T>

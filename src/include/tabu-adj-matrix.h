@@ -2,6 +2,7 @@
 #define __TRIANG_ADJ_MATRIX__
 
 #include "graph-representation.h"
+#include "tabu-list.h"
 
 //class used by the Tabu Search.
 //It stores the graph as a lower triangular adjacency matrix.
@@ -38,6 +39,8 @@ private:
 
 	grEdge generateInvalidEdge();
 
+	size_t maxNumEdges();
+
 	//returns the n-th node with largest or smallest degree from the
 	//list sent.
 	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
@@ -73,6 +76,9 @@ public:
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
 	grEdge selectRandomEdge(bool existent=true);
+
+	//select a random edge that is not in tabuList
+	grEdge selectRandomEdge(std::vector<grEdge>* tabuList, bool existent=true);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT

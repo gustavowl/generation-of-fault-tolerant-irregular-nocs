@@ -1,29 +1,29 @@
 template <class T>
 typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
-		AdjacencyMatrix<bool>* graph, size_t* edge, bool add) {
+		const TabuAdjMatrix<bool>* graph, grEdge edge, bool add) {
 	NeighbourStatus status = dflt;
 
 	if (add) {
 		//add action
-		if (graph->getNodeDegree(edge[0]) == MAX_DEGREE && 
-				graph->getNodeDegree(edge[1]) == MAX_DEGREE) {
+		if (graph->getNodeDegree(edge.orig) == MAX_DEGREE && 
+				graph->getNodeDegree(edge.dest) == MAX_DEGREE) {
 			status = add2deg4;
 		}
 		
-		else if (graph->getNodeDegree(edge[0]) == MAX_DEGREE ||
-				graph->getNodeDegree(edge[1]) == MAX_DEGREE) {
+		else if (graph->getNodeDegree(edge.orig) == MAX_DEGREE ||
+				graph->getNodeDegree(edge.dest) == MAX_DEGREE) {
 			status = add1deg4;
 		}
 	}
 	else {
 		//delete action
-		if (graph->getNodeDegree(edge[0]) == MIN_DEGREE && 
-				graph->getNodeDegree(edge[1]) == MIN_DEGREE) {
+		if (graph->getNodeDegree(edge.orig) == MIN_DEGREE && 
+				graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
 			status = del2deg2;
 		}
 		
-		else if (graph->getNodeDegree(edge[0]) == MIN_DEGREE ||
-				graph->getNodeDegree(edge[1]) == MIN_DEGREE) {
+		else if (graph->getNodeDegree(edge.orig) == MIN_DEGREE ||
+				graph->getNodeDegree(edge.dest) == MIN_DEGREE) {
 			status = del1deg2;
 		}
 	}
@@ -32,12 +32,12 @@ typename TabuSearch<T>::NeighbourStatus TabuSearch<T>::predictActionStatus(
 }
 
 template <class T>
-size_t* TabuSearch<T>::selectEdgeToDel(AdjacencyMatrix<bool>* neighbour) {
-	return selectRandomEdge(neighbour);
+size_t* TabuSearch<T>::selectEdgeToDel(TabuAdjMatrix<bool>* neighbour) {
+	return neighbour->selectRandomEdge();
 }
 
 template <class T>
-size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
+size_t* TabuSearch<T>::selectEdgeToAdd(TabuAdjMatrix<bool>* neighbour,
 			size_t* edgeToDel, std::vector<size_t>* tabuList,
 			bool aspirationCrit) {
 	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel,
@@ -100,7 +100,7 @@ size_t* TabuSearch<T>::selectEdgeToAdd(AdjacencyMatrix<bool>* neighbour,
 
 template <class T>
 typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
-		const AdjacencyMatrix<bool>* currSol,
+		const TabuAdjMatrix<bool>* currSol,
 		const std::vector<size_t*>* tabuList, bool aspirationCrit) {
 	size_t* edgeToDel = NULL, edgeToAdd = NULL;
 	while (edgeToAdd == NULL) {
@@ -116,11 +116,15 @@ typename TabuSearch<T>::Movement TabuSearch<T>::randomNeighbourhoodStep(
 }
 
 template <class T>
-bool TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
-		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
+void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
+		std::vector<size_t>* tabuList, bool aspirationCrit) {
+	TabuAdjMatrix<bool>* neighbour = currSol->copy();
+	grEdge edgeToDel = neighbour->selectRandomEdge();
+	while (true) {
+	}
+
 	//diferent feasibleness procedures are triggered depending on the movement
-	NeighbourStatus delStatus = predictActionStatus(neighbour, mov.edgeToDel);
-	NeighbourStatus addStatus = predictActionStatus(neighbour, mov.edgeToAdd);
+	NeighbourStatus delStatus = predictActionStatus(neighbour, edgeToDel);
 
 	if (delStatus == del2deg2) {
 		swapEdgesNodes(neighbour, mov, tabuList, aspirationCrit);
@@ -140,15 +144,6 @@ bool TabuSearch<T>::guaranteeFeasibleStep(AdjacencyMatrix<bool>* neighbour,
 			break; //mov will generate a feasible solution
 	}
 
-	return true;
-}
 
-template <class T>
-void TabuSearch<T>::generateNeighbour(AdjacencyMatrix<bool>* neighbour,
-		Movement mov, std::vector<size_t>* tabuList, bool aspirationCrit) {
-	//before making movement, ensurres that the result will be feasible
-	//TODO: loop to verify feasibleness
-	if (guaranteeFeasibleStep(neighbour, mov, tabuList, aspirationCrit)) {
-		makeMovement(neighbour, mov);
-	}
+	delete neighbour;
 }

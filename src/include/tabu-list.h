@@ -13,11 +13,12 @@ class TabuList {
 	TabuList();
 	TabuList(size_t maxSize);
 
-	//TODO: this method only works if T = bool.
-	//Since it depends on areEdgesEqual and it also
-	//checks the edges' value. For the purpose of
-	//this work, other implementation is not necessary.
+	//verifies is edge is in tabuList. Only the origin
+	//and destination nodes are considered, not the
+	//edge's weight/value.
 	bool isTabu(grEdge edge);
 
 	void add(grEdge edge);
+
+	size_t size();
 };
