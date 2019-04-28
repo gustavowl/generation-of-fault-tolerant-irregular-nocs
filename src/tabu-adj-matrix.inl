@@ -221,25 +221,27 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
 		TabuList<T>* tabuList) {
 	
 	grEdge e;
-	size_t randomVal;
 
-	if ( tabuList == NULL || (existent && tabuList->size() >= this->numEdges) ||
-			(!existent && tabuList->size() >= this->maxNumEdges() -
-			 this->numEdges()) ) {
+	if ( tabuList == NULL ) {
 		return this->generateInvalidEdge();
 	}
 
-	if (existent) {
-		randomVal = rng() % (this->numEdges - tabuList->size());
-	}
-	else {
-		//since the matrix is triangular and has no
-		//main diagonal, it has (n^2 - n)/2 possible
-		//edges. This formula can be easily obtained
-		//via arithmetic progression.
-		randomVal = rng() % (this->maxNumEdges() - tabuList->size() -
-				this->numEdges);
-	}
+	//count the possible edges to be chosen
+	size_t inLimits = 0;
+	for (size_t e.orig = 1; e.orig < this->numNodes; e.orig++) {
+		for (size_t e.dest = 0; e.dest < e.orig; e.dest++) {
+			if ( ((existent && this->edgeExists(e)) ||
+					(!existent && !this->edgeExists(e))) &&
+					!tabuList->isTabu(e) ) {
+				inLimits++;
+			}
+
+		}
+	}	
+
+	if (inLimits == 0)
+		return this->generateInvalidEdge();
+	size_t randomVal = rng() % inLimits;
 
 	size_t count = 0;
 	for (e.orig = 1; e.orig < this->numNodes; e.orig++) {
@@ -267,54 +269,25 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
 
 template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
-		bool existent) {
-
-	grEdge e;
-	size_t randomVal;
-
-	if (incidentNode >= this->numNodes || tabuList == NULL)
-		return this->generateInvalidEdge();
-
-	if (existent) {
-		randomVal = rng() % this->getNodeDegree(incidentNode);
+		bool existent, TabuList<T>* tabuList) {
+	size_t maxDegree = degrees[0];
+	for (size_t i = 1; i < this->NumNodes; i++) {
+		if (degrees[i] > maxDegree)
+			maxDegree = degrees[i];
 	}
-	else {
-		//any node has |V| - 1 possible edges since no
-		//self-loops are allowed.
-		randomVal = rng() % (this->numNodes - 1 -
-				this->getNodeDegree(incidentNode));
-	}
-
-	size_t count = 0;
-	e.orig = incidentNode;
-	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
-
-		if (e.orig == e.dest)
-			continue;
-
-		if ( (existent && this->edgeExists(e)) ||
-				(!existent && !this->edgeExists(e))) {
-
-			if (count == randomVal) {
-				e.value = this->getEdgeValue(e);
-				return e;
-			}
-
-			count++;
-		}
-	}
-
-	return this->generateInvalidEdge();
+	
+	return this->selectRandomEdge(incidentNode, maxDegree + 1,
+			existent, tabuList);
 }
 
 template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
-		size_t upperDestDeg, bool existent, TabuList<T> tabuList) {
+		size_t upperDestDeg, bool existent, TabuList<T>* tabuList) {
 	grEdge e;
 	//counts nodes with degree < upperDegLim
-	size_t inLimit = 0;
+	size_t inLimits = 0;
 
-	if (incidentNode >= this->numNodes)
+	if (incidentNode >= this->numNodes || tabuList == NULL)
 		return this->generateInvalidEdge();
 
 	e.orig = incidentNode;
@@ -323,16 +296,19 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		if (e.orig == e.dest)
 			continue;
 
-		if ( (existent && this->edgeExists(e)) ||
-				(!existent && !this->edgeExists(e)) &&
+		if ( ((existent && this->edgeExists(e)) ||
+				(!existent && !this->edgeExists(e))) &&
 				degrees[e.dest] < upperDegLim &&
 				!tabuList->isTabu(e) ) {
 
-			inLimit++;
+			inLimits++;
 		}
 	}
 
-	size_t randomVal = rng() % inLimit;
+	if (inLimits == 0)
+		return this->generateInvalidEdge();
+
+	size_t randomVal = rng() % inLimits;
 	size_t count = 0;
 
 	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {

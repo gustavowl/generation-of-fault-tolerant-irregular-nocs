@@ -144,7 +144,7 @@ bool TabuSearch<T>::swap(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
-bool TabuSearch<T>::spin(TabuAdjMatrix<bool>* neighbour,
+bool TabuSearch<T>::spinMinDegree(TabuAdjMatrix<bool>* neighbour,
 		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
 	//selects node to be fixed (remain unchanged in the spinning process)
 	size_t fixedNode = (neighbour->getNodeDegree(edgeToDel.orig) == MIN_DEGREE) ?
@@ -153,14 +153,53 @@ bool TabuSearch<T>::spin(TabuAdjMatrix<bool>* neighbour,
 	grEdge spinned;
 
 	if (aspirationCrit) {
-		spinned = neighbour->spinEdge(edgeToDel, fixedNode, MAX_DEGREE, tabuList);
-	}
-	else {
 		TabuList<bool> emptyTabu;
 		spinned = neighbour->spinEdge(edgeToDel, fixedNode, MAX_DEGREE, &emptyTabu);
 	}
+	else {
+		spinned = neighbour->spinEdge(edgeToDel, fixedNode, MAX_DEGREE, tabuList);
+	}
 
 	return !neighbour->isEdgeInvalid(spinned);
+}
+
+template <class T>
+bool TabuSearch<T>::spinMaxDegree(TabuAdjMatrix<bool>* neighbour,
+		grEdge edgeToAdd, TabuList<bool>* tabuList, bool aspirationCrit) {
+	//select node with max degree.
+	//It will have one edge spinned randomly.
+	//The centre of the spin is the node adjacent to
+	//the one with max degree./
+	size_t spinCentre = (neighbour->getNodeDegree(edgeToAdd.orig) == MAX_DEGREE) ?
+		edgeToAdd.dest : edgeToAdd.orig;
+
+	//select edge incident to spinCentre randomly,
+	//with the exception of the edgeToDel.
+	TabuList<bool> tabuSpins;
+	grEdge edgeToSpin, spinned;
+
+	while(tabuSpins.size() < neighbour->getNodeDegree(spinCentre)) {
+		edgeToSpin = neighbour->selectRandomEdge(spinCentre, MAX_DEGREE,
+				true, &tabuSpins);
+
+		if (aspirationCrit) {
+			TabuList<bool> emptyTabu;
+			spinned = neighbour->spinEdge(edgeToSpin, spinCentre, MAX_DEGREE,
+					&emptyTabu);
+		}
+		else {
+			spinned = neighbour->spinEdge(edgeToSpin, spinCentre, MAX_DEGREE,
+					tabuList);
+		}
+
+		if (neighbour->isEdgeInvalid(spinned)) {
+			tabuSpins.add(edgeToSpin);
+			continue;
+		}
+
+		return true;
+	}
+	return false;
 }
 
 template <class T>
@@ -178,27 +217,67 @@ bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 			return this->spin(neighbour, edgeToDel, tabuList, aspirationCrit);
 	}
 
+	//no problem with the edge to be deleted.
+	//Select edge to add and verity if it has problems	
+	TabuList<bool> tabuEdgesToAdd;
+
+	if (!aspirationCrit) {
+		for (size_t i = 0; i < tabuList->size(); i++)
+			tabuEdgesToAdd.add(tabuList->at(i));
+	}
+
+	size_t possibilities = neighbour->maxNumEdges() -
+		neighbour->getNumEdges() - tabuEdgesToAdd.size();
+	grEdge edgeToAdd;
+	NeighbourStatus addStatus;
+
+	for (; possibilities > 0; possibilities--) {
+		edgeToAdd = neighbour->selectRandomEdge(false, &tabuEdgesToAdd);
+		addStatus = this->predictActionStatus(neighbour,
+				edgeToAdd, true);
+
+		switch (addStatus) {
+			case (add1maxdeg):
+				if (!this->spinMaxDegree(neighbour, edgeToAdd,
+							tabuList, aspirationCrit)) {
+					tabuEdgesToAdd.add(edgeToAdd);
+					continue;
+				}
+				break;
+			case (add2maxdeg):
+				break;
+		}
+		//default case. Add edge
+		neighbour->delEdge(edgeToDel);
+		neighbour->addEdge(edgeToAdd);
+		return true;
+	}
+
+	return false;
 }
 
 template <class T>
 void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
 		TabuList<bool>* tabuList, bool aspirationCrit) {
+	//creates a copy of the current solution
 	TabuAdjMatrix<bool>* neighbour = currSol->copy();
 	//creates tabuList of edges to be deleted (edges that cannot be
 	//removed without violating the aspiration criteria
 	TabuList<bool> delTabuList;
 
-	grEdge edgeToDel = neighbour->selectRandomEdge();
+	grEdge edgeToDel = neighbour->selectRandomEdge(&delTabuList);
 
 	while (! this->neighbourhoodStep(neighbour, edgeToDel,
 				tabuList, aspirationCrit)) {
-		delete neighbour;
+		//delete neighbour; SHOULD NOT BE NECESSARY TODO: DEBUG
 		delTabuList.add(edgeToDel);
 
-		if (delTabuList.size() == currSol->getNumEdges())
+		if (delTabuList.size() == currSol->getNumEdges()) {
+			detele neighbour;
 			return NULL;
+		}
 
-		neighbour = currSol->copy();
+		//neighbour = currSol->copy(); SHOULD NOT BE NECESSARY TODO: DEBUG
 		edgeToDel = neighbour->selectRandomEdge(&delTabuList);
 	}
 

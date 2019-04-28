@@ -31,8 +31,6 @@ private:
 
 	grEdge generateInvalidEdge();
 
-	size_t maxNumEdges();
-
 	//returns the n-th node with largest or smallest degree from the
 	//list sent.
 	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
@@ -45,6 +43,8 @@ public:
 	//If checkValue is set to false, then it does not verify
 	//whether value != nullEdgeValue
 	bool isEdgeInvalid(grEdge edge, bool checkValue=true) const;
+
+	size_t maxNumEdges();
 
 	// Constructors
 	TabuAdjMatrix();
@@ -84,7 +84,7 @@ public:
 	//	it is supposed that it will return the in-degree + out-degree
 	//override this method if necessary.
 	grEdge selectRandomEdge(size_t incidentNode,
-			bool existent=true);
+			bool existent=true, TabuList<T> tabuList);
 
 	//Same as selectRandomEdge(incidentNode, existent), but
 	//it selects a target node with degree < degreeUpLim (upper
