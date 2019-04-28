@@ -1,16 +1,12 @@
 //TODO: clean includes
-//#include <iostream>
+#include <iostream>
 #include "include/file-manager.h"
 #include "include/graph-converter.h"
 #include "include/graph-representation.h"
-#include "include/adjacency-list.h"
-#include "include/adjacency-matrix.h"
 #include "include/tabu-adj-matrix.h"
-#include "include/dijkstra.h"
-//#include "include/tabu-search.h"
+#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
-	/*
 	if (argc != 6) {
 		std::cout << "Invalid number of arguments! Five expected:\n" <<
 			"\t1 - Path to .adjl file;\n" <<
@@ -22,41 +18,8 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	std::cout << "Reading \"" << argv[1] << "\" file..." << std::endl;*/
+	std::cout << "Reading \"" << argv[1] << "\" file..." << std::endl;
 
-	//TODO: BEGIN DELETE
-	GraphRepresentation<size_t>* gr = FileManager::readFile(
-			"dijkstra.adjl", FileManager::FileType::adj_list, ' ');
-
-	if (gr == NULL)
-		return -1;
-
-	AdjacencyMatrix<size_t> adjm = AdjacencyMatrix<size_t>(
-			gr->getNumNodes(), true, true, 0);
-	GraphConverter::convert(gr, &adjm);
-	
-	std::cout << "Graph read from file:\n" <<
-		"==============================" << std::endl;
-	gr->print();
-	std::cout << "==============================" << std::endl;
-	std::cout << "Converted Graph:\n" <<
-		"==============================" << std::endl;
-	adjm.print();
-
-	TabuAdjMatrix<bool> tabu = TabuAdjMatrix<bool>(gr->getNumNodes(), 0);
-	GraphConverter::convert(gr, &tabu);
-	tabu.print();
-
-	for (size_t i = 0; i < tabu.getNumNodes(); i++) {
-		Dijkstra<bool>::Node node = Dijkstra<bool>::dijkstra(&tabu, 0, i, 2112, false);
-		std::cout << "0 to " << i << " = " << node.weightSum <<
-			"/" << node.hops << " (weight/hops)" << std::endl;
-	}
-
-	delete gr;
-	//TODO: END DELETE
-
-	/*
 	GraphRepresentation<size_t>* gr = FileManager::readFile(
 			argv[1], FileManager::FileType::adj_list, argv[2][0]);
 
@@ -69,8 +32,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << "Done." << std::endl;
 
-	AdjacencyMatrix<size_t> adjm = AdjacencyMatrix<size_t>(
-			gr->getNumNodes(), false, false, 0);
+	TabuAdjMatrix<bool> adjm = TabuAdjMatrix<bool>(
+			gr->getNumNodes(), false);
 	GraphConverter::convert(gr, &adjm);
 	
 	std::cout << "Graph read from file:\n" <<
@@ -86,7 +49,7 @@ int main(int argc, char *argv[]) {
 		std::endl;
 
 	std::cout << "Begins Tabu Search..." << std::endl;
-	AdjacencyMatrix<size_t>* res = TabuSearch<size_t>::start(
+	TabuAdjMatrix<size_t>* res = TabuSearch<size_t>::start(
 			gr, std::numeric_limits<size_t>::max(),
 			std::stoi(argv[4]), std::stoi(argv[5]),
 			std::stoi(argv[3]));
@@ -99,7 +62,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	delete res;*/
+	delete res;
 
 	return 0;
 }

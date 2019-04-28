@@ -1,6 +1,5 @@
 template <class T>
-void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol,
-		size_t epsilon) {
+void TabuSearch<T>::fitToEpsilon(AdjacencyMatrix<bool>* initSol) {
 	//saves nodes degrees
 	size_t size = initSol->getNumNodes();
 	size_t degrees[initSol->getNumNodes()];
@@ -154,8 +153,7 @@ void TabuSearch<T>::makeFeasible(AdjacencyMatrix<bool>* initSol) {
 }
 
 template <class T>
-AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
-		const GraphRepresentation<T>* tg, size_t epsilon) {
+AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	//checks wheter if epsilon is valid or not.
 	//i.e. if it is possible to generate a graph such that
 	//for all nodes, degree(node) in [2, 4]
@@ -182,8 +180,7 @@ AdjacencyMatrix<bool>* TabuSearch<T>::generateInitSol(
 }
 
 template <class T>
-T TabuSearch<T>::fitness(const GraphRepresentation<T>* tg,
-		const AdjacencyMatrix<bool>* sol, T valueLimit) {
+T TabuSearch<T>::fitness(const AdjacencyMatrix<bool>* sol) {
 	//computes QAP function:
 	//for all edge(i, j) in tg
 	//\sum min_hops(node_i, node_j) * weightOf(edge(i, j))
@@ -243,12 +240,57 @@ void TabuSearch<T>::deallocateTabuList(std::vector<size_t*>* tabuList) {
 }
 
 template <class T>
-AdjacencyMatrix<T>* TabuSearch<T>::start(
-		const GraphRepresentation<T>* tg, T valueLimit,
-		size_t tabuListSize, size_t stopCriteria,
-		size_t epsilon) {
+TabuSearch<T>::TabuSearch() {
+	this->taskGraph = NULL;
+}
 
-	srand(time(NULL)); //TODO: print/save seed
+template <class T>
+TabuSearch<T>::~TabuSearch() {
+	if (this->taskGraph != NULL)
+		delete this->taskGraph;
+}
+
+template <class T>
+void TabuSearch<T>::setDegreeLimits(size_t minDegree, size_t maxDegree) {
+	if (maxDegree < minDegree)
+		return;
+
+	this->minDegree = minDegree;
+	this->maxDegree = maxDegree;
+}
+
+template <class T>
+void setTaskGraph(const GraphRepresentation<T>* taksGraph) {
+	if (this->taskGraph != NULL)
+		delete this->taskGraph;
+
+	this->taskGraph = taskGraph->copy();
+}
+
+template <class T>
+void setTabuListSize(size_t tabuListSize) {
+	this->tabuList = TabuList<T>::TabuList(tabuListSize);
+}
+
+template <class T>
+void setStopCriteria(size_t stopCriteria) {
+	this->stopCriteria = stopCriteria;
+}
+
+template <class T>
+void setFitnessLimit(T fitnessLimit) {
+	this->fitnessLimit = fitnessLimit;
+}
+
+template <class T>
+void setEpsilon(size_t epsilon) {
+	this->epsilon = epsilon;
+}
+
+template <class T>
+TabuAdjMatrix<T>* TabuSearch<T>::start() {
+
+	//TODO: print/save seed
 
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.

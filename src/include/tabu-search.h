@@ -3,17 +3,18 @@
 
 #include "graph-representation.h"
 #include "graph-converter.h"
-#include "adjacency-matrix.h"
+#include "tabu-list.h"
+#include "tabu-adj-matrix.h"
 #include "dijkstra.h"
-#include <vector>
-//#include <cstdlib>
 #include <iostream> //TODO: DELETEME (DEBUG)
 
 template <class T>
 class TabuSearch {
 private:
-	static const size_t MIN_DEGREE = 2;
-	static const size_t MAX_DEGREE = 4;
+	size_t minDegree, maxDegree, stopCriteria, epsilon;
+	T fitnessLimit;
+	GraphRepresentation<T> taskGraph;
+	TabuList<T> tabuList;
 
 	//movement used for neighbourhood search: edge position
 	//swap. Movements are also added to tabuList (actually,
@@ -28,12 +29,11 @@ private:
 
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
-	static void fitToEpsilon(AdjacencyMatrix<bool>* initSol,
-			size_t epsilon);
+	static void fitToEpsilon(AdjacencyMatrix<bool>* initSol);
 
 	//returns whether initSol is feasible or not.
 	//A solution is feasible if the degree of all of its nodes
-	//is in the range [2, 4].
+	//is in the range [minDegree, maxDegree].
 	//called by generateInitSol, and addEdgeDel2Deg2().
 	static bool isFeasible(AdjacencyMatrix<bool>* sol);
 
@@ -64,8 +64,7 @@ private:
 	//returns NULL if a valid solution cannot be generated
 	//i.e. if epsilon is too restrictive or not restrictive
 	//enough for \-/ node, degree(node) in [2, 4].
-	static AdjacencyMatrix<bool>* generateInitSol(
-			const GraphRepresentation<T>* tg, size_t epsilon);
+	static AdjacencyMatrix<bool>* generateInitSol();
 
 	//Computes QAP. The tg nodes are mapped to sol nodes.
 	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)
@@ -80,8 +79,7 @@ private:
 	//tg: task graph
 	//sol: solution
 	//valueLimit: max value for T
-	static T fitness(const GraphRepresentation<T>* tg,
-			const AdjacencyMatrix<bool>* sol, T valueLimit);
+	static T fitness(const AdjacencyMatrix<bool>* sol);
 
 	//makes movement specified by mov.
 	static void makeMovement(AdjacencyMatrix<bool>* graph, Movement mov);
@@ -93,6 +91,31 @@ private:
 	static void deallocateTabuList(std::vector<size_t*>* tabuList);
 
 public:
+	TabuSearch();
+	~TabuSearch();
+	//Every node in the solution must have degree in the
+	//[minDegree, maxDegree]
+	void setDegreeLimits(size_t minDegree, size_t maxDegree);
+
+	//copies the taskGraph
+	void setTaskGraph(const GraphRepresentation<T>* taskGraph);
+
+	//defines the size of the tabu list. TODO: recommend a size
+	void setTabuListSize(size_t tabuListSize);
+
+	//sets the max number of iterations with no improvements.
+	//If this number is reached, the Tabu Search stops.
+	void setStopCriteria(size_t stopCriteria);
+
+	//set the max value of the fitness function.
+	//Normaly it is the largest value possible (infinity).
+	void setFitnessLimit(T fitnessLimit);
+
+	//since this is a multiobjective problem, epsilon restriction
+	//technique is used. Epsilon fixes the number of edges in the
+	//solutions and in the neighbours.
+	void setEpsilon(size_t epsilon);
+
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed
 	//with latency. The Tabu Search should maximise fault tolerance
@@ -105,20 +128,13 @@ public:
 	//acycled.
 	//
 	//Problem restrictions: the generated graphs node's will
-	//have degree in the range [2, 4].
+	//have degree in the range [minDegree, maxDegree].
 	//
-	//tg: Task Graph
-	//tabuListSize: self-explanatory (recommended: = epsilon?)
-	//stopCriteria: number of iterations with no improvement
-	//epsilon: used for epsilon restriction (TODO: check translation).
-	//	it limits the number of edges.
-	//returns: best solution found as an undirected graph (it may
-	//	contain cycles). Returns NULL is no solution is feasible
-	//	(there exists a node for which degree(node) not in [2, 4].
-	//	TODO: return set of solutions.
-	static AdjacencyMatrix<T>* start(const GraphRepresentation<T>* tg,
-			T valueLimit, size_t tabuListSize, size_t stopCriteria,
-			size_t epsilon);
+	//ATTENTION: set the Tabu Search parameters before starting it:
+	//setDegreeLimits, setTaskGraph, setTabuListSize, setStopCriteria,
+	//setFitnessLimit, and setEpsilon.
+	//TODO: return set of solutions.
+	TabuAdjMatrix<T>* start();
 };
 
 #include "../tabu-search.inl"
