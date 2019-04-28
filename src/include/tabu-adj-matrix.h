@@ -161,7 +161,7 @@ public:
 
 	//Similar to getNodeWithNthDegree, but instead of calculating from
 	//all the nodes, it only considers the neighbours of incidentNode.
-	size_t getNeighourWithNthDegree(size_t rankPos, size_t incidentNode,
+	size_t getNeighbourWithNthDegree(size_t rankPos, size_t incidentNode,
 			bool largest);
 };
 

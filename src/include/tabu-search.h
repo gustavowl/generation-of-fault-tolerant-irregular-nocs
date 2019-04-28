@@ -13,7 +13,7 @@ class TabuSearch {
 private:
 	size_t minDegree, maxDegree, stopCriteria, epsilon;
 	T fitnessLimit;
-	GraphRepresentation<T> taskGraph;
+	GraphRepresentation<T>* taskGraph;
 	//solutions are computed as boolean graphs
 	TabuList<bool> tabuList;
 
@@ -51,8 +51,8 @@ private:
 	//			2.2 - create empty tabuList of target nodes
 	//			2.3 - identify second node with smallest degree
 	//				(not in tabuList)
-	//			2.4 - add edge
-	//		3 - check if graph is disconnect
+	//			2.4 - add edge between these two nodes
+	//		3 - check if graph is disconnected
 	//			3.1 - Dijkstra
 	//			3.2 - if disconnected
 	//				3.2.1 - remove edge

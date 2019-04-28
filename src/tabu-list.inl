@@ -13,7 +13,7 @@ TabuList<T>::TabuList(size_t maxSize) {
 }
 
 template <class T>
-bool TabuList<T>::isInTabuList(grEdge edge) {
+bool TabuList<T>::isTabu(grEdge edge) {
 	//searches tabuList
 	for (size_t i = 0; i < tabuList.size(); i++) {
 		if (areEdgesEqual(tabuList[i], edge)) {
@@ -25,7 +25,7 @@ bool TabuList<T>::isInTabuList(grEdge edge) {
 }
 
 template <class T>
-void TabuList<T>::addToTabuList(grEdge edge) {
+void TabuList<T>::add(grEdge edge) {
 	if (tabuList->size() == tabuList->capacity()) {
 		//cycle
 		tabuList[index] = edge;

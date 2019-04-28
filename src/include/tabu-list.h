@@ -17,7 +17,7 @@ class TabuList {
 	//Since it depends on areEdgesEqual and it also
 	//checks the edges' value. For the purpose of
 	//this work, other implementation is not necessary.
-	bool isInTabuList(grEdge edge);
+	bool isTabu(grEdge edge);
 
-	void addToTabuList(grEdge edge);
+	void add(grEdge edge);
 };

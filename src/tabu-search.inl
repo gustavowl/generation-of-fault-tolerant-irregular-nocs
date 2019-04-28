@@ -1,51 +1,26 @@
 template <class T>
 void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
-	//saves nodes degrees
-	size_t size = initSol->getNumNodes();
-	size_t degrees[initSol->getNumNodes()];
-	for (size_t i = 0; i < initSol->getNumNodes(); i++)
-		degrees[i] = initSol->getNodeDegree(i);
 
+	size_t frstIndex, scndIndex;
 	while (epsilon < initSol->getNumEdges()) {
 		//removes edges
 		//computes positions of the two nodes with largest degrees
-		size_t largest = 0;
-		size_t largest2 = 0;
+		frstIndex = initSol->getNodeWithNthDegree(0, true);	
+		scndIndex = initSol->getNodeWithNthDegree(1, true);	
 
-		for (size_t i = 1; i < size; i++) {
-			if (degrees[i] > degrees[largest]) {
-				largest2 = largest;
-				largest = i;
-				continue;
-			}
-			if (degrees[i] > degrees[largest2])
-				largest2 = i;
-		}
-
-		initSol->delEdge(largest, largest2);
-		degrees[largest]--;
-		degrees[largest2]--;
+		initSol->delEdge( grEdge{
+				.orig=frstIndex, .dest=scndIndex} );
 	}
 
 	while (epsilon > initSol->getNumEdges()) {
 		//adds edges
 		//computes positions of the two nodes with smallest degrees
-		size_t smallest = 0;
-		size_t smallest2 = 0;
+		frstIndex = initSol->getNodeWithNthDegree(0, false);	
+		scndIndex = initSol->getNodeWithNthDegree(1, false);	
 
-		for (size_t i = 1; i < size; i++) {
-			if (degrees[i] < degrees[smallest]) {
-				smallest2 = smallest;
-				smallest = i;
-				continue;
-			}
-			if (degrees[i] < degrees[smallest2])
-				smallest2 = i;
-		}
-
-		initSol->addEdge(smallest, smallest2, true);
-		degrees[smallest]++;
-		degrees[smallest2]++;
+		initSol->delEdge( grEdge{
+				.orig=frstIndex, .dest=scndIndex,
+				.value = !initSol->getNullEdgeValue()} );
 	}
 }
 
@@ -55,7 +30,7 @@ bool TabuSearch<T>::isFeasible(TabuAdjMatrix<bool>* sol) {
 	size_t degree = 0;
 	for (size_t i = 0; i < size; i++) {
 		degree = sol->getNodeDegree(i);
-		if (degree < MIN_DEGREE || degree > MAX_DEGREE)
+		if (degree < minDegree || degree > maxDegree)
 			return false;
 	}
 	return true;
@@ -64,73 +39,50 @@ bool TabuSearch<T>::isFeasible(TabuAdjMatrix<bool>* sol) {
 template <class T>
 void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 	//sets initial variables
-	size_t size = initSol->getNumNodes();
-	size_t degrees[size];
-	for (size_t i = 0; i < size; i++)
-		degrees[i] = initSol->getNodeDegree(i);
-	std::vector<size_t> neighbours;
+	grEdge edge;
+	edge.value = initSol->getNullEdgeValue();
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
 		//1 - remove edge
 		//	1.1 - identify node with largest degree
-		size_t largest = 0;
-		for (size_t i = 1; i < size; i++) {
-			if (degrees[i] > degrees[largest])
-				largest = i;
-		}
+		size_t largest = initSol->getNodeWithNthDegree(0, true);
 		//	1.2 - identify its neighbour with largest degree
-		neighbours = initSol->getNeighbours(largest);
-		size_t lrgNeighbour = neighbours[0];
-		for (size_t i = 1; i < neighbours.size(); i++) {
-			if (degrees[neighbours[i]] > degrees[lrgNeighbour])
-				lrgNeighbour = neighbours[i];
-		}
-		//	1.3 - remove edge
-		initSol->delEdge(largest, lrgNeighbour);
-		degrees[largest]--;
-		degrees[lrgNeighbour]--;
+		size_t lrgNeighbour = initSol->getNeighbourWithNthDegree(
+				0, largest, true);
+		//1.3 - remove edge
+		edge.orig = largest;
+		edge.dest = lrgNeighbour;
+		initSol->delEdge(edge);
 		
 		//2 - add edge
 		//	2.1 - identify node with smallest degree
-		size_t smallest = 0;
-		for (size_t i = 1; i < size; i++) {
-			if (degrees[i] < degrees[smallest])
-				smallest = i;
-		}
-
+		size_t smallest = initSol->getNodeWithNthDegree(0, false);
 		//	2.2 - create empty tabuList of target nodes
-		bool tabuList[size];
-		for (size_t i = 0; i < size; i++)
-			tabuList[i] = false;
-		tabuList[smallest] = true;
+		TabuList<bool> tabuList = TabuList(initSol->getNumNodes());
+		edge.orig = smallest;
 
 		while (true) {
 			//	2.3 - identify second node with smallest degree
 			//		(not in tabuList)
-			size_t smlNeighbour = 0; //first node not in tabu
-			for (size_t i = 0; i < size; i++) {
-				if (!tabuList[i]) {
-					smlNeighbour = i;
-					break;
-				}
-			}
-			//second node not in tabu
-			for (size_t i = smlNeighbour + 1; i < size; i++) {
-				if (!tabuList[i] && degrees[i] < degrees[smlNeighbour])
-					smlNeighbour = i;
-			}
-			//	2.4 - add edge
-			if (initSol->edgeExists(smallest, smlNeighbour)) {
+			size_t rankPos = 0;
+			size_t smlNeighbour;
+			do {
+				rankPos++;
+				smlNeighbour = initSol->getNodeWithNthDegree(rankPos, false);
+				edge.dest = smlNeighbour;
+			} while(tabuList.isTabu(edge));
+			//	2.4 - add edge between these two nodes
+			if (initSol->edgeExists(edge)) {
 				//edge exists, add target node to tabuList
-				tabuList[smlNeighbour] = true;
+				tabuList.add(edge);
 				continue;
 			}
-			initSol->addEdge(smallest, smlNeighbour, true);
-			degrees[smallest]++;
-			degrees[smlNeighbour]++;
+			edge.value = !edge.value;
+			initSol->addEdge(edge);
+			edge.value = !edge.value;
 
-			//3 - check if graph is disconnect
+			//3 - check if graph is disconnected
 			//	3.1 - Dijkstra
 			size_t numHops = Dijkstra<bool>::dijkstra(
 					initSol, largest, lrgNeighbour, true,
@@ -138,11 +90,9 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 			//	3.2 - if disconnected
 			if (numHops == HOP_INF) {
 				//	3.2.1 - remove edge
-				initSol->delEdge(smallest, smlNeighbour);
-				degrees[smallest]--;
-				degrees[smlNeighbour]--;
+				initSol->delEdge(edge);
 				//	3.2.2 - add target node to a TabuList
-				tabuList[smlNeighbour] = true;
+				tabuList.add(edge);
 				//	3.2.3 - go back to step 2.3
 				continue;
 			}
@@ -173,7 +123,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	//copies task graph, converting representation
 	GraphConverter::convert(tg, initSol);
 
-	fitToEpsilon(initSol, epsilon);
+	fitToEpsilon(initSol);
 	makeFeasible(initSol);
 
 	return initSol;
@@ -196,7 +146,7 @@ T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 						sol, i, j, true, false).hops;
 
 				if (numHops == HOP_INF)
-					return valueLimit;
+					return fitnessLimit;
 
 				T qap = numHops * tg->getEdgeValue(i, j);
 
