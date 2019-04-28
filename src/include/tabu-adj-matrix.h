@@ -75,7 +75,7 @@ public:
 	//returns a randomly chosen edge not in TabuList.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	grEdge selectRandomEdge(bool existent=true, TabuList<T>* tabuList = NULL);
+	grEdge selectRandomEdge(bool existent=true, TabuList<T>* tabuList);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
@@ -89,8 +89,8 @@ public:
 	//Same as selectRandomEdge(incidentNode, existent), but
 	//it selects a target node with degree < degreeUpLim (upper
 	//degree limit)
-	grEdge selectRandomEdge(size_t incidentNode, size_t upperDegLim,
-			bool existent=true);
+	grEdge selectRandomEdge(size_t incidentNode, size_t upperDestDeg,
+			bool existent=true, TabuList<T> tabuList);
 
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
@@ -111,7 +111,7 @@ public:
 	//If the graph remains unchanged, the final values of edge1, and
 	//edge2 will be invalid.
 	void swapEdgesNodes(grEdge* edge1, grEdge* edge2,
-			TabuList<T>* tabuList=NULL);
+			TabuList<T>* tabuList);
 	
 	//Swap a random edge of the node with another
 	//For example, consider that edge (0, 5)
@@ -150,7 +150,8 @@ public:
 	//	edge's remaining node.
 	//returns the edge after spinning. It there is no valid spin,
 	//	the edge will be invalid.
-	grEdge spinEdge(grEdge edge, size_t fixedNode, size_t upperDegLim);
+	grEdge spinEdge(grEdge edge, size_t fixedNode, size_t upperDestDeg,
+			TabuList<T>* tabuList);
 
 	//Returns the node with n-th smallest or largest degree.
 	//The rankPos determines the n-th position in the [0, numNodes - 1]

@@ -121,7 +121,9 @@ bool TabuSearch<T>::swap(TabuAdjMatrix<bool>* neighbour,
 		edgeToSwap2 = edgeToAdd;
 
 		if (aspirationCrit) {
-			neighbour->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2)
+			//tabuSlctEdges' element will never conflict here
+			neighbour->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
+					&tabuSlctdEdges);
 		}
 		else {
 			neighbour->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
@@ -142,6 +144,26 @@ bool TabuSearch<T>::swap(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
+bool TabuSearch<T>::spin(TabuAdjMatrix<bool>* neighbour,
+		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
+	//selects node to be fixed (remain unchanged in the spinning process)
+	size_t fixedNode = (neighbour->getNodeDegree(edgeToDel.orig) == MIN_DEGREE) ?
+		edgeToDel.orig : edgeToDel.dest;
+
+	grEdge spinned;
+
+	if (aspirationCrit) {
+		spinned = neighbour->spinEdge(edgeToDel, fixedNode, MAX_DEGREE, tabuList);
+	}
+	else {
+		TabuList<bool> emptyTabu;
+		spinned = neighbour->spinEdge(edgeToDel, fixedNode, MAX_DEGREE, &emptyTabu);
+	}
+
+	return !neighbour->isEdgeInvalid(spinned);
+}
+
+template <class T>
 bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
 
@@ -152,6 +174,8 @@ bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 	switch (delStatus) {
 		case del2mindeg:
 			return this->swap(neighbour, edgeToDel, tabuList, aspirationCrit);
+		case del1mindeg:
+			return this->spin(neighbour, edgeToDel, tabuList, aspirationCrit);
 	}
 
 }
