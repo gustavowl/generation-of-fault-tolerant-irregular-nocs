@@ -1,3 +1,5 @@
+#include "include/neighbourhood-search.h"
+
 typename NeighbourhoodSearch::NeighbourStatus
 NeighbourhoodSearch::predictDelActionStatus(
 		Neighbour* neigh) {
@@ -142,8 +144,8 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	tabuEdgesToAdd.add(neigh->deltdEdge);
 
 	while(tabuSpins.size() < neigh->sol->getNodeDegree(spinCentre)) {
-		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, true,
-				&tabuSpins);
+		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, &tabuSpins,
+				true);
 
 		size_t spinCentre = (neigh->sol->getNodeDegree(edgeToSpin.orig)
 				== MAX_DEGREE) ? edgeToSpin.dest : edgeToSpin.orig;
@@ -222,7 +224,7 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 
 	for (; possibilities > 0; possibilities--) {
 		edgeToAdd = neigh->sol->selectRandomEdge(
-				false, &tabuEdgesToAdd);
+				&tabuEdgesToAdd, false);
 		addStatus = this->predictAddActionStatus(neigh, edgeToAdd, true);
 
 		switch (addStatus) {

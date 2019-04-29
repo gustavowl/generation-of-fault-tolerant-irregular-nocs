@@ -52,7 +52,7 @@ grEdge TabuAdjMatrix<T>::generateInvalidEdge() {
 }
 
 template <class T>
-size_t maxNumEdges() {
+size_t TabuAdjMatrix<T>::maxNumEdges() {
 	//since the matrix is triangular and has no
 	//main diagonal, it has (n^2 - n)/2 possible
 	//edges. This formula can be easily obtained
@@ -217,8 +217,8 @@ bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 }
 
 template <class T>
-grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
-		TabuList<T>* tabuList) {
+grEdge TabuAdjMatrix<T>::selectRandomEdge(TabuList<T>* tabuList,
+		bool existent) {
 	
 	grEdge e;
 
@@ -228,8 +228,8 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
 
 	//count the possible edges to be chosen
 	size_t inLimits = 0;
-	for (size_t e.orig = 1; e.orig < this->numNodes; e.orig++) {
-		for (size_t e.dest = 0; e.dest < e.orig; e.dest++) {
+	for (e.orig = 1; e.orig < this->numNodes; e.orig++) {
+		for (e.dest = 0; e.dest < e.orig; e.dest++) {
 			if ( ((existent && this->edgeExists(e)) ||
 					(!existent && !this->edgeExists(e))) &&
 					!tabuList->isTabu(e) ) {
@@ -269,7 +269,7 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(bool existent,
 
 template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
-		bool existent, TabuList<T>* tabuList) {
+		TabuList<T>* tabuList, bool existent) {
 	size_t maxDegree = degrees[0];
 	for (size_t i = 1; i < this->NumNodes; i++) {
 		if (degrees[i] > maxDegree)
@@ -282,9 +282,9 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 
 template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
-		size_t upperDestDeg, bool existent, TabuList<T>* tabuList) {
+		size_t upperDestDeg, TabuList<T>* tabuList, bool existent) {
 	grEdge e;
-	//counts nodes with degree < upperDegLim
+	//counts nodes with degree < upperDestDeg
 	size_t inLimits = 0;
 
 	if (incidentNode >= this->numNodes || tabuList == NULL)
@@ -298,7 +298,7 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 
 		if ( ((existent && this->edgeExists(e)) ||
 				(!existent && !this->edgeExists(e))) &&
-				degrees[e.dest] < upperDegLim &&
+				degrees[e.dest] < upperDestDeg &&
 				!tabuList->isTabu(e) ) {
 
 			inLimits++;
@@ -334,7 +334,7 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 
 template <class T>
 void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
-		TabuList<T> tabuList) {
+		TabuList<T>* tabuList) {
 	//there are two possible swap for edges (1, 2), (3, 4)
 	//	(1, 4), (3, 2) or (1, 3), (2, 4)
 	
@@ -471,7 +471,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 	TabuList<T> tabuOrigEdges;
 	while (tabuOrigEdges.size() < degrees[targets.orig]) {
 		grEdge origEdge = this->selectRandomEdge(targets.orig,
-				true, &tabuOrigEdges);
+				&tabuOrigEdges, true);
 
 		if (this->isEdgeInvalid(origEdge))
 			break;
@@ -491,7 +491,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 		tabuDestEdges.add(spinnedOrig);
 		while(tabuDestEdges.size() - 1 < degrees[targets.dest]) {
 			grEdge destEdge = this->selectRandomEdge(targets.dest,
-					true, &tabuDestEdges);
+					&tabuDestEdges, true);
 
 			if (this->isEdgeInvalid(destEdge))
 				break;
@@ -521,10 +521,11 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 
 	//no possible spin found.return false;
 	return NULL;
+}
 
 template <class T>
-size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
-		size_t rankPos, bool largest) {
+size_t TabuAdjMatrix<T>::getNodeWithNthDegreeFromList(
+		std::vector<size_t> nodes, size_t rankPos, bool largest) {
 	if (rankPos >= nodes.size())
 		return this->numNodes;
 
@@ -566,7 +567,8 @@ size_t TabuAdjMatrix<T>::getNodeWithNthDegree(size_t rankPos,
 	return this->getNodeWithNthDegreeFromList(nodes, rankPos, largest);
 }
 
-template TabuAdjMatrix<T>::getNeighbourWithNthDegree(size_t rankPos,
+template <class T>
+size_t TabuAdjMatrix<T>::getNeighbourWithNthDegree(size_t rankPos,
 		size_t incidentNode, bool largest) {
 	if (incidentNode >= this->numNodes)
 		return this->numNodes;

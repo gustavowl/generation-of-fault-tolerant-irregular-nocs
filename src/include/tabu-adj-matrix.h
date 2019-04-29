@@ -75,7 +75,7 @@ public:
 	//returns a randomly chosen edge not in TabuList.
 	//if exists is set to false, returns a edge that is NOT
 	//in the graph.
-	grEdge selectRandomEdge(bool existent=true, TabuList<T>* tabuList);
+	grEdge selectRandomEdge(TabuList<T>* tabuList, bool existent=true);
 
 	//returns a randomly chosen edge with incident node incidentNode.
 	//if exists is set to false, returns a edge that is NOT
@@ -84,13 +84,13 @@ public:
 	//	it is supposed that it will return the in-degree + out-degree
 	//override this method if necessary.
 	grEdge selectRandomEdge(size_t incidentNode,
-			bool existent=true, TabuList<T> tabuList);
+			TabuList<T>* tabuList, bool existent=true);
 
 	//Same as selectRandomEdge(incidentNode, existent), but
 	//it selects a target node with degree < degreeUpLim (upper
 	//degree limit)
 	grEdge selectRandomEdge(size_t incidentNode, size_t upperDestDeg,
-			bool existent=true, TabuList<T> tabuList);
+			TabuList<T>* tabuList, bool existent=true);
 
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
@@ -157,7 +157,7 @@ public:
 	//edges from `targets`
 	//The number of edges is not altered.
 	//returns false if it is not possible to double spin.
-	drEdge* doubleSpinEdge(grEdge targets, size_t upperDestDeg,
+	grEdge* doubleSpinEdge(grEdge targets, size_t upperDestDeg,
 			TabuList<T>* tabuList);
 
 	//Returns the node with n-th smallest or largest degree.

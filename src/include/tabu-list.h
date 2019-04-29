@@ -24,3 +24,5 @@ class TabuList {
 
 	grEdge at(size_t index) const;
 };
+
+#endif

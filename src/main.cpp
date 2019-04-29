@@ -4,7 +4,7 @@
 #include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/tabu-adj-matrix.h"
-#include "include/tabu-search.h"
+//#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
 	if (argc != 6) {
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
 		std::endl;
 
-	std::cout << "Begins Tabu Search..." << std::endl;
+	/*std::cout << "Begins Tabu Search..." << std::endl;
 	TabuAdjMatrix<size_t>* res = TabuSearch<size_t>::start(
 			gr, std::numeric_limits<size_t>::max(),
 			std::stoi(argv[4]), std::stoi(argv[5]),
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	delete res;
+	delete res;*/
 
 	return 0;
 }
