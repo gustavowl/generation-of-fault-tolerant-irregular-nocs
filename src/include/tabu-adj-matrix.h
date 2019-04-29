@@ -153,6 +153,13 @@ public:
 	grEdge spinEdge(grEdge edge, size_t fixedNode, size_t upperDestDeg,
 			TabuList<T>* tabuList);
 
+	//Spins edges of the nodes incident to `targets`; deleting these
+	//edges from `targets`
+	//The number of edges is not altered.
+	//returns false if it is not possible to double spin.
+	bool doubleSpinEdge(grEdge targets, size_t upperDestDeg,
+			TabuList<T>* tabuList);
+
 	//Returns the node with n-th smallest or largest degree.
 	//The rankPos determines the n-th position in the [0, numNodes - 1]
 	//range. When boolean is set to true, returns the n-th largest, and

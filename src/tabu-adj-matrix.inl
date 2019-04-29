@@ -462,6 +462,63 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 }
 
 template <class T>
+bool TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets, size_t upperDestDeg,
+		TabuList<T>* tabuList) {
+
+	if (targets.orig >= this->numNodes || targets.dest >= this->numNodes)
+		return false;
+
+	TabuList<T> tabuOrigEdges;
+	while (tabuOrigEdges.size() < degrees[targets.orig]) {
+		grEdge origEdge = this->selectRandomEdge(targets.orig, upperDestDeg,
+				true, &tabuOrigEdges);
+
+		if (this->isEdgeInvalid(origEdge))
+			break;
+
+		//first edge to spin selected. Spin it
+		size_t fixedNode = (origEdge.orig == targets.orig) ?
+			origEdge.dest : origEdge.orig;
+		grEdge spinnedOrig = this->spinEdge(origEdge, fixedNode,
+			upperDestDeg, tabuList);
+		if (this->isEdgeInvalid(spinnedOrig)) {
+			tabuOrigEdges.add(origEdge);
+			continue;
+		}
+
+		//select second edge to spin
+		TabuList<T> tabuDestEdges;
+		tabuDestEdges.add(spinnedOrig);
+		while(tabuDestEdges.size() - 1 < degrees[targets.dest]) {
+			grEdge destEdge = this->selectRandomEdge(targets.dest, upperDestDeg,
+				true, &tabuDestEdges);
+
+			if (this->isEdgeInvalid(destEdge))
+				break;
+
+			fixedNode = (destEdge.dest == targets.dest) ?
+				destEdge.orig : destEdge.dest;
+			grEdge spinnedDest = this->spinEdge(destEdge, fixedNode,
+				upperDestDeg, tabuList);
+			if (this->isEdgeInvalid(spinnedDest)) {
+				tabuDestEdges.add(destEdge);
+				continue;
+			}
+
+			//second edge successfully spinned
+			return true;
+		}
+
+		//failed. Undo
+		this->delEdge(spinnedOrig);
+		this->addEdge(origEdge);
+		tabuOrigEdges.add(origEdge);
+	}
+
+	return false;
+}
+
+template <class T>
 size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
 		size_t rankPos, bool largest) {
 	if (rankPos >= nodes.size())

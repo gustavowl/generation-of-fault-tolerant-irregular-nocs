@@ -213,6 +213,26 @@ bool TabuSearch<T>::spinMaxDegree(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
+bool TabuSearch<T>::doubleSpinMaxDegree(TabuAdjMatrix<bool>* neighbour,
+		grEdge edgeToDel, grEdge edgeToAdd, TabuList<bool>* tabuList,
+		bool aspirationCrit) {
+
+	neighbour->delEdge(edgeToDel);
+	bool success;
+
+	if (aspirationCrit) {
+		TabuList<bool> emptyTabu;
+		success = neighbour->doubleSpinEdge(edgeToAdd, MAX_DEGREE, emptyTabu);
+	}
+	else {
+		ret = neighbour->doubleSpinEdge(edgeToAdd, MAX_DEGREE, tabuList);
+	}
+
+	neighbour->addEdge(edgeToDel);
+	return success;
+}
+
+template <class T>
 bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 		grEdge edgeToDel, TabuList<bool>* tabuList, bool aspirationCrit) {
 
@@ -255,6 +275,11 @@ bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 				}
 				break;
 			case (add2maxdeg):
+				if (!this->doubleSpinEdge(neighbour, edgeToDel, edgeToAdd,
+							tabuList, aspirationCrit)) {
+					tabuEdgesToAdd.add(edgeToAdd);
+					continue;
+				}
 				break;
 		}
 		//default case. Add edge
