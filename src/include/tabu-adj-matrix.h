@@ -157,7 +157,7 @@ public:
 	//edges from `targets`
 	//The number of edges is not altered.
 	//returns false if it is not possible to double spin.
-	bool doubleSpinEdge(grEdge targets, size_t upperDestDeg,
+	drEdge* doubleSpinEdge(grEdge targets, size_t upperDestDeg,
 			TabuList<T>* tabuList);
 
 	//Returns the node with n-th smallest or largest degree.

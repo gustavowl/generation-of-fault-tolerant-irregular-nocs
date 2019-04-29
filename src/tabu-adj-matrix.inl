@@ -462,15 +462,15 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 }
 
 template <class T>
-bool TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets, size_t upperDestDeg,
-		TabuList<T>* tabuList) {
+grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
+		size_t upperDestDeg, TabuList<T>* tabuList) {
 
 	if (targets.orig >= this->numNodes || targets.dest >= this->numNodes)
 		return false;
 
 	TabuList<T> tabuOrigEdges;
 	while (tabuOrigEdges.size() < degrees[targets.orig]) {
-		grEdge origEdge = this->selectRandomEdge(targets.orig, upperDestDeg,
+		grEdge origEdge = this->selectRandomEdge(targets.orig,
 				true, &tabuOrigEdges);
 
 		if (this->isEdgeInvalid(origEdge))
@@ -490,8 +490,8 @@ bool TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets, size_t upperDestDeg,
 		TabuList<T> tabuDestEdges;
 		tabuDestEdges.add(spinnedOrig);
 		while(tabuDestEdges.size() - 1 < degrees[targets.dest]) {
-			grEdge destEdge = this->selectRandomEdge(targets.dest, upperDestDeg,
-				true, &tabuDestEdges);
+			grEdge destEdge = this->selectRandomEdge(targets.dest,
+					true, &tabuDestEdges);
 
 			if (this->isEdgeInvalid(destEdge))
 				break;
@@ -506,6 +506,10 @@ bool TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets, size_t upperDestDeg,
 			}
 
 			//second edge successfully spinned
+			//allocate space to return added edges
+			grEdge* ret = new grEdge[2];
+			ret[0] = spinnedOrig;
+			ret[1] = spinnedDest;
 			return true;
 		}
 
@@ -515,8 +519,8 @@ bool TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets, size_t upperDestDeg,
 		tabuOrigEdges.add(origEdge);
 	}
 
-	return false;
-}
+	//no possible spin found.return false;
+	return NULL;
 
 template <class T>
 size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,

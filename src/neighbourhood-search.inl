@@ -126,8 +126,8 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	//It will have one edge spinned randomly.
 	//The centre of the spin is the node adjacent to
 	//the one with max degree./
-	size_t spinCentre = (neighbour->getNodeDegree(edgeToAdd.orig) ==
-			MAX_DEGREE) ? edgeToAdd.dest : edgeToAdd.orig;
+	size_t maxDegNode = (neigh->sol->getNodeDegree(edgeToAdd.orig) ==
+			MAX_DEGREE) ? edgeToAdd.orig : edgeToAdd.dest;
 
 	neigh->sol->delEdge(neigh->deltdEdge);
 	//select edge incident to spinCentre randomly,
@@ -141,9 +141,12 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 			tabuEdgesToAdd.add(tabuList->at(i));
 	tabuEdgesToAdd.add(neigh->deltdEdge);
 
-	while(tabuSpins.size() < neighbour->getNodeDegree(spinCentre)) {
-		edgeToSpin = neighbour->selectRandomEdge(spinCentre, MAX_DEGREE,
-				true, &tabuSpins);
+	while(tabuSpins.size() < neigh->sol->getNodeDegree(spinCentre)) {
+		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, true,
+				&tabuSpins);
+
+		size_t spinCentre = (neigh->sol->getNodeDegree(edgeToSpin.orig)
+				== MAX_DEGREE) ? edgeToSpin.dest : edgeToSpin.orig;
 
 		spinned = neigh->sol->spinEdge(edgeToSpin, spinCentre,
 					MAX_DEGREE, &tabuEdgesToAdd);
@@ -163,24 +166,31 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 }
 
 bool NeighbourhoodSearch::doubleSpinMaxDegree(
-		TabuAdjMatrix<bool>* neighbour,	boolEdge edgeToDel,
-		boolEdge edgeToAdd, TabuList<bool>* tabuList,
+		Neighbour* neigh, boolEdge edgeToAdd, TabuList<bool>* tabuList,
 		bool aspirationCrit) {
 
-	neighbour->delEdge(edgeToDel);
+	neigh->sol->delEdge(edgeToDel);
 	bool success;
 
-	if (aspirationCrit) {
-		TabuList<bool> emptyTabu;
-		success = neighbour->doubleSpinEdge(edgeToAdd, MAX_DEGREE,
-				emptyTabu);
-	}
-	else {
-		ret = neighbour->doubleSpinEdge(edgeToAdd, MAX_DEGREE, tabuList);
-	}
+	TabuList<bool> augmentedTabu;
+	if (!aspirationCrit)
+		for (size_t i = 0; i < tabuList->size(); i++)
+			augmentedTabu.add(tabuList->at(i));
+	augmentedTabu.add(edgeToDel);
+
+	grEdge* edgesAdded = neigh->sol->doubleSpinEdge(edgeToAdd, MAX_DEGREE,
+			&augmentedTabu);
 
 	neighbour->addEdge(edgeToDel);
-	return success;
+
+	if (edgesAdded == NULL)
+		return false;
+
+	neigh->isTabu = tabuList->isTabu(edgesAdded[0]) ||
+		tabuList->isTabu(edgesAdded[1]);
+	delete[] edgesAdded;
+
+	return true;
 }
 
 bool NeighbourhoodSearch::neighbourhoodStep(

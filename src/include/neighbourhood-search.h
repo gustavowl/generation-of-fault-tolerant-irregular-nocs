@@ -85,6 +85,9 @@ private:
 	static bool spinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
 			TabuList<bool>* tabuList, bool aspirationCrit);
 
+	static bool doubleSpinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
+			TabuList<bool>* tabuList, bool aspirationCrit);
+
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically
 	//changes the position of an edge: deletes a random existing
