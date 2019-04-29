@@ -14,6 +14,12 @@ class NeighbourhoodSearch {
 		add2maxdeg //add edge with 2 degree 4 nodes
 	};
 
+	struct Neighbour {
+		TabuAdjMatrix<bool>* solution;
+		grEdge deletedEdge;
+		bool wasTabuEdgeAdded;
+	}
+
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
 	//2 - Delete an edge incident to 1 node of degree 2;
@@ -102,7 +108,7 @@ class NeighbourhoodSearch {
 	//The neighbour is feasible (within the degree range).
 	//It guarantees that the resulting solution after the movement will
 	//be feasible.
-	static void generateNeighbour(TabuAdjMatrix<bool>* currSol,
+	static Neighbour generateNeighbour(TabuAdjMatrix<bool>* currSol,
 			std::vector<size_t>* tabuList, bool aspirationCrit);
 }
 

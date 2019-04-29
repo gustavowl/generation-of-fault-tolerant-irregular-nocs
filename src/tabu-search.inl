@@ -164,26 +164,6 @@ T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 }
 
 template <class T>
-void TabuSearch<T>::makeMovement(TabuAdjMatrix<bool>* graph, Movement mov,
-		bool undo) {
-	if (undo) {
-		graph->delEdge(mov.edgeToAdd[0], mov.edgeToAdd[1]);
-		graph->addEdge(mov.edgeToDel[0], mov.edgeToDel[1],
-				! graph->getNullEdgeValue());
-		return;
-	}
-	graph->delEdge(mov.edgeToDel[0], mov.edgeToDel[1]);
-	graph->addEdge(mov.edgeToAdd[0], mov.edgeToAdd[1],
-			! graph->getNullEdgeValue());
-}
-
-template <class T>
-void TabuSearch<T>::deallocateMovement(Movement* mov) {
-	delete[] mov->edgeDeltd;
-	delete[] mov->edgeAdded;
-}
-
-template <class T>
 TabuSearch<T>::TabuSearch() {
 	this->taskGraph = NULL;
 }
@@ -243,31 +223,32 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 				tg->getNumNodes()) / 2)
 		return NULL; //this would cause an infinite loop
 
-	TabuAdjMatrix<bool>* currSol = generateInitSol(tg, epsilon);
+	TabuAdjMatrix<bool>* currSol = generateInitSol();
 	if (currSol == NULL)
 		return NULL;
-	T currFit = fitness(tg, currSol, valueLimit);
-	Movement currMov;
+	T currFit = fitness(currSol);
 
-
-	std::vector<Movement> neighboursMov;
+	std::vector<NeighbourhoodSearch::Neighbour> neighbours;
 	std::vector<T> neighboursFit;
 	
-	//stores tabu edges
-	//two edges are add/removed per movement (iteration)
-	std::vector<size_t*> tabuList;
+	//stores tabu edges. Namely, the edge chosen
+	//to be deleted will remain unaddable for some iterations
+	std::vector<grEdge> tabuList;
 	tabuList.reserve(tabuListSize);
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
 
 	//creates a copy
 	//TODO: set num edges (create copy const?)
-	GraphRepresentation<bool>* bestSol = currSol->copy(); 
+	TabuAdjMatrix<bool>* bestSol = currSol->copy(); 
 	T bestFit = currFit;
 	size_t count = 0;
 	size_t totalCount = 0;
+	size_t selectedIndex;
+	NeighbourhoodSearch::Neighbour chosenNeighbour;
 	
 	while(count < stopCriteria) {
+		selectedIndex = 0;
 		currSol->print();
 		std::cout << "Fit: " << currFit << '\n';
 		std::cout << count << '/' << stopCriteria << std::endl;
@@ -278,12 +259,11 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		//2 * numNodes (check generateInitSol())
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
-			neighboursMov.push_back(getRandomNeighbour(currSol,
-						epsilon, &tabuList));
+			neighbours.push_back(NeighbourhoodSearch::generateNeighbour(
+						currSol, tabuList, true));
 			//computes neighbours' fitness
-			makeMovement(currSol, neighboursMov[i]);
-			neighboursFit.push_back(fitness(tg, currSol, valueLimit));
-			makeMovement(currSol, neighboursMov[i], true);
+			neighboursFit.push_back(fitness(tg, neighbours[i].solution,
+					valueLimit));
 		}
 
 		//searches for aspiration criterea
@@ -291,68 +271,60 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		for (size_t i = 0; i < neighboursFit.size(); i++) {
 			if (!aspirationCrit) {
 				if (neighboursFit[i] < bestFit) {
-					currFit = neighboursFit[i];
-					currMov = neighboursMov[i];
+					selectedIndex = i;
 					aspirationCrit = true;
 				}
 				continue;
 			}
 			//there may be multiple aspiration criterea
 			//the best one is chosen
-			if (neighboursFit[i] < currFit) {
-				currFit = neighboursFit[i];
-				currMov = neighboursMov[i];
+			if (neighboursFit[i] < neighboursFit[selectedIndex]) {
+				selectedIndex = i;
 			}
 		}
 		//if aspiration criterea not found,
 		//search for the best solution not in tabuList
 		if (!aspirationCrit) {
-			size_t bestIndex;
 			while (!neighboursMov.empty()) {
-				bestIndex = 0;
-				for (size_t i = 1; i < neighboursMov.size(); i++) {
-					if (neighboursFit[i] < neighboursFit[bestIndex])
-						bestIndex = i;
+				selectedIndex = 0;
+				for (size_t i = 1; i < neighbours.size(); i++) {
+					if (neighboursFit[i] < neighboursFit[selectedIndex])
+						selectedIndex = i;
 				}
 
-				currMov = neighboursMov[bestIndex];
-				currFit = neighboursFit[bestIndex];
-			//	std::cout << currMov.edgeDeltd[0] << ' ' << currMov.edgeDeltd[1] << '\n';
-			//	std::cout << currMov.edgeAdded[0] << ' ' << currMov.edgeAdded[1] << '\n';
-			//	std::cin.ignore();
-
-				if (isInTabuList(&tabuList, currMov)) {
+				if (neighbours[selectedIndex].wasTabuEdgeAdded) {
 					//tabu solution, search for next best neighbour
-					deallocateMovement(&neighboursMov[bestIndex]);
-					neighboursMov.erase(neighboursMov.begin() +
-							bestIndex);
+					deallocateNeighbour(&neighbours[selectedIndex]);
+					neighbours.erase(neighbours.begin() +
+							selectedIndex);
 					neighboursFit.erase(neighboursFit.begin() +
-							bestIndex);
+							selectedIndex);
 					continue;
 				}
 				break; //non tabu best neighbour found
 			}
 
 			//if all are tabu, generate non tabu neighbour
-			if (neighboursMov.empty()) {
-				currMov = getRandomNeighbour(currSol, epsilon,
-						&tabuList, false);
-				//computes neighbours' fitness
-				makeMovement(currSol, currMov);
-				currFit = fitness(tg, currSol, valueLimit);
-				makeMovement(currSol, currMov, true);
+			if (neighbours.empty()) {
+				neighbours.push_back(NeighbourhoodSearch::generateNeighbour(
+							currSol, tabuList, false));
+				neighboursFit.push_back(fitness(tg, neighbours[i].solution,
+					valueLimit));
+				selectedIndex = 0;
 			}
 		}
 
 		//changes to best neighbour solution found
-		makeMovement(currSol, currMov);
-		addToTabuList(&tabuList, &tabuIndex, currMov);
+		delete currSol;
+		currSol = neighbours[selectedIndex].solution;
+		currFit = neighboursFit[selectedIndex];
+		tabuList.add(neighbours[selectedIndex].deletedEdge);
 
-		if (neighboursMov.empty())
-			deallocateMovement(&currMov);
-		for (size_t i = 0; i < neighboursMov.size(); i++)
-			deallocateMovement(&neighboursMov[i]);
-		neighboursMov.clear();
+		//deallocates remaining solutions
+		neighbours.erase(neighbours.begin() + selectedIndex);
+		for (size_t i = 0; i < neighbours.size(); i++)
+			deallocateNeighbour(&neighbours[i]);
+		neighbours.clear();
 		neighboursFit.clear();
 
 		if (currFit < bestFit) {

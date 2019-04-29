@@ -17,17 +17,6 @@ private:
 	//solutions are computed as boolean graphs
 	TabuList<bool> tabuList;
 
-	//movement used for neighbourhood search: edge position
-	//swap. Movements are also added to tabuList (actually,
-	//the edgeDeltd, not the movement itself).
-	//Neighbourhood search basically changes the position
-	//of an edge: Deletes a random existing edge, and adds
-	//another edge randomly.
-	struct Movement{
-		size_t* edgeToDel; //edge to delete
-		size_t* edgeToAdd;
-	};
-
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
 	static void fitToEpsilon(TabuAdjMatrix<bool>* initSol);
@@ -81,12 +70,6 @@ private:
 	//sol: solution
 	//valueLimit: max value for T
 	static T fitness(const TabuAdjMatrix<bool>* sol);
-
-	//makes movement specified by mov.
-	static void makeMovement(TabuAdjMatrix<bool>* graph, Movement mov);
-
-	//called after searching neighbourhood
-	static void deallocateMovement(Movement* mov);
 
 public:
 	TabuSearch();

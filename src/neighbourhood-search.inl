@@ -292,7 +292,7 @@ bool TabuSearch<T>::neighbourhoodStep(TabuAdjMatrix<bool>* neighbour,
 }
 
 template <class T>
-void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
+Neighbour TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
 		TabuList<bool>* tabuList, bool aspirationCrit) {
 	//creates a copy of the current solution
 	TabuAdjMatrix<bool>* neighbour = currSol->copy();
@@ -316,5 +316,8 @@ void TabuSearch<T>::generateNeighbour(const TabuAdjMatrix<bool>* currSol,
 		edgeToDel = neighbour->selectRandomEdge(&delTabuList);
 	}
 
-	return neighbour;
+	return Neighbour {.solution=neighbour,
+		.deletedEdge=edgeToDel,
+		.wasTabuEdgeAdded=true
+	};
 }
