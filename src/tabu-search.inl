@@ -233,8 +233,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	
 	//stores tabu edges. Namely, the edge chosen
 	//to be deleted will remain unaddable for some iterations
-	std::vector<grEdge> tabuList;
-	tabuList.reserve(tabuListSize);
+	TabuList<bool> tabuList (tabuListSize);
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
 
@@ -245,7 +244,6 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	size_t count = 0;
 	size_t totalCount = 0;
 	size_t selectedIndex;
-	NeighbourhoodSearch::Neighbour chosenNeighbour;
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
@@ -262,8 +260,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 			neighbours.push_back(NeighbourhoodSearch::generateNeighbour(
 						currSol, tabuList, true));
 			//computes neighbours' fitness
-			neighboursFit.push_back(fitness(tg, neighbours[i].solution,
-					valueLimit));
+			neighboursFit.push_back(fitness(tg, neighbours[i].sol,
+					fitnessLimit));
 		}
 
 		//searches for aspiration criterea
@@ -285,14 +283,14 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		//if aspiration criterea not found,
 		//search for the best solution not in tabuList
 		if (!aspirationCrit) {
-			while (!neighboursMov.empty()) {
+			while (!neighbours.empty()) {
 				selectedIndex = 0;
 				for (size_t i = 1; i < neighbours.size(); i++) {
 					if (neighboursFit[i] < neighboursFit[selectedIndex])
 						selectedIndex = i;
 				}
 
-				if (neighbours[selectedIndex].wasTabuEdgeAdded) {
+				if (neighbours[selectedIndex].isTabu) {
 					//tabu solution, search for next best neighbour
 					deallocateNeighbour(&neighbours[selectedIndex]);
 					neighbours.erase(neighbours.begin() +
@@ -306,19 +304,20 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 			//if all are tabu, generate non tabu neighbour
 			if (neighbours.empty()) {
-				neighbours.push_back(NeighbourhoodSearch::generateNeighbour(
-							currSol, tabuList, false));
-				neighboursFit.push_back(fitness(tg, neighbours[i].solution,
-					valueLimit));
+				neighbours.push_back(
+						NeighbourhoodSearch::generateNeighbour(currSol,
+							tabuList, false));
+				neighboursFit.push_back(fitness(tg, neighbours[i].sol,
+					fitnessLimit));
 				selectedIndex = 0;
 			}
 		}
 
 		//changes to best neighbour solution found
 		delete currSol;
-		currSol = neighbours[selectedIndex].solution;
+		currSol = neighbours[selectedIndex].sol;
 		currFit = neighboursFit[selectedIndex];
-		tabuList.add(neighbours[selectedIndex].deletedEdge);
+		tabuList.add(neighbours[selectedIndex].deltdEdge);
 
 		//deallocates remaining solutions
 		neighbours.erase(neighbours.begin() + selectedIndex);
