@@ -3,6 +3,7 @@
 
 #include "graph-representation.h"
 #include "tabu-list.h"
+#include "graph-converter.h"
 
 //class used by the Tabu Search.
 //It stores the graph as a lower triangular adjacency matrix.
@@ -64,7 +65,7 @@ public:
 
 	virtual size_t getNodeDegree(size_t node) const;
 
-	virtual GraphRepresentation<T>* copy() const;
+	virtual TabuAdjMatrix<T>* copy() const;
 
 	virtual bool areEdgesEqual(grEdge edge1, grEdge edge2);
 

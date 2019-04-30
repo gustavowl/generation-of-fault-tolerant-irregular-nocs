@@ -181,7 +181,7 @@ size_t TabuAdjMatrix<T>::getNodeDegree(size_t node) const {
 }
 
 template <class T>
-GraphRepresentation<T>* TabuAdjMatrix<T>::copy() const {
+TabuAdjMatrix<T>* TabuAdjMatrix<T>::copy() const {
 	//calls constructor to reserve mem space and initial instantiation
 	TabuAdjMatrix<T>* ret = new TabuAdjMatrix(this->numNodes,
 			this->nullEdgeValue); //TODO (std::nothrow) and check
