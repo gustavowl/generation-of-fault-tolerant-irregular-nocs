@@ -3,10 +3,32 @@
 
 #include "tabu-adj-matrix.h"
 #include "tabu-list.h"
+#include "graph-converter.h"
 #define boolEdge typename GraphRepresentation<bool>::Edge
 
 class NeighbourhoodSearch {
 public:
+	//this enum is used for neighbourhood search.
+	enum NeighbourStatus { del2mindeg, //deleted a edge with 2 degree 2 nodes
+		del1mindeg, //deleted a edge with 1 degree 2 node
+		dflt, // (default) delete edge with degree >2 nodes or
+		//		add edge with degree <4 nodes
+		add1maxdeg, //add edge with 1 degree 4 node
+		add2maxdeg //add edge with 2 degree 4 nodes
+	};
+
+	struct Neighbour {
+		TabuAdjMatrix<bool>* sol; //solution
+		boolEdge deltdEdge; //deleted edge
+		bool isTabu; //was tabu edge added
+	};
+
+	static void deallocateNeighbour(Neighbour* neigh);
+
+	static void setMinDegree(size_t minDegree);
+
+	static void setMaxDegree(size_t maxDegree);
+
 	//it changes the neighbour graph to a feasible solution if needed.
 	//This function is responsible for mantaining the solutions feasible.
 	//There are 5 scenarios possible.
@@ -40,26 +62,11 @@ public:
 	//It guarantees that the resulting solution after the movement will
 	//be feasible.
 	static Neighbour generateNeighbour(TabuAdjMatrix<bool>* currSol,
-			std::vector<size_t>* tabuList, bool aspirationCrit);
-
-	//this enum is used for neighbourhood search.
-	enum NeighbourStatus { del2mindeg, //deleted a edge with 2 degree 2 nodes
-		del1mindeg, //deleted a edge with 1 degree 2 node
-		dflt, // (default) delete edge with degree >2 nodes or
-		//		add edge with degree <4 nodes
-		add1maxdeg, //add edge with 1 degree 4 node
-		add2maxdeg //add edge with 2 degree 4 nodes
-	};
-
-	struct Neighbour {
-		TabuAdjMatrix<bool>* sol; //solution
-		boolEdge deltdEdge; //deleted edge
-		bool isTabu; //was tabu edge added
-	}
-
-	static void deallocateNeighbour(Neighbour* neigh);
+			TabuList<bool>* tabuList, bool aspirationCrit);
 
 private:
+	static size_t MIN_DEGREE, MAX_DEGREE;
+
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
 	//2 - Delete an edge incident to 1 node of degree 2;
@@ -113,6 +120,6 @@ private:
 			Neighbour* neigh, TabuList<bool>* tabuList,
 			bool aspirationCrit=true);
 	
-}
+};
 
 #endif

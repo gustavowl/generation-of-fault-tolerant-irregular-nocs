@@ -12,6 +12,10 @@ TabuList<T>::TabuList(size_t maxSize) {
 }
 
 template <class T>
+TabuList<T>::~TabuList() {
+}
+
+template <class T>
 bool TabuList<T>::isTabu(grEdge edge) {
 	//searches tabuList
 	for (size_t i = 0; i < tabuList.size(); i++) {

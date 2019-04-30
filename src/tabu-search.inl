@@ -181,6 +181,8 @@ void TabuSearch<T>::setDegreeLimits(size_t minDegree, size_t maxDegree) {
 
 	this->minDegree = minDegree;
 	this->maxDegree = maxDegree;
+	NeighbourhoodSearch::setMinDegree(minDegree);
+	NeighbourhoodSearch::setMaxDegree(maxDegree);
 }
 
 template <class T>

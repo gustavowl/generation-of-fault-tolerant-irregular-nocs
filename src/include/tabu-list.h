@@ -6,9 +6,12 @@
 
 template <class T>
 class TabuList {
+
+private:
 	std::vector<grEdge> tabuList;
 	size_t index; //used for simulating circular queue
 
+public:
 	//TODO: set capacity
 	TabuList();
 	TabuList(size_t maxSize);

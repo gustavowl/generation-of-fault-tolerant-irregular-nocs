@@ -271,13 +271,13 @@ template <class T>
 grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 		TabuList<T>* tabuList, bool existent) {
 	size_t maxDegree = degrees[0];
-	for (size_t i = 1; i < this->NumNodes; i++) {
+	for (size_t i = 1; i < this->numNodes; i++) {
 		if (degrees[i] > maxDegree)
 			maxDegree = degrees[i];
 	}
 	
 	return this->selectRandomEdge(incidentNode, maxDegree + 1,
-			existent, tabuList);
+			tabuList, existent);
 }
 
 template <class T>
@@ -466,7 +466,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 		size_t upperDestDeg, TabuList<T>* tabuList) {
 
 	if (targets.orig >= this->numNodes || targets.dest >= this->numNodes)
-		return false;
+		return NULL;
 
 	TabuList<T> tabuOrigEdges;
 	while (tabuOrigEdges.size() < degrees[targets.orig]) {
@@ -510,7 +510,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 			grEdge* ret = new grEdge[2];
 			ret[0] = spinnedOrig;
 			ret[1] = spinnedDest;
-			return true;
+			return ret;
 		}
 
 		//failed. Undo
