@@ -23,11 +23,12 @@ public:
 		bool isTabu; //was tabu edge added
 	};
 
-	static void deallocateNeighbour(Neighbour* neigh);
+	NeighbourhoodSearch();
+	~NeighbourhoodSearch();
 
-	static void setMinDegree(size_t minDegree);
+	void deallocateNeighbour(Neighbour* neigh);
 
-	static void setMaxDegree(size_t maxDegree);
+	void setDegreeLimits(size_t minDegree, size_t maxDegree);
 
 	//it changes the neighbour graph to a feasible solution if needed.
 	//This function is responsible for mantaining the solutions feasible.
@@ -61,11 +62,13 @@ public:
 	//The neighbour is feasible (within the degree range).
 	//It guarantees that the resulting solution after the movement will
 	//be feasible.
-	static Neighbour generateNeighbour(TabuAdjMatrix<bool>* currSol,
+	Neighbour generateNeighbour(TabuAdjMatrix<bool>* currSol,
 			TabuList<bool>* tabuList, bool aspirationCrit);
 
 private:
-	static size_t MIN_DEGREE, MAX_DEGREE;
+	size_t minDegree, maxDegree;
+	TabuList<bool>* tabuList;
+	bool aspirationCrit;
 
 	//There are three possible scenarios when deleting edges (add=false):
 	//1 - Delete an edge incident to 2 nodes of degree 2;
@@ -77,22 +80,20 @@ private:
 	//3 - otherwise
 	//The return type is one of these six status, listed in the
 	//NeighbourStatus enum.
-	static NeighbourStatus predictDelActionStatus(
+	NeighbourStatus predictDelActionStatus(
 			Neighbour* neigh);
 
-	static NeighbourStatus predictAddActionStatus(
+	NeighbourStatus predictAddActionStatus(
 			Neighbour* neigh, boolEdge edgeToAdd);
 
-	static bool swap(Neighbour* neigh, TabuList<bool>* tabuList,
+	bool swap(Neighbour* neigh, TabuList<bool>* tabuList,
 			bool aspirationCrit);
 
-	static bool spinMinDegree(Neighbour* neigh, TabuList<bool>* tabuList,
-			bool aspirationCrit);
+	bool spinMinDegree(Neighbour* neigh);
 
-	static bool spinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
-			TabuList<bool>* tabuList, bool aspirationCrit);
+	bool spinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd);
 
-	static bool doubleSpinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
+	bool doubleSpinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
 			TabuList<bool>* tabuList, bool aspirationCrit);
 
 	//returns a movement for a random neighbour according to
@@ -116,7 +117,7 @@ private:
 	//used if aspirationCrit is set to false.
 	//aspirationCrit: aspiration criteria. If it is set to false, then
 	//it will return a movement not in the tabuList.
-	static bool neighbourhoodStep(
+	bool neighbourhoodStep(
 			Neighbour* neigh, TabuList<bool>* tabuList,
 			bool aspirationCrit=true);
 	

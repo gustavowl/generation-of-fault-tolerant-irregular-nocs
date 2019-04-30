@@ -182,8 +182,7 @@ void TabuSearch<T>::setDegreeLimits(size_t minDegree, size_t maxDegree) {
 
 	this->minDegree = minDegree;
 	this->maxDegree = maxDegree;
-	NeighbourhoodSearch::setMinDegree(minDegree);
-	NeighbourhoodSearch::setMaxDegree(maxDegree);
+	neighSearch.setDegreeLimits(minDegree, maxDegree);
 }
 
 template <class T>
@@ -260,7 +259,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		//2 * numNodes (check generateInitSol())
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
-			neighbours.push_back(NeighbourhoodSearch::generateNeighbour(
+			neighbours.push_back(neighSearch.generateNeighbour(
 						currSol, tabuList, true));
 			//computes neighbours' fitness
 			neighboursFit.push_back(fitness(tg, neighbours[i].sol,
@@ -295,7 +294,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 				if (neighbours[selectedIndex].isTabu) {
 					//tabu solution, search for next best neighbour
-					deallocateNeighbour(&neighbours[selectedIndex]);
+					neighSearch.deallocateNeighbour(&neighbours[selectedIndex]);
 					neighbours.erase(neighbours.begin() +
 							selectedIndex);
 					neighboursFit.erase(neighboursFit.begin() +
@@ -308,7 +307,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 			//if all are tabu, generate non tabu neighbour
 			if (neighbours.empty()) {
 				neighbours.push_back(
-						NeighbourhoodSearch::generateNeighbour(currSol,
+						neighSearch.generateNeighbour(currSol,
 							tabuList, false));
 				neighboursFit.push_back(fitness(tg, neighbours[i].sol,
 					fitnessLimit));
@@ -325,7 +324,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		//deallocates remaining solutions
 		neighbours.erase(neighbours.begin() + selectedIndex);
 		for (size_t i = 0; i < neighbours.size(); i++)
-			deallocateNeighbour(&neighbours[i]);
+			neighSearch.deallocateNeighbour(&neighbours[i]);
 		neighbours.clear();
 		neighboursFit.clear();
 

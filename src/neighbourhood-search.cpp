@@ -50,8 +50,7 @@ NeighbourhoodSearch::predictAddActionStatus(
 	return status;
 }
 
-bool NeighbourhoodSearch::swap(Neighbour* neigh, TabuList<bool>* tabuList,
-		bool aspirationCrit) {
+bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 
 	TabuList<bool> tabuSlctdEdges;
 	if (!aspirationCrit) { //populate tabuList
@@ -97,8 +96,7 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh, TabuList<bool>* tabuList,
 	//POINT OF kNOw RETURN
 }
 
-bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh,
-		TabuList<bool>* tabuList, bool aspirationCrit) {
+bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh) {
 	//selects node to be fixed (remain unchanged in the spinning process)
 	boolEdge edgeToDel = neigh->deltdEdge;
 	size_t fixedNode = (neigh->sol->getNodeDegree(edgeToDel.orig) ==
@@ -122,8 +120,7 @@ bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh,
 }
 
 bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
-		boolEdge edgeToAdd, TabuList<bool>* tabuList,
-		bool aspirationCrit) {
+		boolEdge edgeToAdd) {
 	//select node with max degree.
 	//It will have one edge spinned randomly.
 	//The centre of the spin is the node adjacent to
@@ -167,9 +164,8 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	return false;
 }
 
-bool NeighbourhoodSearch::doubleSpinMaxDegree(
-		Neighbour* neigh, boolEdge edgeToAdd, TabuList<bool>* tabuList,
-		bool aspirationCrit) {
+bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
+		boolEdge edgeToAdd) {
 
 	neigh->sol->delEdge(neigh->deltdEdge);
 
@@ -263,9 +259,15 @@ typename NeighbourhoodSearch::Neighbour
 NeighbourhoodSearch::generateNeighbour(
 		TabuAdjMatrix<bool>* currSol, TabuList<bool>* tabuList,
 		bool aspirationCrit) {
+	//sets the environment
 	//creates a copy of the current solution
 	TabuAdjMatrix<bool>* solCopy = new TabuAdjMatrix<bool>(
 			currSol->getNumNodes(), currSol->getNullEdgeValue());
+	GraphConverter::convert(currSol, solCopy);
+	//tabuList
+	this->tabuList = tabuList;
+	this->aspirationCrit = aspirationCrit;
+
 	//creates tabuList of edges to be deleted (edges that cannot be
 	//removed without violating the aspiration criteria
 	TabuList<bool> delTabuList;
@@ -292,7 +294,20 @@ NeighbourhoodSearch::generateNeighbour(
 		neigh.deltdEdge = edgeToDel;
 	}
 
+	this->tabuList = NULL;
+
 	return neigh;
+}
+
+NeighbourhoodSearch::NeighbourhoodSearch() {
+	minDegree = maxDegree = 0;
+	tabuList = NULL;
+	aspirationCrit = false;
+}
+
+NeighbourhoodSearch::~NeighbourhoodSearch() {
+	if (tabuList != NULL)
+		delete tabuList;
 }
 
 void NeighbourhoodSearch::deallocateNeighbour(Neighbour* neigh) {
@@ -300,10 +315,10 @@ void NeighbourhoodSearch::deallocateNeighbour(Neighbour* neigh) {
 	neigh->sol = NULL;
 }
 
-void NeighbourhoodSearch::setMinDegree(size_t minDegree) {
-	MIN_DEGREE = minDegree;
-}
+void NeighbourhoodSearch::setDegreeLimits(size_t minDegree, size_t maxDegree) {
+	if (maxDegree < minDegree)
+		return;
 
-void NeighbourhoodSearch::setMaxDegree(size_t maxDegree) {
-	MAX_DEGREE = maxDegree;
+	this->minDegree = minDegree;
+	this->maxDegree = maxDegree;
 }

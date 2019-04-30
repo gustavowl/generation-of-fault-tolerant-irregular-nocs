@@ -6,6 +6,7 @@
 #include "tabu-list.h"
 #include "tabu-adj-matrix.h"
 #include "dijkstra.h"
+#include "neighbourhood-search"
 #include <iostream> //TODO: DELETEME (DEBUG)
 
 template <class T>
@@ -16,6 +17,7 @@ private:
 	GraphRepresentation<T>* taskGraph;
 	//solutions are computed as boolean graphs
 	TabuList<bool> tabuList;
+	NeighbourhoodSearch neighSearch;
 
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
