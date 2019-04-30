@@ -88,7 +88,7 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 			edgeToAdd = neigh->sol->selectRandomEdge(&tabuSlctdEdges);
 			continue;
 		}
-		//check if edges swapp are tabu
+		//check if edges swapped are tabu
 		neigh->isTabu = tabuList->isTabu(edgeToSwap1) ||
 			tabuList->isTabu(edgeToSwap2);
 		return true;

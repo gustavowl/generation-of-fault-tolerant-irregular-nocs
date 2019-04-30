@@ -322,6 +322,7 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 
 			if (count == randomVal) {
 				e.value = this->getEdgeValue(e);
+				this->nodeIdSwap(&e);
 				return e;
 			}
 
@@ -388,12 +389,10 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
 		//valid swap. Check if edges are in tabuList.
 		//Otherwise, remove edges, choose weights randomly,
 		//and add new swapped edges.
-		
-		if (tabuList->isTabu(*edge1) || tabuList->isTabu(*edge2))
+		this->nodeIdSwap(&swapEdge1); //standard representation
+		this->nodeIdSwap(&swapEdge2); //standard representation
+		if (tabuList->isTabu(swapEdge1) || tabuList->isTabu(swapEdge2))
 			continue;
-
-		this->delEdge(*edge1);
-		this->delEdge(*edge2);
 
 		if (rng() % 2 == 0) {
 			swapEdge1.value = getEdgeValue(*edge1); 
@@ -403,6 +402,9 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
 			swapEdge1.value = getEdgeValue(*edge2); 
 			swapEdge2.value = getEdgeValue(*edge1);
 		}
+
+		this->delEdge(*edge1);
+		this->delEdge(*edge2);
 
 		this->addEdge(swapEdge1);
 		this->addEdge(swapEdge2);
