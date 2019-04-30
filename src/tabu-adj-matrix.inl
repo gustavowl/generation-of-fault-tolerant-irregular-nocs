@@ -532,17 +532,19 @@ size_t TabuAdjMatrix<T>::getNodeWithNthDegreeFromList(
 	size_t node; //selected node
 	size_t degree;
 
-	for (; rankPos >= 0; rankPos--) {
+	rankPos++;
+
+	for (; rankPos > 0; rankPos--) {
 		size_t index = 0; //index of selected node in nodes
 		node = nodes[index];
-		degree = this->getNodeDegree(node);
+		degree = degrees[node];
 
 		for (size_t i = 1; i < nodes.size(); i++) {
-			if ( (largest && this->getNodeDegree(nodes[i]) > degree) ||
-				   (!largest && this->getNodeDegree(nodes[i]) < degree) ) {
+			if ( (largest && degrees[nodes[i]] > degree) ||
+				   (!largest && degrees[nodes[i]] < degree) ) {
 				index = i;
 				node = nodes[index];
-				degree = this->getNodeDegree(node);
+				degree = degrees[node];
 			}	
 		}
 		//removes node to search for other positions

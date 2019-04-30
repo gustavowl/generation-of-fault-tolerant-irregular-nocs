@@ -85,7 +85,7 @@ public:
 	void setDegreeLimits(size_t minDegree, size_t maxDegree);
 
 	//copies the taskGraph
-	void setTaskGraph(const GraphRepresentation<T>* taskGraph);
+	void setTaskGraph(const GraphRepresentation<T>* tg);
 
 	//defines the size of the tabu list. TODO: recommend a size
 	void setTabuListSize(size_t tabuListSize);

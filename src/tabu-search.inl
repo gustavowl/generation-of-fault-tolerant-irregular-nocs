@@ -192,11 +192,11 @@ void TabuSearch<T>::setDegreeLimits(size_t minDegree, size_t maxDegree) {
 }
 
 template <class T>
-void TabuSearch<T>::setTaskGraph(const GraphRepresentation<T>* taksGraph) {
+void TabuSearch<T>::setTaskGraph(const GraphRepresentation<T>* tg) {
 	if (this->taskGraph != NULL)
 		delete this->taskGraph;
 
-	this->taskGraph = taskGraph->copy();
+	this->taskGraph = tg->copy();
 }
 
 template <class T>
