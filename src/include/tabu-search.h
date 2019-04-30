@@ -16,7 +16,7 @@ private:
 	T fitnessLimit;
 	GraphRepresentation<T>* taskGraph;
 	//solutions are computed as boolean graphs
-	TabuList<bool> tabuList;
+	TabuList<bool>* tabuList;
 	NeighbourhoodSearch neighSearch;
 
 	//removes/adds edges until |E| = epsilon.
@@ -72,6 +72,10 @@ private:
 	//sol: solution
 	//valueLimit: max value for T
 	T fitness(const TabuAdjMatrix<bool>* sol);
+
+	//TODO: DELETEME used for debugging:
+	//anchor for gdb
+	void assert(bool value);
 
 public:
 	TabuSearch();

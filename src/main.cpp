@@ -48,11 +48,16 @@ int main(int argc, char *argv[]) {
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
 		std::endl;
 
-	/*std::cout << "Begins Tabu Search..." << std::endl;
-	TabuAdjMatrix<size_t>* res = TabuSearch<size_t>::start(
-			gr, std::numeric_limits<size_t>::max(),
-			std::stoi(argv[4]), std::stoi(argv[5]),
-			std::stoi(argv[3]));
+	std::cout << "Begins Tabu Search..." << std::endl;
+	TabuSearch<size_t> ts;
+	ts.setTaskGraph(gr);
+	ts.setEpsilon(std::stoi(argv[3]));
+	ts.setTabuListSize(std::stoi(argv[4]));
+	ts.setStopCriteria(std::stoi(argv[5]));
+	ts.setFitnessLimit(std::numeric_limits<size_t>::max());
+	ts.setDegreeLimits(2, 4);
+
+	TabuAdjMatrix<size_t>* res = ts.start();
 
 	delete gr;
 
@@ -62,7 +67,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	delete res;*/
+	delete res;
 
 	return 0;
 }

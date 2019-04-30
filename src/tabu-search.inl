@@ -8,7 +8,7 @@ void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 		frstIndex = initSol->getNodeWithNthDegree(0, true);	
 		scndIndex = initSol->getNodeWithNthDegree(1, true);	
 
-		initSol->delEdge( grEdge{
+		initSol->delEdge( boolEdge{
 				.orig=frstIndex, .dest=scndIndex} );
 	}
 
@@ -18,7 +18,7 @@ void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 		frstIndex = initSol->getNodeWithNthDegree(0, false);	
 		scndIndex = initSol->getNodeWithNthDegree(1, false);	
 
-		initSol->delEdge( grEdge{
+		initSol->delEdge( boolEdge{
 				.orig=frstIndex, .dest=scndIndex,
 				.value = !initSol->getNullEdgeValue()} );
 	}
@@ -39,7 +39,7 @@ bool TabuSearch<T>::isFeasible(TabuAdjMatrix<bool>* sol) {
 template <class T>
 void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 	//sets initial variables
-	grEdge edge;
+	boolEdge edge;
 	edge.value = initSol->getNullEdgeValue();
 
 	//while (not feasible)
@@ -116,7 +116,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	}
 
 	TabuAdjMatrix<bool>* initSol = new TabuAdjMatrix<bool>(
-			taskGraph->getNumNodes(), true, true, taskGraph->getNullEdgeValue());
+			taskGraph->getNumNodes(), taskGraph->getNullEdgeValue());
 	//unable to generate graph
 	if (initSol->getNumNodes() != taskGraph->getNumNodes())
 		return NULL;
@@ -138,18 +138,21 @@ T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 	T sum;
 	bool firstFound = false;
 
+	grEdge edge;
 	//Computes QAP for each edge in the task graph
-	for (size_t i = 0; i < taskGraph->getNumNodes(); i++) {
-		for (size_t j = 0; j < taskGraph->getNumNodes(); j++) {
-			if (taskGraph->edgeExists(i, j)) {
+	for (edge.orig = 0; edge.orig < taskGraph->getNumNodes();
+			edge.orig++) {
+		for (edge.dest = 0; edge.dest < taskGraph->getNumNodes();
+				edge.dest++) {
+			if (taskGraph->edgeExists(edge)) {
 
 				size_t numHops = Dijkstra<bool>::dijkstra(
-						sol, i, j, true, false).hops;
+						sol, edge.orig, edge.dest, true, false).hops;
 
 				if (numHops == HOP_INF)
 					return fitnessLimit;
 
-				T qap = numHops * taskGraph->getEdgeValue(i, j);
+				T qap = numHops * taskGraph->getEdgeValue(edge);
 
 				if (firstFound) {
 					sum += qap;
@@ -167,12 +170,15 @@ T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 template <class T>
 TabuSearch<T>::TabuSearch() {
 	this->taskGraph = NULL;
+	this->tabuList = NULL;
 }
 
 template <class T>
 TabuSearch<T>::~TabuSearch() {
 	if (this->taskGraph != NULL)
 		delete this->taskGraph;
+	if (this->tabuList != NULL)
+		delete this->tabuList;
 }
 
 template <class T>
@@ -195,7 +201,10 @@ void TabuSearch<T>::setTaskGraph(const GraphRepresentation<T>* taksGraph) {
 
 template <class T>
 void TabuSearch<T>::setTabuListSize(size_t tabuListSize) {
-	this->tabuList = TabuList<T>::TabuList(tabuListSize, true);
+	if (this->tabuList != NULL)
+		delete tabuList;
+
+	this->tabuList = new TabuList<bool>(tabuListSize, true);
 }
 
 template <class T>
@@ -221,8 +230,9 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
 	//This result can be obtained through arithmetic progression
-	if (tabuList.size() >= (taskGraph->getNumNodes() * taskGraph->getNumNodes() -
-				taskGraph->getNumNodes()) / 2)
+	if ( tabuList->size() >= (taskGraph->getNumNodes() *
+				taskGraph->getNumNodes() -
+				taskGraph->getNumNodes())/2 )
 		return NULL; //this would cause an infinite loop
 
 	TabuAdjMatrix<bool>* currSol = generateInitSol();
@@ -232,9 +242,6 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 	std::vector<NeighbourhoodSearch::Neighbour> neighbours;
 	std::vector<T> neighboursFit;
-	
-	//TODO: assert that tabuList.size() == 0
-	size_t tabuIndex = 0; //used to simulate circular queue
 
 	//creates a copy
 	//TODO: set num edges (create copy const?)
@@ -257,10 +264,10 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
 			neighbours.push_back(neighSearch.generateNeighbour(
-						currSol, &tabuList, true));
+						currSol, tabuList, true));
+			assert(neighbours[i].sol != NULL);
 			//computes neighbours' fitness
-			neighboursFit.push_back(fitness(taskGraph, neighbours[i].sol,
-					fitnessLimit));
+			neighboursFit.push_back(fitness(neighbours[i].sol));
 		}
 
 		//searches for aspiration criterea
@@ -291,7 +298,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 				if (neighbours[selectedIndex].isTabu) {
 					//tabu solution, search for next best neighbour
-					neighSearch.deallocateNeighbour(&neighbours[selectedIndex]);
+					neighSearch.deallocateNeighbour(
+							&neighbours[selectedIndex]);
 					neighbours.erase(neighbours.begin() +
 							selectedIndex);
 					neighboursFit.erase(neighboursFit.begin() +
@@ -305,10 +313,11 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 			if (neighbours.empty()) {
 				neighbours.push_back(
 						neighSearch.generateNeighbour(currSol,
-							&tabuList, false));
-				neighboursFit.push_back(fitness(taskGraph, neighbours[0].sol,
-					fitnessLimit));
+							tabuList, false));
+				neighboursFit.push_back(fitness(neighbours[0].sol));
 				selectedIndex = 0;
+				assert(neighbours[0].sol != NULL);
+				assert(!neighbours[0].isTabu);
 			}
 		}
 
@@ -316,7 +325,9 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		delete currSol;
 		currSol = neighbours[selectedIndex].sol;
 		currFit = neighboursFit[selectedIndex];
-		tabuList.add(neighbours[selectedIndex].deltdEdge);
+		tabuList->add(neighbours[selectedIndex].deltdEdge);
+		if (!aspirationCrit)
+			assert(!neighbours[selectedIndex].isTabu);
 
 		//deallocates remaining solutions
 		neighbours.erase(neighbours.begin() + selectedIndex);
@@ -348,4 +359,24 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 	//TODO: return solution set
 	return ret;
+}
+
+template <class T>
+void TabuSearch<T>::assert(bool value) {
+	if (value)
+		return;
+	//print status
+	std::cout << "**************************************" <<
+		"\n*********ASSERT EXCEPTION*************\n" <<
+		"**************************************\n";
+	std::cout << "TABU LIST\n";
+	boolEdge edge;
+	for (size_t i = 0; i < tabuList->size(); i++) {
+		edge = tabuList->at(i);
+		std::cout << edge.orig << " to " << edge.dest <<
+			". Weight: " << edge.value << "\n";
+	}
+	std::cout << "**************************************" <<
+		"\n*********ASSERT EXCEPTION*************\n" <<
+		"**************************************" << std::endl;
 }
