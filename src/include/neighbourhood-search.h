@@ -19,8 +19,9 @@ public:
 
 	struct Neighbour {
 		TabuAdjMatrix<bool>* sol; //solution
-		boolEdge deltdEdge; //deleted edge
-		bool isTabu; //was tabu edge added
+		//deleted edges to be added in tabuList
+		std::vector<boolEdge> deltdEdges;
+		bool isTabu; //is any of the added edge tabu?
 	};
 
 	NeighbourhoodSearch();

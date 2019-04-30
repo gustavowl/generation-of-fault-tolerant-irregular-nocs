@@ -325,7 +325,11 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		delete currSol;
 		currSol = neighbours[selectedIndex].sol;
 		currFit = neighboursFit[selectedIndex];
-		tabuList->add(neighbours[selectedIndex].deltdEdge);
+		for (size_t i = 0; i <
+				neighbours[selectedIndex].deltdEdges.size();
+				i++) {
+			tabuList->add(neighbours[selectedIndex].deltdEdges[i]);
+		}
 		if (!aspirationCrit)
 			assert(!neighbours[selectedIndex].isTabu);
 
