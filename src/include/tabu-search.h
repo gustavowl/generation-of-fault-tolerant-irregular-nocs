@@ -6,7 +6,7 @@
 #include "tabu-list.h"
 #include "tabu-adj-matrix.h"
 #include "dijkstra.h"
-#include "neighbourhood-search"
+#include "neighbourhood-search.h"
 #include <iostream> //TODO: DELETEME (DEBUG)
 
 template <class T>
@@ -21,13 +21,13 @@ private:
 
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
-	static void fitToEpsilon(TabuAdjMatrix<bool>* initSol);
+	void fitToEpsilon(TabuAdjMatrix<bool>* initSol);
 
 	//returns whether initSol is feasible or not.
 	//A solution is feasible if the degree of all of its nodes
 	//is in the range [minDegree, maxDegree].
 	//called by generateInitSol, and addEdgeDel2Deg2().
-	static bool isFeasible(TabuAdjMatrix<bool>* sol);
+	bool isFeasible(TabuAdjMatrix<bool>* sol);
 
 	//swaps the edges until degree(node) is in [2, 4] range for
 	//all nodes. The algorithm is divided in 3 main steps and works
@@ -50,13 +50,13 @@ private:
 	//				3.2.2 - add target node to a TabuList
 	//				3.2.3 - go back to step 2.3
 	//called by generateInitSol.
-	static void makeFeasible(TabuAdjMatrix<bool>* initSol);
+	void makeFeasible(TabuAdjMatrix<bool>* initSol);
 
 	//generates initial solution based on the task graph.
 	//returns NULL if a valid solution cannot be generated
 	//i.e. if epsilon is too restrictive or not restrictive
 	//enough for \-/ node, degree(node) in [2, 4].
-	static TabuAdjMatrix<bool>* generateInitSol();
+	TabuAdjMatrix<bool>* generateInitSol();
 
 	//Computes QAP. The tg nodes are mapped to sol nodes.
 	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)
@@ -71,7 +71,7 @@ private:
 	//tg: task graph
 	//sol: solution
 	//valueLimit: max value for T
-	static T fitness(const TabuAdjMatrix<bool>* sol);
+	T fitness(const TabuAdjMatrix<bool>* sol);
 
 public:
 	TabuSearch();

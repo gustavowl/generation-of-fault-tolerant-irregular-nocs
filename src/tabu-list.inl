@@ -1,5 +1,3 @@
-#include "include/tabu-list.h"
-
 template <class T>
 TabuList<T>::TabuList() {
 	index = 0;
@@ -31,19 +29,15 @@ bool TabuList<T>::isTabu(grEdge edge) {
 
 template <class T>
 void TabuList<T>::add(grEdge edge) {
-	if (!this->cyclic) {
-		tabuList->push_back(edge);
-		return;
-	}
 
-	if (tabuList->size() == tabuList->capacity()) {
+	if (this->cyclic && tabuList.size() == tabuList.capacity()) {
 		//cycle
 		tabuList[index] = edge;
 		index = (index + 1) % tabuList.size();
 		return;
 	}
 	//tabuList is not full, no need to cycle
-	tabuList->push_back(newEdge);
+	tabuList.push_back(edge);
 }
 
 template <class T>

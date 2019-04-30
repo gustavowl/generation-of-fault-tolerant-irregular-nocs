@@ -86,15 +86,13 @@ private:
 	NeighbourStatus predictAddActionStatus(
 			Neighbour* neigh, boolEdge edgeToAdd);
 
-	bool swap(Neighbour* neigh, TabuList<bool>* tabuList,
-			bool aspirationCrit);
+	bool swap(Neighbour* neigh);
 
 	bool spinMinDegree(Neighbour* neigh);
 
 	bool spinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd);
 
-	bool doubleSpinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd,
-			TabuList<bool>* tabuList, bool aspirationCrit);
+	bool doubleSpinMaxDegree(Neighbour* neigh, boolEdge edgeToAdd);
 
 	//returns a movement for a random neighbour according to
 	//the neighbourhood step. A neighbourhood steps basically

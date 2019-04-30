@@ -8,12 +8,12 @@ NeighbourhoodSearch::predictDelActionStatus(
 	boolEdge edge = neigh->deltdEdge;
 
 	//delete action
-	if (neigh->sol->getNodeDegree(edge.orig) == MIN_DEGREE && 
-			neigh->sol->getNodeDegree(edge.dest) == MIN_DEGREE) {
+	if (neigh->sol->getNodeDegree(edge.orig) == minDegree && 
+			neigh->sol->getNodeDegree(edge.dest) == minDegree) {
 		status = del2mindeg;
 	}
-	else if (neigh->sol->getNodeDegree(edge.orig) == MIN_DEGREE ||
-			neigh->sol->getNodeDegree(edge.dest) == MIN_DEGREE) {
+	else if (neigh->sol->getNodeDegree(edge.orig) == minDegree ||
+			neigh->sol->getNodeDegree(edge.dest) == minDegree) {
 		status = del1mindeg;
 	}
 
@@ -39,11 +39,11 @@ NeighbourhoodSearch::predictAddActionStatus(
 	}
 
 	//add action
-	if (addOrigDeg > MAX_DEGREE && addDestDeg > MAX_DEGREE) {
+	if (addOrigDeg > maxDegree && addDestDeg > maxDegree) {
 		status = add2maxdeg;
 	}
 	
-	else if (addOrigDeg > MAX_DEGREE || addDestDeg > MAX_DEGREE) {
+	else if (addOrigDeg > maxDegree || addDestDeg > maxDegree) {
 		status = add1maxdeg;
 	}
 
@@ -100,17 +100,17 @@ bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh) {
 	//selects node to be fixed (remain unchanged in the spinning process)
 	boolEdge edgeToDel = neigh->deltdEdge;
 	size_t fixedNode = (neigh->sol->getNodeDegree(edgeToDel.orig) ==
-			MIN_DEGREE) ? edgeToDel.orig : edgeToDel.dest;
+			minDegree) ? edgeToDel.orig : edgeToDel.dest;
 
 	boolEdge spinned;
 
 	if (aspirationCrit) {
 		TabuList<bool> emptyTabu;
-		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, MAX_DEGREE,
+		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, maxDegree,
 				&emptyTabu);
 	}
 	else {
-		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, MAX_DEGREE,
+		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, maxDegree,
 				tabuList);
 	}
 
@@ -126,7 +126,7 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	//The centre of the spin is the node adjacent to
 	//the one with max degree./
 	size_t maxDegNode = (neigh->sol->getNodeDegree(edgeToAdd.orig) ==
-			MAX_DEGREE) ? edgeToAdd.orig : edgeToAdd.dest;
+			maxDegree) ? edgeToAdd.orig : edgeToAdd.dest;
 
 	neigh->sol->delEdge(neigh->deltdEdge);
 	//select edge incident to spinCentre randomly,
@@ -145,10 +145,10 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 				true);
 
 		size_t spinCentre = (neigh->sol->getNodeDegree(edgeToSpin.orig)
-				== MAX_DEGREE) ? edgeToSpin.dest : edgeToSpin.orig;
+				== maxDegree) ? edgeToSpin.dest : edgeToSpin.orig;
 
 		spinned = neigh->sol->spinEdge(edgeToSpin, spinCentre,
-					MAX_DEGREE, &tabuEdgesToAdd);
+					maxDegree, &tabuEdgesToAdd);
 
 		if (neigh->sol->isEdgeInvalid(spinned)) {
 			tabuSpins.add(edgeToSpin);
@@ -176,7 +176,7 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 	augmentedTabu.add(neigh->deltdEdge);
 
 	boolEdge* edgesAdded = neigh->sol->doubleSpinEdge(
-			edgeToAdd, MAX_DEGREE, &augmentedTabu);
+			edgeToAdd, maxDegree, &augmentedTabu);
 
 	neigh->sol->addEdge(neigh->deltdEdge);
 
@@ -197,9 +197,9 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 
 	switch (delStatus) {
 		case del2mindeg:
-			return swap(neigh, tabuList, aspirationCrit);
+			return swap(neigh);
 		case del1mindeg:
-			return spinMinDegree(neigh, tabuList, aspirationCrit);
+			return spinMinDegree(neigh);
 		default:
 			break;
 	}
@@ -225,16 +225,14 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 
 		switch (addStatus) {
 			case (add1maxdeg):
-				if (!spinMaxDegree(neigh, edgeToAdd,
-							tabuList, aspirationCrit)) {
+				if (!spinMaxDegree(neigh, edgeToAdd)) {
 					tabuEdgesToAdd.add(edgeToAdd);
 					continue;
 				}
 				break;
 
 			case (add2maxdeg):
-				if (!doubleSpinMaxDegree(neigh, edgeToAdd, tabuList,
-							aspirationCrit)) {
+				if (!doubleSpinMaxDegree(neigh, edgeToAdd)) {
 					tabuEdgesToAdd.add(edgeToAdd);
 					continue;
 				}

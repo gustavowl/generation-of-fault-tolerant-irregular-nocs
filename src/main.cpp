@@ -4,7 +4,7 @@
 #include "include/graph-converter.h"
 #include "include/graph-representation.h"
 #include "include/tabu-adj-matrix.h"
-//#include "include/tabu-search.h"
+#include "include/tabu-search.h"
 
 int main(int argc, char *argv[]) {
 	if (argc != 6) {

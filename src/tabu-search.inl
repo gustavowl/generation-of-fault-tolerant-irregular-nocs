@@ -58,13 +58,13 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 		//2 - add edge
 		//	2.1 - identify node with smallest degree
 		size_t smallest = initSol->getNodeWithNthDegree(0, false);
-		//	2.2 - create empty tabuList of target nodes
-		TabuList<bool> tabuList = TabuList(initSol->getNumNodes());
+		//	2.2 - create empty tl of target nodes
+		TabuList<bool> tl = TabuList<bool>(initSol->getNumNodes());
 		edge.orig = smallest;
 
 		while (true) {
 			//	2.3 - identify second node with smallest degree
-			//		(not in tabuList)
+			//		(not in tl)
 			size_t rankPos = 0;
 			size_t smlNeighbour;
 			do {
@@ -72,11 +72,11 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
 						false);
 				edge.dest = smlNeighbour;
-			} while(tabuList.isTabu(edge));
+			} while(tl.isTabu(edge));
 			//	2.4 - add edge between these two nodes
 			if (initSol->edgeExists(edge)) {
-				//edge exists, add target node to tabuList
-				tabuList.add(edge);
+				//edge exists, add target node to tl
+				tl.add(edge);
 				continue;
 			}
 			edge.value = !edge.value;
@@ -93,7 +93,7 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 				//	3.2.1 - remove edge
 				initSol->delEdge(edge);
 				//	3.2.2 - add target node to a TabuList
-				tabuList.add(edge);
+				tl.add(edge);
 				//	3.2.3 - go back to step 2.3
 				continue;
 			}
@@ -109,20 +109,20 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	//i.e. if it is possible to generate a graph such that
 	//for all nodes, degree(node) in [minDegree, maxDegree]
 	//REFER TO: degree sum formula / handshaking lemma
-	if ((2*epsilon) / tg->getNumNodes() < minDegree ||
-			(2*epsilon) / tg->getNumNodes() > maxDegree) {
+	if ((2*epsilon) / taskGraph->getNumNodes() < minDegree ||
+			(2*epsilon) / taskGraph->getNumNodes() > maxDegree) {
 
 		return NULL;
 	}
 
 	TabuAdjMatrix<bool>* initSol = new TabuAdjMatrix<bool>(
-			tg->getNumNodes(), true, true, tg->getNullEdgeValue());
+			taskGraph->getNumNodes(), true, true, taskGraph->getNullEdgeValue());
 	//unable to generate graph
-	if (initSol->getNumNodes() != tg->getNumNodes())
+	if (initSol->getNumNodes() != taskGraph->getNumNodes())
 		return NULL;
 
 	//copies task graph, converting representation
-	GraphConverter::convert(tg, initSol);
+	GraphConverter::convert(taskGraph, initSol);
 
 	fitToEpsilon(initSol);
 	makeFeasible(initSol);
@@ -133,15 +133,15 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 template <class T>
 T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 	//computes QAP function:
-	//for all edge(i, j) in tg
+	//for all edge(i, j) in taskGraph
 	//\sum min_hops(node_i, node_j) * weightOf(edge(i, j))
 	T sum;
 	bool firstFound = false;
 
 	//Computes QAP for each edge in the task graph
-	for (size_t i = 0; i < tg->getNumNodes(); i++) {
-		for (size_t j = 0; j < tg->getNumNodes(); j++) {
-			if (tg->edgeExists(i, j)) {
+	for (size_t i = 0; i < taskGraph->getNumNodes(); i++) {
+		for (size_t j = 0; j < taskGraph->getNumNodes(); j++) {
+			if (taskGraph->edgeExists(i, j)) {
 
 				size_t numHops = Dijkstra<bool>::dijkstra(
 						sol, i, j, true, false).hops;
@@ -149,7 +149,7 @@ T TabuSearch<T>::fitness(const TabuAdjMatrix<bool>* sol) {
 				if (numHops == HOP_INF)
 					return fitnessLimit;
 
-				T qap = numHops * tg->getEdgeValue(i, j);
+				T qap = numHops * taskGraph->getEdgeValue(i, j);
 
 				if (firstFound) {
 					sum += qap;
@@ -186,7 +186,7 @@ void TabuSearch<T>::setDegreeLimits(size_t minDegree, size_t maxDegree) {
 }
 
 template <class T>
-void setTaskGraph(const GraphRepresentation<T>* taksGraph) {
+void TabuSearch<T>::setTaskGraph(const GraphRepresentation<T>* taksGraph) {
 	if (this->taskGraph != NULL)
 		delete this->taskGraph;
 
@@ -194,22 +194,22 @@ void setTaskGraph(const GraphRepresentation<T>* taksGraph) {
 }
 
 template <class T>
-void setTabuListSize(size_t tabuListSize) {
+void TabuSearch<T>::setTabuListSize(size_t tabuListSize) {
 	this->tabuList = TabuList<T>::TabuList(tabuListSize, true);
 }
 
 template <class T>
-void setStopCriteria(size_t stopCriteria) {
+void TabuSearch<T>::setStopCriteria(size_t stopCriteria) {
 	this->stopCriteria = stopCriteria;
 }
 
 template <class T>
-void setFitnessLimit(T fitnessLimit) {
+void TabuSearch<T>::setFitnessLimit(T fitnessLimit) {
 	this->fitnessLimit = fitnessLimit;
 }
 
 template <class T>
-void setEpsilon(size_t epsilon) {
+void TabuSearch<T>::setEpsilon(size_t epsilon) {
 	this->epsilon = epsilon;
 }
 
@@ -221,8 +221,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	//no loops are allowed and the matrices are symmetric.
 	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
 	//This result can be obtained through arithmetic progression
-	if (tabuListSize >= (tg->getNumNodes() * tg->getNumNodes() -
-				tg->getNumNodes()) / 2)
+	if (tabuList.size() >= (taskGraph->getNumNodes() * taskGraph->getNumNodes() -
+				taskGraph->getNumNodes()) / 2)
 		return NULL; //this would cause an infinite loop
 
 	TabuAdjMatrix<bool>* currSol = generateInitSol();
@@ -233,9 +233,6 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	std::vector<NeighbourhoodSearch::Neighbour> neighbours;
 	std::vector<T> neighboursFit;
 	
-	//stores tabu edges. Namely, the edge chosen
-	//to be deleted will remain unaddable for some iterations
-	TabuList<bool> tabuList (tabuListSize);
 	//TODO: assert that tabuList.size() == 0
 	size_t tabuIndex = 0; //used to simulate circular queue
 
@@ -260,9 +257,9 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		for (size_t i = 0; i < epsilon; i++) {
 			//generates random neighbourhood movements
 			neighbours.push_back(neighSearch.generateNeighbour(
-						currSol, tabuList, true));
+						currSol, &tabuList, true));
 			//computes neighbours' fitness
-			neighboursFit.push_back(fitness(tg, neighbours[i].sol,
+			neighboursFit.push_back(fitness(taskGraph, neighbours[i].sol,
 					fitnessLimit));
 		}
 
@@ -308,8 +305,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 			if (neighbours.empty()) {
 				neighbours.push_back(
 						neighSearch.generateNeighbour(currSol,
-							tabuList, false));
-				neighboursFit.push_back(fitness(tg, neighbours[i].sol,
+							&tabuList, false));
+				neighboursFit.push_back(fitness(taskGraph, neighbours[0].sol,
 					fitnessLimit));
 				selectedIndex = 0;
 			}

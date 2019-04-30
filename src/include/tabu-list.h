@@ -17,6 +17,8 @@ public:
 	TabuList();
 	TabuList(size_t maxSize, bool cyclic=true);
 
+	~TabuList();
+
 	//verifies is edge is in tabuList. Only the origin
 	//and destination nodes are considered, not the
 	//edge's weight/value.
@@ -28,5 +30,7 @@ public:
 
 	grEdge at(size_t index) const;
 };
+
+#include "../tabu-list.inl"
 
 #endif
