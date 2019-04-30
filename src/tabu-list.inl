@@ -3,12 +3,14 @@
 template <class T>
 TabuList<T>::TabuList() {
 	index = 0;
+	cyclic = false;
 }
 
 template <class T>
-TabuList<T>::TabuList(size_t maxSize) {
+TabuList<T>::TabuList(size_t maxSize, bool cyclic) {
 	index = 0;
 	tabuList.reserve(maxSize);
+	this->cyclic = cyclic;
 }
 
 template <class T>
@@ -29,6 +31,11 @@ bool TabuList<T>::isTabu(grEdge edge) {
 
 template <class T>
 void TabuList<T>::add(grEdge edge) {
+	if (!this->cyclic) {
+		tabuList->push_back(edge);
+		return;
+	}
+
 	if (tabuList->size() == tabuList->capacity()) {
 		//cycle
 		tabuList[index] = edge;

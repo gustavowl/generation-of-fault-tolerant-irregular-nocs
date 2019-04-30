@@ -10,11 +10,12 @@ class TabuList {
 private:
 	std::vector<grEdge> tabuList;
 	size_t index; //used for simulating circular queue
+	bool cyclic;
 
 public:
 	//TODO: set capacity
 	TabuList();
-	TabuList(size_t maxSize);
+	TabuList(size_t maxSize, bool cyclic=true);
 
 	//verifies is edge is in tabuList. Only the origin
 	//and destination nodes are considered, not the

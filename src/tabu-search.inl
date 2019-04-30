@@ -69,7 +69,8 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 			size_t smlNeighbour;
 			do {
 				rankPos++;
-				smlNeighbour = initSol->getNodeWithNthDegree(rankPos, false);
+				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
+						false);
 				edge.dest = smlNeighbour;
 			} while(tabuList.isTabu(edge));
 			//	2.4 - add edge between these two nodes
@@ -195,7 +196,7 @@ void setTaskGraph(const GraphRepresentation<T>* taksGraph) {
 
 template <class T>
 void setTabuListSize(size_t tabuListSize) {
-	this->tabuList = TabuList<T>::TabuList(tabuListSize);
+	this->tabuList = TabuList<T>::TabuList(tabuListSize, true);
 }
 
 template <class T>
