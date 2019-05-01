@@ -227,14 +227,6 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 	//TODO: print/save seed
 
-	//no loops are allowed and the matrices are symmetric.
-	//Thus, there are only (nodes*2 - nodes)/2 unique edges.
-	//This result can be obtained through arithmetic progression
-	if ( tabuList->size() >= (taskGraph->getNumNodes() *
-				taskGraph->getNumNodes() -
-				taskGraph->getNumNodes())/2 )
-		return NULL; //this would cause an infinite loop
-
 	TabuAdjMatrix<bool>* currSol = generateInitSol();
 	if (currSol == NULL)
 		return NULL;
@@ -253,9 +245,9 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
-		currSol->print();
-		std::cout << "Fit: " << currFit << '\n';
-		std::cout << count << '/' << stopCriteria << std::endl;
+		//currSol->print();
+		//std::cout << "Fit: " << currFit << '\n';
+		//std::cout << count << '/' << stopCriteria << std::endl;
 
 		//searches neighbourhood
 		//searches first epsilon random neighbours
@@ -348,6 +340,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		neighbours.clear();
 		neighboursFit.clear();
 
+		totalCount++;
 		if (currFit < bestFit) {
 			count = 0;
 			delete bestSol;
@@ -356,7 +349,6 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 			continue;
 		}
 		count++;
-		totalCount++;
 	}
 
 	delete currSol;
