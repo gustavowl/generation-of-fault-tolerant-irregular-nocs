@@ -70,15 +70,9 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 		edgeToSwap1 = neigh->deltdEdges[0];
 		edgeToSwap2 = edgeToAdd;
 
-		if (aspirationCrit) {
-			//tabuSlctEdges' element will never conflict here
-			neigh->sol->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
-					&tabuSlctdEdges);
-		}
-		else {
-			neigh->sol->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
-					tabuList);
-		}
+		neigh->sol->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
+				&tabuSlctdEdges);
+
 		//edges swapped may not be valid. Add edgeToAdd to a
 		//tabuList and select another edge.	
 		if (neigh->sol->isEdgeInvalid(edgeToSwap1) ||
@@ -91,8 +85,10 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 		//adds the second edge deleted (before swap) to list
 		neigh->deltdEdges.push_back(edgeToAdd);
 		//check if edges swapped are tabu
-		neigh->isTabu = tabuList->isTabu(edgeToSwap1) ||
-			tabuList->isTabu(edgeToSwap2);
+		std::vector<boolEdge> vec;
+		vec.push_back(edgeToSwap1);
+		vec.push_back(edgeToSwap2);
+		neigh->isTabu = tabuList->isTabu(vec);
 		return true;
 	}
 	//POINT OF kNOw RETURN
@@ -137,9 +133,6 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	boolEdge edgeToSpin, spinned;
 
 	TabuList<bool> tabuEdgesToAdd;
-	if (!aspirationCrit)
-		for (size_t i = 0; i < tabuList->size(); i++)
-			tabuEdgesToAdd.add(tabuList->at(i));
 	tabuEdgesToAdd.add(neigh->deltdEdges[0]);
 
 	while(tabuSpins.size() < neigh->sol->getNodeDegree(maxDegNode)) {
@@ -157,9 +150,20 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 			continue;
 		}
 
+		std::vector<boolEdge> mv;
+		mv.push_back(edgeToAdd);
+		mv.push_back(spinned);
+		if (!aspirationCrit && tabuList->isTabu(mv)) {
+			//if movement is tabu, undo
+			neigh->sol->delEdge(spinned);
+			neigh->sol->addEdge(edgeToSpin);
+			tabuSpins.add(edgeToSpin);
+			continue;
+		}
+
 		neigh->deltdEdges.push_back(edgeToSpin);
 		neigh->sol->addEdge(neigh->deltdEdges[0]);
-		neigh->isTabu = tabuList->isTabu(spinned);
+		neigh->isTabu = tabuList->isTabu(mv);
 		return true;
 	}
 
@@ -172,14 +176,17 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 
 	neigh->sol->delEdge(neigh->deltdEdges[0]);
 
-	TabuList<bool> augmentedTabu;
-	if (!aspirationCrit)
-		for (size_t i = 0; i < tabuList->size(); i++)
-			augmentedTabu.add(tabuList->at(i));
-	augmentedTabu.add(neigh->deltdEdges[0]);
+	TabuList<bool> emptyTabu;
+	boolEdge* edgesAdded;
 
-	boolEdge* edgesAdded = neigh->sol->doubleSpinEdge(
-			edgeToAdd, maxDegree, &augmentedTabu);
+	if (aspirationCrit) {
+		edgesAdded = neigh->sol->doubleSpinEdge( neigh->deltdEdges[0],
+				edgeToAdd, maxDegree, &emptyTabu);
+	}
+	else {
+		edgesAdded = neigh->sol->doubleSpinEdge(neigh->deltdEdges[0],
+				edgeToAdd, maxDegree, tabuList);
+	}
 
 	neigh->sol->addEdge(neigh->deltdEdges[0]);
 
@@ -188,8 +195,11 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 
 	neigh->deltdEdges.push_back(edgesAdded[0]);
 	neigh->deltdEdges.push_back(edgesAdded[1]);
-	neigh->isTabu = tabuList->isTabu(edgesAdded[0]) ||
-		tabuList->isTabu(edgesAdded[1]);
+	std::vector<boolEdge> mv;
+	mv.push_back(edgeToAdd);
+	mv.push_back(edgesAdded[2]);
+	mv.push_back(edgesAdded[3]);
+	neigh->isTabu = tabuList->isTabu(mv);
 	delete[] edgesAdded;
 
 	return true;

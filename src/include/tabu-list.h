@@ -8,9 +8,11 @@ template <class T>
 class TabuList {
 
 private:
-	std::vector<grEdge> tabuList;
+	std::vector<std::vector<grEdge>> tabuList;
 	size_t index; //used for simulating circular queue
 	bool cyclic;
+
+	void sort(std::vector<grEdge>* edges);
 
 public:
 	//TODO: set capacity
@@ -24,11 +26,15 @@ public:
 	//edge's weight/value.
 	bool isTabu(grEdge edge);
 
+	bool isTabu(std::vector<grEdge> edges);
+
 	void add(grEdge edge);
+
+	void add(std::vector<grEdge> edge);
 
 	size_t size();
 
-	grEdge at(size_t index) const;
+	std::vector<grEdge> at(size_t index) const;
 };
 
 #include "../tabu-list.inl"

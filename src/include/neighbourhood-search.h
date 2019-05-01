@@ -21,7 +21,7 @@ public:
 		TabuAdjMatrix<bool>* sol; //solution
 		//deleted edges to be added in tabuList
 		std::vector<boolEdge> deltdEdges;
-		bool isTabu; //is any of the added edge tabu?
+		bool isTabu; //is any of the added edges tabu?
 	};
 
 	NeighbourhoodSearch();

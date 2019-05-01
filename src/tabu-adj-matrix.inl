@@ -391,7 +391,10 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
 		//and add new swapped edges.
 		this->nodeIdSwap(&swapEdge1); //standard representation
 		this->nodeIdSwap(&swapEdge2); //standard representation
-		if (tabuList->isTabu(swapEdge1) || tabuList->isTabu(swapEdge2))
+		std::vector<grEdge> vec;
+		vec.push_back(swapEdge1);
+		vec.push_back(swapEdge2);
+		if (tabuList->isTabu(vec))
 			continue;
 
 		if (rng() % 2 == 0) {
@@ -464,13 +467,14 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 }
 
 template <class T>
-grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
+grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		size_t upperDestDeg, TabuList<T>* tabuList) {
 
 	if (targets.orig >= this->numNodes || targets.dest >= this->numNodes)
 		return NULL;
 
 	TabuList<T> tabuOrigEdges;
+	tabuOrigEdges.add(deltdEdge);
 	while (tabuOrigEdges.size() < degrees[targets.orig]) {
 		grEdge origEdge = this->selectRandomEdge(targets.orig,
 				&tabuOrigEdges, true);
@@ -490,6 +494,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 
 		//select second edge to spin
 		TabuList<T> tabuDestEdges;
+		tabuDestEdges.add(deltdEdge);
 		tabuDestEdges.add(spinnedOrig);
 		while(tabuDestEdges.size() - 1 < degrees[targets.dest]) {
 			grEdge destEdge = this->selectRandomEdge(targets.dest,
@@ -507,11 +512,26 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge targets,
 				continue;
 			}
 
+			//verify if movement is tabu
+			std::vector<grEdge> mv;
+			mv.push_back(targets);
+			mv.push_back(spinnedOrig);
+			mv.push_back(spinnedDest);
+			if (tabuList->isTabu(mv)) {
+				//undoes movement
+				this->delEdge(spinnedDest);
+				this->addEdge(destEdge);
+				tabuDestEdges.add(destEdge);
+				continue;
+			}
+
 			//second edge successfully spinned
-			//allocate space to return added edges
-			grEdge* ret = new grEdge[2];
-			ret[0] = spinnedOrig;
-			ret[1] = spinnedDest;
+			//allocate space to return deleted and added edges
+			grEdge* ret = new grEdge[4];
+			ret[0] = origEdge;
+			ret[1] = destEdge;
+			ret[2] = spinnedOrig;
+			ret[3] = spinnedDest;
 			return ret;
 		}
 

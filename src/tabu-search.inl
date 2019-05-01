@@ -314,6 +314,14 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 				neighbours.push_back(
 						neighSearch.generateNeighbour(currSol,
 							tabuList, false));
+				assert(neighbours[0].sol != NULL);
+				if (neighbours[0].sol == NULL) {
+					std::cout << "TabuList size too restrictive" <<
+						"\nTODO: DEALLOCATE MEMORY" <<
+						std::endl;
+					//TODO: DEALLOCATE MEMORY
+					return NULL;
+				}
 				neighboursFit.push_back(fitness(neighbours[0].sol));
 				selectedIndex = 0;
 				assert(neighbours[0].sol != NULL);
@@ -374,11 +382,18 @@ void TabuSearch<T>::assert(bool value) {
 		"\n*********ASSERT EXCEPTION*************\n" <<
 		"**************************************\n";
 	std::cout << "TABU LIST\n";
-	boolEdge edge;
+	std::vector<boolEdge> tabuItem;
 	for (size_t i = 0; i < tabuList->size(); i++) {
-		edge = tabuList->at(i);
-		std::cout << edge.orig << " to " << edge.dest <<
-			". Weight: " << edge.value << "\n";
+		tabuItem = tabuList->at(i);
+		std::cout << '{';
+		size_t j = 0;
+		for (; j < tabuItem.size() - 1; j++) {
+			std::cout << tabuItem[j].orig << " -> " << tabuItem[j].dest <<
+				" = " << tabuItem[j].value << ", ";
+		}
+		std::cout << tabuItem[j].orig << " -> " << tabuItem[j].dest <<
+			" = " << tabuItem[j].value << ", ";
+		std::cout << "}\n";
 	}
 	std::cout << "**************************************" <<
 		"\n*********ASSERT EXCEPTION*************\n" <<

@@ -158,8 +158,8 @@ public:
 	//edges from `targets`
 	//The number of edges is not altered.
 	//returns false if it is not possible to double spin.
-	grEdge* doubleSpinEdge(grEdge targets, size_t upperDestDeg,
-			TabuList<T>* tabuList);
+	grEdge* doubleSpinEdge(grEdge deltdEdge, grEdge targets,
+			size_t upperDestDeg, TabuList<T>* tabuList);
 
 	//Returns the node with n-th smallest or largest degree.
 	//The rankPos determines the n-th position in the [0, numNodes - 1]
