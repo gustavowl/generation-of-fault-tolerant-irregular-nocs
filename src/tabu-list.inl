@@ -56,7 +56,7 @@ bool TabuList<T>::isTabu(std::vector<grEdge> edges) {
 			comparison = true;
 
 			for (size_t j = 0; j < edges.size(); j++) {
-				if (!edges[j].equalsTo(tabuList[i][j])) {
+				if (!edges[j].equalsTo(tabuList[i][j], false)) {
 					comparison = false;
 					break;
 				}
