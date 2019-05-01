@@ -176,6 +176,8 @@ public:
 	//all the nodes, it only considers the neighbours of incidentNode.
 	size_t getNeighbourWithNthDegree(size_t rankPos, size_t incidentNode,
 			bool largest);
+
+	size_t toInt64();
 };
 
 #include "../tabu-adj-matrix.inl"

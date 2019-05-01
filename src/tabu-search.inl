@@ -242,10 +242,13 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	size_t count = 0;
 	size_t totalCount = 0;
 	size_t selectedIndex;
+	bool aspirationCrit;
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
 		//currSol->print();
+		std::cout << currSol->toInt64() << std::endl;
+		//std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
 		//std::cout << "Fit: " << currFit << '\n';
 		//std::cout << count << '/' << stopCriteria << std::endl;
 
@@ -263,7 +266,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		}
 
 		//searches for aspiration criterea
-		bool aspirationCrit = false;
+		aspirationCrit = false;
 		for (size_t i = 0; i < neighboursFit.size(); i++) {
 			if (!aspirationCrit) {
 				if (neighboursFit[i] < bestFit) {
@@ -325,11 +328,8 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		delete currSol;
 		currSol = neighbours[selectedIndex].sol;
 		currFit = neighboursFit[selectedIndex];
-		for (size_t i = 0; i <
-				neighbours[selectedIndex].deltdEdges.size();
-				i++) {
-			tabuList->add(neighbours[selectedIndex].deltdEdges[i]);
-		}
+		tabuList->add(neighbours[selectedIndex].deltdEdges);
+
 		if (!aspirationCrit)
 			assert(!neighbours[selectedIndex].isTabu);
 

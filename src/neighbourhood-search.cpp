@@ -289,11 +289,10 @@ NeighbourhoodSearch::generateNeighbour(
 
 	boolEdge edgeToDel = solCopy->selectRandomEdge(&delTabuList);
 
-	NeighbourhoodSearch::Neighbour neigh {
-		.sol = solCopy,
-		.isTabu = false
-	};
+	NeighbourhoodSearch::Neighbour neigh;
+	neigh.sol = solCopy;
 	neigh.deltdEdges.push_back(edgeToDel);
+	neigh.isTabu = false;
 
 	while (! neighbourhoodStep(&neigh, tabuList, aspirationCrit)) {
 		//delete neighbour; SHOULD NOT BE NECESSARY TODO: DEBUG

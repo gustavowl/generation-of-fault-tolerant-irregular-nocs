@@ -600,3 +600,19 @@ size_t TabuAdjMatrix<T>::getNeighbourWithNthDegree(size_t rankPos,
 	return this->getNodeWithNthDegreeFromList(
 			this->getNeighbours(incidentNode), rankPos, largest);
 }
+
+template <class T>
+size_t TabuAdjMatrix<T>::toInt64() {
+	size_t maxEdges = this->maxNumEdges();
+	if (maxEdges > 64)
+		return 0;
+
+	size_t ret = 0;
+	grEdge edge;
+	for (edge.orig = 1; edge.orig < this->numNodes; edge.orig++) {
+		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
+			ret = ret * 2 + this->edgeExists(edge);
+		}
+	}
+	return ret;
+}
