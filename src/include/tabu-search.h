@@ -103,14 +103,14 @@ public:
 	//solutions and in the neighbours.
 	void setEpsilon(size_t epsilon);
 
-size_t selectBestNeighbour(std::vector<T>* neighboursFit);
+	size_t selectBestNeighbour(std::vector<T>* neighboursFit);
 
 
-size_t searchAspirationCriteria(std::vector<T>* neighboursFit, T bestFit);
+	size_t searchAspirationCriteria(std::vector<T>* neighboursFit, T bestFit);
 
-void removeTabuNeighbours(
-		std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
-		std::vector<T>* neighboursFit);
+	void removeTabuNeighbours(
+			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+			std::vector<T>* neighboursFit);
 
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed
@@ -130,7 +130,7 @@ void removeTabuNeighbours(
 	//setDegreeLimits, setTaskGraph, setTabuListSize, setStopCriteria,
 	//setFitnessLimit, and setEpsilon.
 	//TODO: return set of solutions.
-	TabuAdjMatrix<T>* start();
+	TabuAdjMatrix<bool>* start();
 };
 
 #include "../tabu-search.inl"

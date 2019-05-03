@@ -263,7 +263,7 @@ void TabuSearch<T>::removeTabuNeighbours(
 }
 
 template <class T>
-TabuAdjMatrix<T>* TabuSearch<T>::start() {
+TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 
 	//TODO: print/save seed
 
@@ -322,13 +322,11 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 				neighbours.push_back(
 						neighSearch.generateNeighbour(currSol,
 							tabuList, false));
-				assert(neighbours[0].sol != NULL);
 				if (neighbours[0].sol == NULL) {
-					std::cout << "TabuList size too restrictive" <<
-						"\nTODO: DEALLOCATE MEMORY" <<
-						std::endl;
-					//TODO: DEALLOCATE MEMORY
-					return NULL;
+					currSol->print();
+					std::cout << "Unable to generate non-tabu neighbour" <<
+						"\nReturning best solution found..." << std::endl;
+					break;
 				}
 				neighboursFit.push_back(fitness(neighbours[0].sol));
 				selectedIndex = 0;
@@ -372,11 +370,9 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 	bestSol->print();
 	std::cout << "Fitness: " << bestFit;
 	std::cout << "\nTotal iterations: " << totalCount << std::endl;
-	TabuAdjMatrix<T>* ret = NULL;
-	delete bestSol;
 
 	//TODO: return solution set
-	return ret;
+	return bestSol;
 }
 
 template <class T>

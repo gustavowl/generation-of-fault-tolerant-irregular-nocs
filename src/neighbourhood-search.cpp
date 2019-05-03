@@ -374,7 +374,7 @@ NeighbourhoodSearch::generateNeighbour(
 
 		if (delTabuList.size() == currSol->getNumEdges()) {
 			deallocateNeighbour(&neigh);
-			return neigh;
+			break;
 		}
 
 		//neighbour = currSol->copy(); SHOULD NOT BE NECESSARY TODO: DEBUG

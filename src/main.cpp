@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	ts.setFitnessLimit(std::numeric_limits<size_t>::max());
 	ts.setDegreeLimits(2, 4);
 
-	TabuAdjMatrix<size_t>* res = ts.start();
+	TabuAdjMatrix<bool>* res = ts.start();
 
 	delete gr;
 
