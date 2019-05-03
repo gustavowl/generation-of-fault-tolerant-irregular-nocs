@@ -6,7 +6,8 @@ void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 		//removes edges
 		//computes positions of the two nodes with largest degrees
 		frstIndex = initSol->getNodeWithNthDegree(0, true);	
-		scndIndex = initSol->getNodeWithNthDegree(1, true);	
+		scndIndex = initSol->getNeighbourWithNthDegree(0,
+				frstIndex, true);	
 
 		initSol->delEdge( boolEdge{
 				.orig=frstIndex, .dest=scndIndex} );
@@ -18,7 +19,7 @@ void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 		frstIndex = initSol->getNodeWithNthDegree(0, false);	
 		scndIndex = initSol->getNodeWithNthDegree(1, false);	
 
-		initSol->delEdge( boolEdge{
+		initSol->addEdge( boolEdge{
 				.orig=frstIndex, .dest=scndIndex,
 				.value = !initSol->getNullEdgeValue()} );
 	}
@@ -286,11 +287,11 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
-		//currSol->print();
-		std::cout << currSol->toInt64() << std::endl;
-		//std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
-		//std::cout << "Fit: " << currFit << '\n';
-		//std::cout << count << '/' << stopCriteria << std::endl;
+		currSol->print();
+		//std::cout << currSol->toInt64() << std::endl;
+		std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
+		std::cout << "Fit: " << currFit << '\n';
+		std::cout << count << '/' << stopCriteria << std::endl;
 
 		//searches neighbourhood
 		//searches first epsilon random neighbours
