@@ -237,7 +237,8 @@ size_t TabuSearch<T>::selectBestNeighbour(std::vector<T>* neighboursFit) {
 }
 
 template <class T>
-size_t TabuSearch<T>::searchAspirationCriteria(std::vector<T>* neighboursFit, T bestFit) {
+size_t TabuSearch<T>::searchAspirationCriteria(
+		std::vector<T>* neighboursFit, T bestFit) {
 
 	size_t selectedIndex = selectBestNeighbour(neighboursFit);
 
@@ -247,15 +248,16 @@ size_t TabuSearch<T>::searchAspirationCriteria(std::vector<T>* neighboursFit, T 
 }
 
 template <class T>
-void TabuSearch<T>::removeTabuNeighbours(std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+void TabuSearch<T>::removeTabuNeighbours(
+		std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
 		std::vector<T>* neighboursFit) {
 
-	for (size_t i = neighbours->size() - 1; i >= 0; i--) {
-		if (neighbours->at(i).isTabu) {
+	for (size_t i = neighbours->size(); i > 0; i--) {
+		if (neighbours->at(i - 1).isTabu) {
 			neighSearch.deallocateNeighbour(
-					&(neighbours->at(i)));
-			neighbours->erase(neighbours->begin() + i);
-			neighboursFit->erase(neighboursFit->begin() + i);
+					&(neighbours->at(i - 1)));
+			neighbours->erase(neighbours->begin() + i - 1);
+			neighboursFit->erase(neighboursFit->begin() + i - 1);
 		}
 	}
 }
