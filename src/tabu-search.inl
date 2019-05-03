@@ -223,6 +223,44 @@ void TabuSearch<T>::setEpsilon(size_t epsilon) {
 }
 
 template <class T>
+size_t TabuSearch<T>::selectBestNeighbour(std::vector<T>* neighboursFit) {
+
+	size_t size = neighboursFit->size();
+	size_t selectedIndex = 0;
+
+	for (size_t i = 1; i < size; i++) {
+		if (neighboursFit->at(i) < neighboursFit->at(selectedIndex))
+			selectedIndex = i;
+	}
+
+	return selectedIndex;
+}
+
+template <class T>
+size_t TabuSearch<T>::searchAspirationCriteria(std::vector<T>* neighboursFit, T bestFit) {
+
+	size_t selectedIndex = selectBestNeighbour(neighboursFit);
+
+	if (neighboursFit->at(selectedIndex) < bestFit)
+		return selectedIndex;
+	return neighboursFit->size();
+}
+
+template <class T>
+void TabuSearch<T>::removeTabuNeighbours(std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+		std::vector<T>* neighboursFit) {
+
+	for (size_t i = neighbours->size() - 1; i >= 0; i--) {
+		if (neighbours->at(i).isTabu) {
+			neighSearch.deallocateNeighbour(
+					&(neighbours->at(i)));
+			neighbours->erase(neighbours->begin() + i);
+			neighboursFit->erase(neighboursFit->begin() + i);
+		}
+	}
+}
+
+template <class T>
 TabuAdjMatrix<T>* TabuSearch<T>::start() {
 
 	//TODO: print/save seed
@@ -266,46 +304,19 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		}
 
 		//searches for aspiration criterea
-		aspirationCrit = false;
-		for (size_t i = 0; i < neighboursFit.size(); i++) {
-			if (!aspirationCrit) {
-				if (neighboursFit[i] < bestFit) {
-					selectedIndex = i;
-					aspirationCrit = true;
-				}
-				continue;
-			}
-			//there may be multiple aspiration criterea
-			//the best one is chosen
-			if (neighboursFit[i] < neighboursFit[selectedIndex]) {
-				selectedIndex = i;
-			}
-		}
+		selectedIndex = searchAspirationCriteria(&neighboursFit, bestFit);
+		aspirationCrit = selectedIndex != neighboursFit.size();
 		//if aspiration criterea not found,
 		//search for the best solution not in tabuList
 		if (!aspirationCrit) {
-			while (!neighbours.empty()) {
-				selectedIndex = 0;
-				for (size_t i = 1; i < neighbours.size(); i++) {
-					if (neighboursFit[i] < neighboursFit[selectedIndex])
-						selectedIndex = i;
-				}
+			removeTabuNeighbours(&neighbours, &neighboursFit);
 
-				if (neighbours[selectedIndex].isTabu) {
-					//tabu solution, search for next best neighbour
-					neighSearch.deallocateNeighbour(
-							&neighbours[selectedIndex]);
-					neighbours.erase(neighbours.begin() +
-							selectedIndex);
-					neighboursFit.erase(neighboursFit.begin() +
-							selectedIndex);
-					continue;
-				}
-				break; //non tabu best neighbour found
-			}
-
-			//if all are tabu, generate non tabu neighbour
-			if (neighbours.empty()) {
+			if (!neighbours.empty())
+				selectedIndex = selectBestNeighbour(&neighboursFit);
+			else {
+				//if all are tabu, generate non tabu neighbour
+				//TODO generate multiple non-tabu neighbours
+				//and choose best one
 				neighbours.push_back(
 						neighSearch.generateNeighbour(currSol,
 							tabuList, false));
