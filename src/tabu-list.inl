@@ -73,6 +73,7 @@ bool TabuList<T>::isTabu(std::vector<grEdge> edges) {
 template <class T>
 bool TabuList<T>::isTabu(GraphRepresentation<T>* graph) {
 	bool comparison;
+
 	for (size_t i = 0; i < tabuList.size(); i++) {
 		comparison = true;
 		std::vector<grEdge>* tabuItem = &(tabuList[i]);

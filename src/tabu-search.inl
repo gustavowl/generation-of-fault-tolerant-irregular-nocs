@@ -330,6 +330,7 @@ TabuAdjMatrix<T>* TabuSearch<T>::start() {
 		currFit = neighboursFit[selectedIndex];
 		tabuList->add(neighbours[selectedIndex].deltdEdges);
 
+		assert(currSol->getNumEdges() == epsilon);
 		if (!aspirationCrit)
 			assert(!neighbours[selectedIndex].isTabu);
 

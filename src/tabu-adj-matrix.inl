@@ -391,10 +391,7 @@ void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
 		//and add new swapped edges.
 		this->nodeIdSwap(&swapEdge1); //standard representation
 		this->nodeIdSwap(&swapEdge2); //standard representation
-		std::vector<grEdge> vec;
-		vec.push_back(swapEdge1);
-		vec.push_back(swapEdge2);
-		if (tabuList->isTabu(vec))
+		if (tabuList->isTabu(swapEdge1) || tabuList->isTabu(swapEdge2))
 			continue;
 
 		if (rng() % 2 == 0) {

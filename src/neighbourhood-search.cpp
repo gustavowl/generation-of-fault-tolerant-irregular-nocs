@@ -70,11 +70,44 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 		edgeToSwap1 = neigh->deltdEdges[0];
 		edgeToSwap2 = edgeToAdd;
 
-		neigh->sol->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
-				&tabuSlctdEdges);
+		//there are two possible swaps for each selected edge
+		TabuList<bool> tabuSwaps;
+		for (size_t i = 0; i < 2; i++) {
+			neigh->sol->swapEdgesNodes(&edgeToSwap1, &edgeToSwap2,
+					&tabuSwaps);
+			//edges swapped may not be valid.
+			if (neigh->sol->isEdgeInvalid(edgeToSwap1) ||
+					neigh->sol->isEdgeInvalid(edgeToSwap2)) {
+				break;
+			}
+			//If solution is tabu, traceback and
+			//add swaped edges to a tabuList and re-run
+			if (!aspirationCrit && tabuList->isTabu(neigh->sol)) {
+				neigh->sol->delEdge(edgeToSwap1);
+				neigh->sol->delEdge(edgeToSwap2);
+				neigh->sol->addEdge(neigh->deltdEdges[0]);
+				neigh->sol->addEdge(edgeToAdd);
 
-		//edges swapped may not be valid. Add edgeToAdd to a
-		//tabuList and select another edge.	
+				tabuSwaps.add(edgeToSwap1);
+				tabuSwaps.add(edgeToSwap2);
+
+				if (i + 1 < 2) {
+					edgeToSwap1 = neigh->deltdEdges[0];
+					edgeToSwap2 = edgeToAdd;
+				}
+				else { //i == 2, stop
+					//used to verify that swap is valid
+					edgeToSwap1 = neigh->sol->generateInvalidEdge();
+					edgeToSwap2 = neigh->sol->generateInvalidEdge();
+				}
+				continue;
+			}
+			//if tabu is not considered, or valid solution found, stop
+			break;
+		}
+
+		//No swap for edgeToAdd may be valid.
+		//Add edgeToAdd to a tabu list and select another edge.	
 		if (neigh->sol->isEdgeInvalid(edgeToSwap1) ||
 				neigh->sol->isEdgeInvalid(edgeToSwap2)) {
 
@@ -85,10 +118,7 @@ bool NeighbourhoodSearch::swap(Neighbour* neigh) {
 		//adds the second edge deleted (before swap) to list
 		neigh->deltdEdges.push_back(edgeToAdd);
 		//check if edges swapped are tabu
-		std::vector<boolEdge> vec;
-		vec.push_back(edgeToSwap1);
-		vec.push_back(edgeToSwap2);
-		neigh->isTabu = tabuList->isTabu(vec);
+		neigh->isTabu = tabuList->isTabu(neigh->sol);
 		return true;
 	}
 	//POINT OF kNOw RETURN
@@ -101,18 +131,41 @@ bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh) {
 			minDegree) ? edgeToDel.orig : edgeToDel.dest;
 
 	boolEdge spinned;
+	TabuList<bool> tabuSpins;
 
 	if (aspirationCrit) {
-		TabuList<bool> emptyTabu;
 		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, maxDegree,
-				&emptyTabu);
+				&tabuSpins);
 	}
 	else {
-		spinned = neigh->sol->spinEdge(edgeToDel, fixedNode, maxDegree,
-				tabuList);
+		for (size_t i = 0; i < tabuList->size(); i++)
+			tabuSpins.add(tabuList->at(i));
+		for (size_t i = 0; i < neigh->sol->getNodeDegree(fixedNode);
+				i++) {
+			spinned = neigh->sol->spinEdge(edgeToDel, fixedNode,
+					maxDegree, &tabuSpins);
+
+			//unable to select an edge not in tabuList
+			if (neigh->sol->isEdgeInvalid(spinned))
+				break;
+			//checks if solution is tabu
+			if (tabuList->isTabu(neigh->sol)) {
+				//traceback
+				neigh->sol->delEdge(spinned);
+				neigh->sol->addEdge(edgeToDel);
+				//spinned edge cannot be chosen again
+				tabuSpins.add(spinned);
+				//used to verify if solution is valid
+				spinned = neigh->sol->generateInvalidEdge();
+				//rerun
+				continue;
+			}
+			//valid solution
+			break;
+		}
 	}
 
-	neigh->isTabu = tabuList->isTabu(spinned);
+	neigh->isTabu = tabuList->isTabu(neigh->sol);
 
 	return !neigh->sol->isEdgeInvalid(spinned);
 }
@@ -135,7 +188,7 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	TabuList<bool> tabuEdgesToAdd;
 	tabuEdgesToAdd.add(neigh->deltdEdges[0]);
 
-	while(tabuSpins.size() < neigh->sol->getNodeDegree(maxDegNode)) {
+	while(tabuSpins.size() < maxDegree) {
 		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, &tabuSpins,
 				true);
 
@@ -150,20 +203,20 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 			continue;
 		}
 
-		std::vector<boolEdge> mv;
-		mv.push_back(edgeToAdd);
-		mv.push_back(spinned);
-		if (!aspirationCrit && tabuList->isTabu(mv)) {
+		neigh->sol->addEdge(edgeToAdd);
+		neigh->isTabu = tabuList->isTabu(neigh->sol);
+		if (!aspirationCrit && neigh->isTabu) {
 			//if movement is tabu, undo
 			neigh->sol->delEdge(spinned);
 			neigh->sol->addEdge(edgeToSpin);
+			neigh->sol->delEdge(edgeToAdd);
 			tabuSpins.add(edgeToSpin);
 			continue;
 		}
 
 		neigh->deltdEdges.push_back(edgeToSpin);
+		neigh->sol->delEdge(edgeToAdd);
 		neigh->sol->addEdge(neigh->deltdEdges[0]);
-		neigh->isTabu = tabuList->isTabu(mv);
 		return true;
 	}
 
@@ -176,33 +229,48 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 
 	neigh->sol->delEdge(neigh->deltdEdges[0]);
 
-	TabuList<bool> emptyTabu;
+	TabuList<bool> tabuSpins;
+	if (!aspirationCrit)
+		for (size_t i = 0; i < tabuList->size(); i++)
+			tabuSpins.add(tabuList->at(i));
 	boolEdge* edgesAdded;
 
-	if (aspirationCrit) {
+	while (true) {
 		edgesAdded = neigh->sol->doubleSpinEdge( neigh->deltdEdges[0],
-				edgeToAdd, maxDegree, &emptyTabu);
+				edgeToAdd, maxDegree, &tabuSpins);
+
+		if (edgesAdded == NULL) {
+			neigh->sol->addEdge(neigh->deltdEdges[0]);
+			return false;
+		}
+		neigh->sol->addEdge(edgeToAdd);
+		neigh->isTabu = tabuList->isTabu(neigh->sol);
+
+		if (!aspirationCrit && neigh->isTabu) {
+			//traceback and re-run
+			neigh->sol->addEdge(edgesAdded[0]);
+			neigh->sol->addEdge(edgesAdded[1]);
+			neigh->sol->delEdge(edgesAdded[2]);
+			neigh->sol->delEdge(edgesAdded[3]);
+			std::vector<boolEdge> mv;
+			mv.push_back(edgesAdded[2]);
+			mv.push_back(edgesAdded[3]);
+			delete[] edgesAdded;
+			tabuSpins.add(mv);
+			neigh->sol->delEdge(edgeToAdd);
+			continue;
+		}
+
+		neigh->sol->delEdge(edgeToAdd);
+		neigh->sol->addEdge(neigh->deltdEdges[0]);
+
+		neigh->deltdEdges.push_back(edgesAdded[0]);
+		neigh->deltdEdges.push_back(edgesAdded[1]);
+		delete[] edgesAdded;
+
+		return true;
 	}
-	else {
-		edgesAdded = neigh->sol->doubleSpinEdge(neigh->deltdEdges[0],
-				edgeToAdd, maxDegree, tabuList);
-	}
-
-	neigh->sol->addEdge(neigh->deltdEdges[0]);
-
-	if (edgesAdded == NULL)
-		return false;
-
-	neigh->deltdEdges.push_back(edgesAdded[0]);
-	neigh->deltdEdges.push_back(edgesAdded[1]);
-	std::vector<boolEdge> mv;
-	mv.push_back(edgeToAdd);
-	mv.push_back(edgesAdded[2]);
-	mv.push_back(edgesAdded[3]);
-	neigh->isTabu = tabuList->isTabu(mv);
-	delete[] edgesAdded;
-
-	return true;
+	//POINT OF kNOw RETURN
 }
 
 bool NeighbourhoodSearch::neighbourhoodStep(
@@ -228,14 +296,15 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 			tabuEdgesToAdd.add(tabuList->at(i));
 	}
 
-	size_t possibilities = neigh->sol->maxNumEdges() -
-		neigh->sol->getNumEdges() - tabuEdgesToAdd.size();
 	boolEdge edgeToAdd;
 	NeighbourStatus addStatus;
 
-	for (; possibilities > 0; possibilities--) {
+	while (true) {
 		edgeToAdd = neigh->sol->selectRandomEdge(
 				&tabuEdgesToAdd, false);
+		if (neigh->sol->isEdgeInvalid(edgeToAdd))
+			return false;
+
 		addStatus = predictAddActionStatus(neigh, edgeToAdd);
 
 		switch (addStatus) {
@@ -258,11 +327,16 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 		//default case. Add edge
 		neigh->sol->delEdge(neigh->deltdEdges[0]);
 		neigh->sol->addEdge(edgeToAdd);
+		neigh->isTabu = tabuList->isTabu(neigh->sol);
 		//if aspirationCrit = false, a tabu edge may have been selected.
 		//This value may have already been set in previously called
 		//methods.
-		if (tabuList->isTabu(edgeToAdd))
-			neigh->isTabu = true;
+		if (!aspirationCrit && neigh->isTabu) {
+			neigh->sol->addEdge(neigh->deltdEdges[0]);
+			neigh->sol->delEdge(edgeToAdd);
+			tabuEdgesToAdd.add(edgeToAdd);
+			continue;
+		}
 
 		return true;
 	}

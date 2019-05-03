@@ -30,13 +30,13 @@ private:
 	//Deallocades both adjm and degrees pointers.
 	void setInvalid();
 
-	grEdge generateInvalidEdge();
-
 	//returns the n-th node with largest or smallest degree from the
 	//list sent.
 	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
 			size_t rankPos, bool largest);
 public:
+	grEdge generateInvalidEdge();
+
 	//returns if an edge is valid.
 	//If the nodes' ids are in the limited range (< numNodes),
 	//if edge is not a self-loop and if edge's value is
