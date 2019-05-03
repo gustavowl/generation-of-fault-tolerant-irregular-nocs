@@ -28,6 +28,9 @@ public:
 
 	bool isTabu(std::vector<grEdge> edges);
 
+	//verifies if graph contains tabu edges
+	bool isTabu(GraphRepresentation<T>* graph);
+
 	void add(grEdge edge);
 
 	void add(std::vector<grEdge> edge);
