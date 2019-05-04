@@ -41,7 +41,7 @@ template <class T>
 void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 	//sets initial variables
 	boolEdge edge;
-	edge.value = initSol->getNullEdgeValue();
+	edge.value = !initSol->getNullEdgeValue();
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
@@ -73,16 +73,14 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
 						false);
 				edge.dest = smlNeighbour;
-			} while(tl.isTabu(edge));
+			} while(smlNeighbour == largest || tl.isTabu(edge));
 			//	2.4 - add edge between these two nodes
 			if (initSol->edgeExists(edge)) {
 				//edge exists, add target node to tl
 				tl.add(edge);
 				continue;
 			}
-			edge.value = !edge.value;
 			initSol->addEdge(edge);
-			edge.value = !edge.value;
 
 			//3 - check if graph is disconnected
 			//	3.1 - Dijkstra
@@ -264,6 +262,34 @@ void TabuSearch<T>::removeTabuNeighbours(
 }
 
 template <class T>
+bool TabuSearch<T>::generateNeighbourhood(
+		TabuAdjMatrix<bool>* currSol,
+		std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+		std::vector<T>* neighboursFit, bool aspirationCrit) {
+
+	NeighbourhoodSearch::Neighbour neigh;
+	for (size_t i = 0; i < epsilon; i++) {
+		//generates random neighbourhood movements
+		neigh = neighSearch.generateNeighbour(
+					currSol, tabuList, aspirationCrit);
+
+		if (neigh.sol == NULL)
+			break;
+
+		neighbours->push_back(neigh);
+		//computes neighbours' fitness
+		neighboursFit->push_back(fitness(neigh.sol));
+
+		if (!aspirationCrit) {
+			assert(neigh.sol != NULL);
+			assert(!neigh.isTabu);
+		}
+	}
+
+	return !neighbours->empty() && neighbours->at(0).sol != NULL;
+}
+
+template <class T>
 TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 
 	//TODO: print/save seed
@@ -297,14 +323,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 		//searches first epsilon random neighbours
 		//this is feasible since epsilon's upper bound is
 		//2 * numNodes (check generateInitSol())
-		for (size_t i = 0; i < epsilon; i++) {
-			//generates random neighbourhood movements
-			neighbours.push_back(neighSearch.generateNeighbour(
-						currSol, tabuList, true));
-			assert(neighbours[i].sol != NULL);
-			//computes neighbours' fitness
-			neighboursFit.push_back(fitness(neighbours[i].sol));
-		}
+		generateNeighbourhood(currSol, &neighbours, &neighboursFit, true);
 
 		//searches for aspiration criterea
 		selectedIndex = searchAspirationCriteria(&neighboursFit, bestFit);
@@ -317,22 +336,16 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 			if (!neighbours.empty())
 				selectedIndex = selectBestNeighbour(&neighboursFit);
 			else {
-				//if all are tabu, generate non tabu neighbour
-				//TODO generate multiple non-tabu neighbours
-				//and choose best one
-				neighbours.push_back(
-						neighSearch.generateNeighbour(currSol,
-							tabuList, false));
-				if (neighbours[0].sol == NULL) {
+				//if all are tabu, generate non tabu neighbourhood
+				//and choose best neighbour
+				if (!generateNeighbourhood(currSol,	&neighbours,
+							&neighboursFit, false)) {
 					currSol->print();
 					std::cout << "Unable to generate non-tabu neighbour" <<
 						"\nReturning best solution found..." << std::endl;
 					break;
 				}
-				neighboursFit.push_back(fitness(neighbours[0].sol));
-				selectedIndex = 0;
-				assert(neighbours[0].sol != NULL);
-				assert(!neighbours[0].isTabu);
+				selectedIndex = selectBestNeighbour(&neighboursFit);
 			}
 		}
 

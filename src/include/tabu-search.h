@@ -112,6 +112,10 @@ public:
 			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
 			std::vector<T>* neighboursFit);
 
+	bool generateNeighbourhood(TabuAdjMatrix<bool>* currSol, 
+			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+			std::vector<T>* neighboursFit, bool aspirationCrit);
+
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed
 	//with latency. The Tabu Search should maximise fault tolerance
