@@ -290,15 +290,16 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 	if (incidentNode >= this->numNodes || tabuList == NULL)
 		return this->generateInvalidEdge();
 
-	e.orig = incidentNode;
-	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
+	for (size_t i = 0; i < this->numNodes; i++) {
 
-		if (e.orig == e.dest)
+		if (i == incidentNode || degrees[i] >= upperDestDeg)
 			continue;
+		e.orig = incidentNode;
+		e.dest = i;
+		this->nodeIdSwap(&e);
 
 		if ( ((existent && this->edgeExists(e)) ||
 				(!existent && !this->edgeExists(e))) &&
-				degrees[e.dest] < upperDestDeg &&
 				!tabuList->isTabu(e) ) {
 
 			inLimits++;
@@ -311,10 +312,16 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 	size_t randomVal = rng() % inLimits;
 	size_t count = 0;
 
-	for (e.dest = 0; e.dest < this->numNodes; e.dest++) {
+	for (size_t i = 0; i < this->numNodes; i++) {
 
-		if ( e.orig == e.dest || degrees[e.dest] >= upperDestDeg ||
-				tabuList->isTabu(e) )
+		if (i == incidentNode || degrees[i] >= upperDestDeg)
+			continue;
+
+		e.orig = incidentNode;
+		e.dest = i;
+		this->nodeIdSwap(&e);
+
+		if (tabuList->isTabu(e))
 			continue;
 
 		if ( (existent && this->edgeExists(e)) ||
@@ -322,7 +329,6 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 
 			if (count == randomVal) {
 				e.value = this->getEdgeValue(e);
-				this->nodeIdSwap(&e);
 				return e;
 			}
 
@@ -429,7 +435,7 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode) {
 
 	grEdge spinned = selectRandomEdge(fixedNode, false);
 
-	if (this->isEdgeInvalid(spinned)) {
+	if (this->isEdgeInvalid(spinned, false)) {
 		//SHOULD BE NEVER REACHED
 		return this->generateInvalidEdge();
 	}
@@ -453,8 +459,8 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 	grEdge spinned = selectRandomEdge(fixedNode, upperDestDeg,
 			tabuList, false);
 
-	if (this->isEdgeInvalid(spinned))
-		return spinned;
+	if (this->isEdgeInvalid(spinned, false))
+		return this->generateInvalidEdge();
 
 	spinned.value = edge.value;
 	this->delEdge(edge);
