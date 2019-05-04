@@ -313,7 +313,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	size_t count = 0;
 	size_t totalCount = 0;
 	size_t selectedIndex;
-	bool aspirationCrit;
+	bool aspirationCrit = false;
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
