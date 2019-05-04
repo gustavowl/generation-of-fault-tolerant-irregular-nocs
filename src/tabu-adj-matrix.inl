@@ -477,8 +477,12 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		return NULL;
 
 	TabuList<T> tabuOrigEdges;
-	tabuOrigEdges.add(deltdEdge);
-	while (tabuOrigEdges.size() < degrees[targets.orig]) {
+	TabuList<T> tabuSpinnedOrig;
+	for (size_t i = 0; i < tabuList->size(); i++)
+		tabuSpinnedOrig.add(tabuList->at(i));
+	tabuSpinnedOrig.add(deltdEdge);
+
+	while (true) {
 		grEdge origEdge = this->selectRandomEdge(targets.orig,
 				&tabuOrigEdges, true);
 
@@ -489,7 +493,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		size_t fixedNode = (origEdge.orig == targets.orig) ?
 			origEdge.dest : origEdge.orig;
 		grEdge spinnedOrig = this->spinEdge(origEdge, fixedNode,
-			upperDestDeg, tabuList);
+			upperDestDeg, &tabuSpinnedOrig);
 		if (this->isEdgeInvalid(spinnedOrig)) {
 			tabuOrigEdges.add(origEdge);
 			continue;
@@ -497,9 +501,14 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 
 		//select second edge to spin
 		TabuList<T> tabuDestEdges;
-		tabuDestEdges.add(deltdEdge);
-		tabuDestEdges.add(spinnedOrig);
-		while(tabuDestEdges.size() - 1 < degrees[targets.dest]) {
+
+		TabuList<T> tabuSpinnedDest;
+		for (size_t i = 0; i < tabuList->size(); i++)
+			tabuSpinnedDest.add(tabuList->at(i));
+		tabuSpinnedDest.add(deltdEdge);
+		tabuSpinnedDest.add(origEdge);
+
+		while(true) {
 			grEdge destEdge = this->selectRandomEdge(targets.dest,
 					&tabuDestEdges, true);
 
@@ -509,7 +518,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 			fixedNode = (destEdge.dest == targets.dest) ?
 				destEdge.orig : destEdge.dest;
 			grEdge spinnedDest = this->spinEdge(destEdge, fixedNode,
-				upperDestDeg, tabuList);
+				upperDestDeg, &tabuSpinnedDest);
 			if (this->isEdgeInvalid(spinnedDest)) {
 				tabuDestEdges.add(destEdge);
 				continue;
@@ -517,14 +526,13 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 
 			//verify if movement is tabu
 			std::vector<grEdge> mv;
-			mv.push_back(targets);
 			mv.push_back(spinnedOrig);
 			mv.push_back(spinnedDest);
 			if (tabuList->isTabu(mv)) {
 				//undoes movement
 				this->delEdge(spinnedDest);
 				this->addEdge(destEdge);
-				tabuDestEdges.add(destEdge);
+				tabuSpinnedDest.add(spinnedDest);
 				continue;
 			}
 
@@ -541,6 +549,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		//failed. Undo
 		this->delEdge(spinnedOrig);
 		this->addEdge(origEdge);
+		tabuSpinnedOrig.add(spinnedOrig);
 		tabuOrigEdges.add(origEdge);
 	}
 

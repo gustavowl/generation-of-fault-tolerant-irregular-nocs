@@ -192,8 +192,8 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, &tabuSpins,
 				true);
 
-		size_t spinCentre = (neigh->sol->getNodeDegree(edgeToSpin.orig)
-				== maxDegree) ? edgeToSpin.dest : edgeToSpin.orig;
+		size_t spinCentre = (edgeToSpin.orig == maxDegNode) ?
+			edgeToSpin.dest : edgeToSpin.orig;
 
 		spinned = neigh->sol->spinEdge(edgeToSpin, spinCentre,
 					maxDegree, &tabuEdgesToAdd);
@@ -233,6 +233,7 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 	if (!aspirationCrit)
 		for (size_t i = 0; i < tabuList->size(); i++)
 			tabuSpins.add(tabuList->at(i));
+	tabuSpins.add(neigh->deltdEdges[0]);
 	boolEdge* edgesAdded;
 
 	while (true) {
@@ -302,9 +303,10 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 	while (true) {
 		edgeToAdd = neigh->sol->selectRandomEdge(
 				&tabuEdgesToAdd, false);
-		if (neigh->sol->isEdgeInvalid(edgeToAdd))
+		if (neigh->sol->isEdgeInvalid(edgeToAdd, false))
 			return false;
 
+		edgeToAdd.value = !neigh->sol->getNullEdgeValue();
 		addStatus = predictAddActionStatus(neigh, edgeToAdd);
 
 		switch (addStatus) {
