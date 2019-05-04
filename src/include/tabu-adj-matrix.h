@@ -19,11 +19,6 @@ private:
 	//stores the nodes' degree 9refer to getNodeDegree())
 	size_t* degrees;
 
-	//swaps the nodes' ids to fit in the format of the
-	//triangular matrix. For instance, (0, 1) is mapped
-	//to (1, 0) while (1, 0) would remain unchanged.
-	void nodeIdSwap(grEdge* edge) const;
-
 	//Called by destructor.
 	//Called when constructors are unable to allocate memory.
 	//If any element (edge or node) was added, it is destroyed.
@@ -35,6 +30,11 @@ private:
 	size_t getNodeWithNthDegreeFromList(std::vector<size_t> nodes,
 			size_t rankPos, bool largest);
 public:
+	//swaps the nodes' ids to fit in the format of the
+	//triangular matrix. For instance, (0, 1) is mapped
+	//to (1, 0) while (1, 0) would remain unchanged.
+	void nodeIdSwap(grEdge* edge) const;
+
 	grEdge generateInvalidEdge();
 
 	//returns if an edge is valid.

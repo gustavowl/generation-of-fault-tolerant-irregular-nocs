@@ -40,8 +40,10 @@ bool TabuSearch<T>::isFeasible(TabuAdjMatrix<bool>* sol) {
 template <class T>
 void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 	//sets initial variables
-	boolEdge edge;
-	edge.value = !initSol->getNullEdgeValue();
+	boolEdge edgeToDel;
+	boolEdge edgeToAdd;
+	edgeToDel.value = !initSol->getNullEdgeValue();
+	edgeToAdd.value = !initSol->getNullEdgeValue();
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
@@ -52,16 +54,17 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 		size_t lrgNeighbour = initSol->getNeighbourWithNthDegree(
 				0, largest, true);
 		//1.3 - remove edge
-		edge.orig = largest;
-		edge.dest = lrgNeighbour;
-		initSol->delEdge(edge);
+		edgeToDel.orig = largest;
+		edgeToDel.dest = lrgNeighbour;
+		initSol->nodeIdSwap(&edgeToDel);
+		initSol->delEdge(edgeToDel);
 		
 		//2 - add edge
 		//	2.1 - identify node with smallest degree
 		size_t smallest = initSol->getNodeWithNthDegree(0, false);
 		//	2.2 - create empty tl of target nodes
 		TabuList<bool> tl = TabuList<bool>(initSol->getNumNodes());
-		edge.orig = smallest;
+		edgeToAdd.orig = smallest;
 
 		while (true) {
 			//	2.3 - identify second node with smallest degree
@@ -72,15 +75,16 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 				rankPos++;
 				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
 						false);
-				edge.dest = smlNeighbour;
-			} while(smlNeighbour == largest || tl.isTabu(edge));
+				edgeToAdd.dest = smlNeighbour;
+				initSol->nodeIdSwap(&edgeToAdd);
+			} while(edgeToAdd.equalsTo(edgeToDel, false) || tl.isTabu(edgeToAdd));
 			//	2.4 - add edge between these two nodes
-			if (initSol->edgeExists(edge)) {
+			if (initSol->edgeExists(edgeToAdd)) {
 				//edge exists, add target node to tl
-				tl.add(edge);
+				tl.add(edgeToAdd);
 				continue;
 			}
-			initSol->addEdge(edge);
+			initSol->addEdge(edgeToAdd);
 
 			//3 - check if graph is disconnected
 			//	3.1 - Dijkstra
@@ -90,9 +94,9 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 			//	3.2 - if disconnected
 			if (numHops == HOP_INF) {
 				//	3.2.1 - remove edge
-				initSol->delEdge(edge);
+				initSol->delEdge(edgeToAdd);
 				//	3.2.2 - add target node to a TabuList
-				tl.add(edge);
+				tl.add(edgeToAdd);
 				//	3.2.3 - go back to step 2.3
 				continue;
 			}
