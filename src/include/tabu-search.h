@@ -58,20 +58,19 @@ private:
 	//enough for \-/ node, degree(node) in [2, 4].
 	TabuAdjMatrix<bool>* generateInitSol();
 
-	//Computes QAP. The tg nodes are mapped to sol nodes.
-	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)
-	//for all edges e_{ij} in tg.
-	//
-	//This method returns a T value. If a path does
-	//not exist from i to j in the solution, then
-	//valueLimit is returned, indicating that sol is
-	//unfiasible (and disconnected).
-	//tg.value is an alias for the edge's weight.
-	//
-	//tg: task graph
-	//sol: solution
-	//valueLimit: max value for T
-	T fitness(const TabuAdjMatrix<bool>* sol);
+	size_t selectBestNeighbour(std::vector<T>* neighboursFit);
+
+
+	size_t searchAspirationCriteria(std::vector<T>* neighboursFit,
+			T bestFit);
+
+	void removeTabuNeighbours(
+			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+			std::vector<T>* neighboursFit);
+
+	bool generateNeighbourhood(TabuAdjMatrix<bool>* currSol, 
+			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
+			std::vector<T>* neighboursFit, bool aspirationCrit);
 
 	//TODO: DELETEME used for debugging:
 	//anchor for gdb
@@ -103,18 +102,20 @@ public:
 	//solutions and in the neighbours.
 	void setEpsilon(size_t epsilon);
 
-	size_t selectBestNeighbour(std::vector<T>* neighboursFit);
-
-
-	size_t searchAspirationCriteria(std::vector<T>* neighboursFit, T bestFit);
-
-	void removeTabuNeighbours(
-			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
-			std::vector<T>* neighboursFit);
-
-	bool generateNeighbourhood(TabuAdjMatrix<bool>* currSol, 
-			std::vector<NeighbourhoodSearch::Neighbour>* neighbours,
-			std::vector<T>* neighboursFit, bool aspirationCrit);
+	//Computes QAP. The tg nodes are mapped to sol nodes.
+	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)
+	//for all edges e_{ij} in tg.
+	//
+	//This method returns a T value. If a path does
+	//not exist from i to j in the solution, then
+	//valueLimit is returned, indicating that sol is
+	//unfiasible (and disconnected).
+	//tg.value is an alias for the edge's weight.
+	//
+	//tg: task graph
+	//sol: solution
+	//valueLimit: max value for T
+	T fitness(const TabuAdjMatrix<bool>* sol);
 
 	//Tabu search receives a task graph and attempts to minimise
 	//the QAP function. The QAP function is directly relationed
