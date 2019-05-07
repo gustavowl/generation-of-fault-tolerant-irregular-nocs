@@ -8,16 +8,18 @@
 #include "rng.h"
 #include "tabu-list.h"
 #include <vector>
+#include "statistics.h"
 
 template <class T>
 class Benchmark {
-public:
+private:
+	GraphRepresentation<T>* taskGraph;
+	T weightInf;
+	TabuAdjMatrix<bool>* topology;
 	//returns a copy of graph after randomly deleting
 	//floor(perc * |E|) links.
 	//perc \in [0, 1]
-	static TabuAdjMatrix<bool>* failLinks(
-			const TabuAdjMatrix<bool>* graph,
-			double perc);
+	TabuAdjMatrix<bool>* failLinks(double perc);
 
 	//calculates the communication of each graph's edge
 	//according to tg by using TabuSearch's fitness
@@ -28,9 +30,17 @@ public:
 	//weight of 7 in the resulting graph.
 	//(0, 1).weight += 7
 	//(1, 2).weight += 7
-	static TabuAdjMatrix<T>* edgeCommCost(
-			const GraphRepresentation<T>* tg,
-			const TabuAdjMatrix<bool>* graph, T weightInf);
+	TabuAdjMatrix<T>* edgeCommCost();
+
+public:
+	Benchmark();
+	~Benchmark();
+
+	void setTaskGraph(const GraphRepresentation<T>* tg);
+	void setTopology(const TabuAdjMatrix<bool>* graph);
+	void setWeightInf(const T inf);
+
+	void start();
 };
 
 #include "../benchmark.inl"
