@@ -188,6 +188,12 @@ GraphRepresentation<T>* AdjacencyMatrix<T>::copy() const {
 }
 
 template <class T>
+std::string AdjacencyMatrix<T>::toStr() const {
+	//TODO: implement AdjacencyMatrix toStr()
+	return "TODO: implement AdjacencyMatrix toStr()";
+}
+
+template <class T>
 bool AdjacencyMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 	if (isSymmetric) {
 		return edge1.value == edge2.value &&

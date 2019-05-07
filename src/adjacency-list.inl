@@ -108,6 +108,12 @@ GraphRepresentation<T>* AdjacencyList<T>::copy() const {
 }
 
 template <class T>
+std::string AdjacencyList<T>::toStr() const {
+	//TODO: implement AdjacencyList toStr()
+	return "TODO: implement AdjacencyList toStr()";
+}
+
+template <class T>
 bool AdjacencyList<T>::areEdgesEqual(grEdge edge1,
 		grEdge edge2) {
 	return edge1.equalsTo(edge2);

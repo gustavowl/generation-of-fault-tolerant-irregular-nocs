@@ -209,6 +209,12 @@ TabuAdjMatrix<T>* TabuAdjMatrix<T>::copy() const {
 }
 
 template <class T>
+std::string TabuAdjMatrix<T>::toStr() const {
+	//TODO: implement TabuAdjMatrix toStr()
+	return "TODO: implement TabuAdjMatrix toStr()";
+}
+
+template <class T>
 bool TabuAdjMatrix<T>::areEdgesEqual(grEdge edge1, grEdge edge2) {
 	nodeIdSwap(&edge1);
 	nodeIdSwap(&edge2);

@@ -53,19 +53,21 @@ public:
 	TabuAdjMatrix(size_t numNodes, T nullEdgeValue);
 
 	// Destructor
-	virtual ~TabuAdjMatrix();
+	~TabuAdjMatrix();
 
-	virtual void addEdge(grEdge edge);
+	void addEdge(grEdge edge);
 
-	virtual void delEdge(grEdge edge);
+	void delEdge(grEdge edge);
 
-	virtual bool edgeExists(grEdge edge) const;
+	bool edgeExists(grEdge edge) const;
 
-	virtual T getEdgeValue(grEdge edge) const;
+	T getEdgeValue(grEdge edge) const;
 
-	virtual size_t getNodeDegree(size_t node) const;
+	size_t getNodeDegree(size_t node) const;
 
-	virtual TabuAdjMatrix<T>* copy() const;
+	TabuAdjMatrix<T>* copy() const;
+
+	std::string toStr() const;
 
 	virtual bool areEdgesEqual(grEdge edge1, grEdge edge2);
 

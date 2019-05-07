@@ -45,6 +45,8 @@ public:
 
 	GraphRepresentation<T>* copy() const;
 
+	std::string toStr() const;
+
 	bool areEdgesEqual(grEdge edge1, grEdge edge2);
 
 	// This function should be called in order to

@@ -74,6 +74,8 @@ public:
 
 	GraphRepresentation<T>* copy() const;
 
+	std::string toStr() const;
+
 	bool areEdgesEqual(grEdge edge1, grEdge edge2);
 };
 

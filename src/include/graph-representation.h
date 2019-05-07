@@ -59,6 +59,8 @@ public:
 
 	virtual GraphRepresentation<T>* copy() const = 0;
 
+	virtual std::string toStr() const = 0;
+
 	//returns a vector containing the next step neighbours.
 	//For an undirected graph:
 	//	a----b----c
