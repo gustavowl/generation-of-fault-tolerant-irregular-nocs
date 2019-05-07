@@ -59,6 +59,9 @@ int main(int argc, char *argv[]) {
 	ts.setDegreeLimits(2, 4);
 
 	TabuAdjMatrix<bool>* res = ts.start();
+	TabuAdjMatrix<size_t>* weighted = Benchmark<size_t>::edgeCommCost(
+			gr, res, HOP_INF);
+	weighted->print();
 
 	delete gr;
 
@@ -69,6 +72,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	delete res;
+	delete weighted;
 
 	return 0;
 }

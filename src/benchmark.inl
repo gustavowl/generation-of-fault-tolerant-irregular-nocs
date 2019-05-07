@@ -1,5 +1,6 @@
 template <class T>
-TabuAdjMatrix<bool>* failLinks(const TabuAdjMatrix<bool>* graph,
+TabuAdjMatrix<bool>* Benchmark<T>::failLinks(
+		const TabuAdjMatrix<bool>* graph,
 		double perc) {
 
 	if (perc < 0 || perc > 1)
@@ -19,8 +20,9 @@ TabuAdjMatrix<bool>* failLinks(const TabuAdjMatrix<bool>* graph,
 }
 
 template <class T>
-TabuAdjMatrix<T>* edgeCommCost(const GraphRepresentation<T>* tg,
-		const TabuAdjMatrix<bool>* graph) {
+TabuAdjMatrix<T>* Benchmark<T>::edgeCommCost(
+		const GraphRepresentation<T>* tg,
+		const TabuAdjMatrix<bool>* graph, T weightInf) {
 
 	size_t numNodes = graph->getNumNodes(); // == tg->getNumNodes()
 	TabuAdjMatrix<T>* costGraph = new TabuAdjMatrix<T>(numNodes, 0);
@@ -32,7 +34,8 @@ TabuAdjMatrix<T>* edgeCommCost(const GraphRepresentation<T>* tg,
 			if (tg->edgeExists(tgEdge)) {
 				//saves shortest path
 				std::vector<size_t> shortPath = Dijkstra<bool>::dijkstra(
-						graph, tgEdge.orig, tgEdge.dest).shortPath;
+						graph, tgEdge.orig, tgEdge.dest,
+						weightInf, false).shortPath;
 
 				//updates the weight of the costGraph acording to
 				//shortestPath found.

@@ -30,7 +30,7 @@ public:
 	//(1, 2).weight += 7
 	static TabuAdjMatrix<T>* edgeCommCost(
 			const GraphRepresentation<T>* tg,
-			const TabuAdjMatrix<bool>* graph);
+			const TabuAdjMatrix<bool>* graph, T weightInf);
 };
 
 #include "../benchmark.inl"
