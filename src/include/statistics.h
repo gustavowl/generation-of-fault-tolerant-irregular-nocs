@@ -13,6 +13,7 @@ private:
 	double stdDev;
 	T fitness; //alias to weightSum
 	bool disconnected;
+	TabuAdjMatrix<T>* weightedGraph;
 
 public:
 	T getMinWeight() const;
@@ -21,6 +22,7 @@ public:
 	double getStdDev() const;
 	T getFitness() const;
 	bool isDisconnected() const;
+	TabuAdjMatrix<T>* getWeightedGraph();
 
 	Statistics();
 	~Statistics();
@@ -34,7 +36,7 @@ public:
 	//weight of 7 in the resulting graph.
 	//(0, 1).weight += 7
 	//(1, 2).weight += 7
-	TabuAdjMatrix<T>* edgeCommCost(
+	void edgeCommCost(
 			const GraphRepresentation<T>* tg,
 			const TabuAdjMatrix<bool>* graph,
 			T weightInf);

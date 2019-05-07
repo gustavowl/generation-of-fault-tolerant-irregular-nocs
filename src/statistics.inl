@@ -29,22 +29,33 @@ bool Statistics<T>::isDisconnected() const {
 }
 
 template <class T>
+TabuAdjMatrix<T>* Statistics<T>::getWeightedGraph() {
+	return this->weightedGraph;
+}
+
+template <class T>
 Statistics<T>::Statistics(){
+	weightedGraph = NULL;
 }
 
 template <class T>
 Statistics<T>::~Statistics(){
+	if (weightedGraph != NULL)
+		delete weightedGraph;
 }
 
 template <class T>
-TabuAdjMatrix<T>* Statistics<T>::edgeCommCost(
+void Statistics<T>::edgeCommCost(
 		const GraphRepresentation<T>* tg,
 		const TabuAdjMatrix<bool>* graph,
 		T weightInf) {
 
 	this->disconnected = false;
 	size_t numNodes = graph->getNumNodes();// == tg->getNumNodes()
-	TabuAdjMatrix<T>* costGraph = new TabuAdjMatrix<T>(numNodes,
+
+	if (weightedGraph != NULL)
+		delete weightedGraph;
+	weightedGraph = new TabuAdjMatrix<T>(numNodes,
 			weightInf);
 
 	grEdge cgEdge;
@@ -55,7 +66,7 @@ TabuAdjMatrix<T>* Statistics<T>::edgeCommCost(
 			if (graph->edgeExists(bEdge)) {
 				cgEdge.orig = bEdge.orig;
 				cgEdge.dest = bEdge.dest;
-				costGraph->addEdge(cgEdge);
+				weightedGraph->addEdge(cgEdge);
 			}
 		}
 	}
@@ -73,21 +84,19 @@ TabuAdjMatrix<T>* Statistics<T>::edgeCommCost(
 					this->disconnected = true;
 					continue;
 				}
-				//updates the weight of the costGraph acording to
+				//updates the weight of the weightedGraph acording to
 				//shortestPath found.
 				//shortest path is a list of nodes.
 				for (size_t i = 1; i < ret.shortPath.size(); i++) {
 					cgEdge.orig = ret.shortPath[i - 1];
 					cgEdge.dest = ret.shortPath[i];
 					cgEdge.value += tg->getEdgeValue(tgEdge);
-					costGraph->delEdge(cgEdge);
-					costGraph->addEdge(cgEdge);
+					weightedGraph->delEdge(cgEdge);
+					weightedGraph->addEdge(cgEdge);
 				}
 			}
 		}
 	}	
-
-	return costGraph;
 }
 
 template <class T>
@@ -102,12 +111,12 @@ void Statistics<T>::computeTopologyStats(
 	size_t numNodes = topology->getNumNodes();
 	grEdge edge;
 
-	TabuAdjMatrix<T>* graph = edgeCommCost(tg, topology, weightInf);
+	edgeCommCost(tg, topology, weightInf);
 
 	for (edge.orig = 1; edge.orig < numNodes; edge.orig++) {
 		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
-			if (graph->edgeExists(edge)) {
-				val = graph->getEdgeValue(edge);
+			if (weightedGraph->edgeExists(edge)) {
+				val = weightedGraph->getEdgeValue(edge);
 				if (firstEdgeFound) {
 					maxWeight = (val > maxWeight)? val : maxWeight;
 					minWeight = (val < minWeight)? val : minWeight;
@@ -123,22 +132,20 @@ void Statistics<T>::computeTopologyStats(
 		}
 	}
 
-	meanWeight = fitness / (double) graph->getNumEdges();
+	meanWeight = fitness / (double) weightedGraph->getNumEdges();
 
 	//computes standard deviation
 	stdDev = 0;
 	for (edge.orig = 1; edge.orig < numNodes; edge.orig++) {
 		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
-			if (graph->edgeExists(edge)) {
-				stdDev += pow((double)graph->getEdgeValue(edge) -
+			if (weightedGraph->edgeExists(edge)) {
+				stdDev += pow((double)weightedGraph->getEdgeValue(edge) -
 						(double)meanWeight, 2);
 			}
 		}
 	}
 
-	stdDev = sqrt(stdDev / graph->getNumEdges());
+	stdDev = sqrt(stdDev / weightedGraph->getNumEdges());
 
-	graph->print();
-
-	delete graph;
+	weightedGraph->print();
 }

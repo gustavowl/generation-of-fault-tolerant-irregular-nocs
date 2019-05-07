@@ -9,6 +9,7 @@
 #include "tabu-list.h"
 #include <vector>
 #include "statistics.h"
+#include "file-manager.h"
 
 template <class T>
 class Benchmark {

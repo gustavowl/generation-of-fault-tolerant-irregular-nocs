@@ -66,8 +66,8 @@ void Benchmark<T>::start() {
 			failTopology = failLinks(perc);
 			
 			//stats
-			stats.computeTopologyStats(taskGraph,
-					failTopology, weightInf);
+			stats.computeTopologyStats(taskGraph, failTopology,
+					weightInf);
 			
 			//TODO: write to file
 			std::cout << "\n=========" << perc*100 <<
@@ -79,6 +79,10 @@ void Benchmark<T>::start() {
 			std::cout << "stdDev: " << stats.getStdDev() << "\n";
 			std::cout << "fitness: " << stats.getFitness() << "\n";
 			std::cout << "discon: "<< stats.isDisconnected() << std::endl;
+			
+			FileManager::writeLine("linetest.txt", "line");
+			FileManager::writeFile("filetest.txt",
+					stats.getWeightedGraph());
 
 			delete failTopology;
 		}

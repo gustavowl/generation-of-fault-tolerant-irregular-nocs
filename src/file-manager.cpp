@@ -142,7 +142,8 @@ void FileManager::writeLine(std::ofstream* file, std::string line) {
 void FileManager::writeLine(std::string filepath, std::string line) {
 	std::ofstream file;
 
-	file.open(filepath);
+	//fstream::app to append line
+	file.open(filepath, std::fstream::out | std::fstream::app);
 
 	if (!file.is_open())
 		return;
