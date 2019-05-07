@@ -130,11 +130,13 @@ void Statistics<T>::computeTopologyStats(
 	for (edge.orig = 1; edge.orig < numNodes; edge.orig++) {
 		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
 			if (graph->edgeExists(edge)) {
-				stdDev += pow(graph->getEdgeValue(edge) - meanWeight, 2);
+				stdDev += pow((double)graph->getEdgeValue(edge) -
+						(double)meanWeight, 2);
 			}
 		}
 	}
-	stdDev = stdDev / (graph->getNumEdges() - 1);
+
+	stdDev = sqrt(stdDev / graph->getNumEdges());
 
 	graph->print();
 

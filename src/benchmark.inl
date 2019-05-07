@@ -73,12 +73,12 @@ void Benchmark<T>::start() {
 			std::cout << "\n=========" << perc*100 <<
 				"%=====" << i + 1 << "/30=====\n";
 			failTopology->print();
-			std::cout << stats.getMinWeight() << "\n";
-			std::cout << stats.getMaxWeight() << "\n";
-			std::cout << stats.getMeanWeight() << "\n";
-			std::cout << stats.getStdDev() << "\n";
-			std::cout << stats.getFitness() << "\n";
-			std::cout << stats.isDisconnected() << std::endl;
+			std::cout << "min: " << stats.getMinWeight() << "\n";
+			std::cout << "max: " << stats.getMaxWeight() << "\n";
+			std::cout << "mean: " << stats.getMeanWeight() << "\n";
+			std::cout << "stdDev: " << stats.getStdDev() << "\n";
+			std::cout << "fitness: " << stats.getFitness() << "\n";
+			std::cout << "discon: "<< stats.isDisconnected() << std::endl;
 
 			delete failTopology;
 		}
