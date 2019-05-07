@@ -4,27 +4,35 @@ T Statistics<T>::getMinWeight() const {
 }
 
 template <class T>
-T getMaxWeight() const{
+T Statistics<T>::getMaxWeight() const{
 	return this->maxWeight;
 }
 
 template <class T>
-double getMeanWeight() const{
+double Statistics<T>::getMeanWeight() const{
 	return this->meanWeight;
 }
 
 template <class T>
-double getStdDev() const{
+double Statistics<T>::getStdDev() const{
 	return this->stdDev;
 }
 
 template <class T>
-T getFitness(){
+T Statistics<T>::getFitness(){
 	return this->fitness;
 }
 
 template <class T>
-void computeGraphStats(TabuAdjMatrix<T>* graph){
+Statistics<T>::Statistics(){
+}
+
+template <class T>
+Statistics<T>::~Statistics(){
+}
+
+template <class T>
+void Statistics<T>::computeGraphStats(TabuAdjMatrix<T>* graph){
 	//compute min and max edge weight
 	T val;
 	fitness = 0; //alias for weight sum
@@ -54,7 +62,7 @@ void computeGraphStats(TabuAdjMatrix<T>* graph){
 	meanWeight = fitness / (double) graph->getNumEdges();
 
 	//computes standard deviation
-	stdDEv = 0;
+	stdDev = 0;
 	for (edge.orig = 1; edge.orig < numNodes; edge.orig++) {
 		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
 			if (graph->edgeExists(edge)) {
@@ -62,5 +70,5 @@ void computeGraphStats(TabuAdjMatrix<T>* graph){
 			}
 		}
 	}
-	stdDev = stdDev / (this->getNumEdges() - 1);
+	stdDev = stdDev / (graph->getNumEdges() - 1);
 }

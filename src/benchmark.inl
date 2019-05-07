@@ -18,7 +18,8 @@ TabuAdjMatrix<bool>* Benchmark<T>::failLinks(double perc) {
 }
 
 template <class T>
-TabuAdjMatrix<T>* Benchmark<T>::edgeCommCost() {
+TabuAdjMatrix<T>* Benchmark<T>::edgeCommCost(
+		TabuAdjMatrix<bool>* graph) {
 
 	size_t numNodes = topology->getNumNodes();//==taskGraph->getNumNodes()
 	TabuAdjMatrix<T>* costGraph = new TabuAdjMatrix<T>(numNodes, 0);
@@ -30,7 +31,7 @@ TabuAdjMatrix<T>* Benchmark<T>::edgeCommCost() {
 			if (taskGraph->edgeExists(tgEdge)) {
 				//saves shortest path
 				std::vector<size_t> shortPath = Dijkstra<bool>::dijkstra(
-						topology, tgEdge.orig, tgEdge.dest,
+						graph, tgEdge.orig, tgEdge.dest,
 						weightInf, false).shortPath;
 
 				//updates the weight of the costGraph acording to
@@ -40,7 +41,7 @@ TabuAdjMatrix<T>* Benchmark<T>::edgeCommCost() {
 					cgEdge.orig = shortPath[i - 1];
 					cgEdge.dest = shortPath[i];
 					cgEdge.value = costGraph->getEdgeValue(cgEdge);
-					cgEdge.value += tg->getEdgeValue(tgEdge);
+					cgEdge.value += taskGraph->getEdgeValue(tgEdge);
 					costGraph->delEdge(cgEdge);
 					costGraph->addEdge(cgEdge);
 				}
@@ -60,6 +61,11 @@ Benchmark<T>::Benchmark() {
 
 template<class T>
 Benchmark<T>::~Benchmark() {
+	if (taskGraph != NULL)
+		delete taskGraph;
+	if (topology != NULL)
+		delete topology;
+
 	taskGraph = NULL;
 	topology = NULL;
 	weightInf = 0;
@@ -68,13 +74,13 @@ Benchmark<T>::~Benchmark() {
 template <class T>
 void Benchmark<T>::setTaskGraph(const GraphRepresentation<T>* tg) {
 	if (tg != NULL)
-		this->taskGraph = tg;
+		this->taskGraph = tg->copy();
 }
 
 template <class T>
 void Benchmark<T>::setTopology(const TabuAdjMatrix<bool>* graph) {
 	if (graph != NULL)
-		this->topology = graph;
+		this->topology = graph->copy();
 }
 
 template <class T>
@@ -86,5 +92,29 @@ template <class T>
 void Benchmark<T>::start() {
 	if (taskGraph == NULL || topology == NULL)
 		return;
-	//do magic
+
+	TabuAdjMatrix<bool>* failTopology;
+	TabuAdjMatrix<T>* weightedTopology;
+	Statistics<T> stats;
+	for (double perc = 0.1; perc < 0.35; perc += 0.05) {
+		for (unsigned int i = 0; i < 30; i++) {
+			failTopology = failLinks(perc);
+			weightedTopology = edgeCommCost(failTopology);
+			
+			//stats
+			stats.computeGraphStats(weightedTopology);
+			
+			//TODO: write to file
+			std::cout << "\n=========" << perc*100 <<
+				"%=====" << i + 1 << "/30=====\n";
+			std::cout << stats.getMinWeight() << "\n";
+			std::cout << stats.getMaxWeight() << "\n";
+			std::cout << stats.getMeanWeight() << "\n";
+			std::cout << stats.getStdDev() << "\n";
+			std::cout << stats.getFitness() << std::endl;
+
+			delete failTopology;
+			delete weightedTopology;
+		}
+	}
 }

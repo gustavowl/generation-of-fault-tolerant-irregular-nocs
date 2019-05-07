@@ -30,7 +30,7 @@ private:
 	//weight of 7 in the resulting graph.
 	//(0, 1).weight += 7
 	//(1, 2).weight += 7
-	TabuAdjMatrix<T>* edgeCommCost();
+	TabuAdjMatrix<T>* edgeCommCost(TabuAdjMatrix<bool>* graph);
 
 public:
 	Benchmark();

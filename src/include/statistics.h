@@ -17,6 +17,9 @@ public:
 	double getStdDev() const;
 	T getFitness();
 
+	Statistics();
+	~Statistics();
+
 	void computeGraphStats(TabuAdjMatrix<T>* graph);
 
 };

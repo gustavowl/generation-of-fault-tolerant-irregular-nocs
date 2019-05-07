@@ -59,17 +59,12 @@ int main(int argc, char *argv[]) {
 	ts.setDegreeLimits(2, 4);
 
 	TabuAdjMatrix<bool>* res = ts.start();
-	TabuAdjMatrix<size_t>* weighted = Benchmark<size_t>::edgeCommCost(
-			gr, res, HOP_INF);
-	weighted->print();
-
-	TabuAdjMatrix<bool>* failure;
-	for (double p = 0.1; p < 0.35; p += 0.05) {
-		failure = Benchmark<size_t>::failLinks(res, p);
-		std::cout << "============FAILURE " << p*100 <<
-			"%============"  << std::endl;
-		failure->print();
-	}
+	
+	Benchmark<size_t> bmk;
+	bmk.setTaskGraph(gr);
+	bmk.setTopology(res);
+	bmk.setWeightInf(HOP_INF);
+	bmk.start();
 
 	delete gr;
 
@@ -80,7 +75,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	delete res;
-	delete weighted;
 
 	return 0;
 }
