@@ -134,3 +134,34 @@ size_t FileManager::parseLine(std::string* line, size_t* values,
 
 	return size;
 }
+
+void FileManager::writeLine(std::ofstream* file, std::string line) {
+	*file << line << '\n';
+}
+
+void FileManager::writeLine(std::string filepath, std::string line) {
+	std::ofstream file;
+
+	file.open(filepath);
+
+	if (!file.is_open())
+		return;
+	
+	FileManager::writeLine(&file, line);
+
+	file.close();
+}
+
+void FileManager::writeFile(std::string filepath,
+		const GraphRepresentation<size_t>* graph) {
+	std::ofstream file;
+
+	file.open(filepath);
+
+	if (!file.is_open())
+		return;
+	
+	FileManager::writeLine(&file, graph->toStr());
+
+	file.close();
+}

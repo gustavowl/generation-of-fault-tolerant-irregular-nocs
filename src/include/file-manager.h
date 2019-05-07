@@ -25,6 +25,11 @@ public:
 	static GraphRepresentation<size_t>* readFile(std::string filepath,
 			FileType type, char separator=stdSeparator, char comment=stdComment);
 
+	static void writeLine(std::string filepath, std::string line);
+
+	static void writeFile(std::string filepath,
+			const GraphRepresentation<size_t>* graph);
+
 private:
 	static const char stdComment = '#';
 	static const char stdSeparator = ',';
@@ -47,6 +52,8 @@ private:
 	 */
 	static size_t parseLine(std::string* line, size_t* values,
 			char separator, char comment);
+
+	static void writeLine(std::ofstream* file, std::string line);
 };
 
 #endif
