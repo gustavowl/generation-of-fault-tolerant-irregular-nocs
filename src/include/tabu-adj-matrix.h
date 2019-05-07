@@ -67,6 +67,12 @@ public:
 
 	TabuAdjMatrix<T>* copy() const;
 
+	//returns string format ready to be saved into a file:
+	//numNodes,numEdges
+	//node,node,weight
+	//...
+	//the upper triangular matrix is written
+	//(not the standard representation format)
 	std::string toStr() const;
 
 	virtual bool areEdgesEqual(grEdge edge1, grEdge edge2);

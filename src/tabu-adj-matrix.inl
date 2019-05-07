@@ -210,8 +210,27 @@ TabuAdjMatrix<T>* TabuAdjMatrix<T>::copy() const {
 
 template <class T>
 std::string TabuAdjMatrix<T>::toStr() const {
-	//TODO: implement TabuAdjMatrix toStr()
-	return "TODO: implement TabuAdjMatrix toStr()";
+	//initializes empty strings
+	std::string ret = "";
+
+	//populates content
+	//head
+	ret += this->numNodes;
+	ret += ',' + this->numEdges;
+	//populates edges
+	grEdge edge;
+	for (size_t i = 0; i < this->numNodes - 1; i++) {
+		for (size_t j = i + 1; j < this->numNodes; j++) {
+			edge.orig = j;
+			edge.dest = i;
+			if (edgeExists(edge)) {
+				ret += '\n' + edge.dest + ',' + edge.orig + ',' +
+					getEdgeValue(edge);
+			}
+		}
+	}
+
+	return ret;
 }
 
 template <class T>
