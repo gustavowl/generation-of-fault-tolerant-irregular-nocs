@@ -5,6 +5,9 @@
 #include "tabu-search.h"
 #include "tabu-adj-matrix.h"
 #include "dijkstra.h"
+#include "rng.h"
+#include "tabu-list.h"
+#include <vector>
 
 template <class T>
 class Benchmark {
@@ -14,7 +17,7 @@ public:
 	//perc \in [0, 1]
 	static TabuAdjMatrix<bool>* failLinks(
 			const TabuAdjMatrix<bool>* graph,
-			float perc);
+			double perc);
 
 	//calculates the communication of each graph's edge
 	//according to tg by using TabuSearch's fitness
