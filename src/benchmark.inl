@@ -79,6 +79,8 @@ void Benchmark<T>::start() {
 			std::cout << "stdDev: " << stats.getStdDev() << "\n";
 			std::cout << "fitness: " << stats.getFitness() << "\n";
 			std::cout << "discon: "<< stats.isDisconnected() << std::endl;
+
+			std::cout << failTopology->toStr() << std::endl;
 			
 			FileManager::writeLine("linetest.txt", "line");
 			FileManager::writeFile("filetest.txt",

@@ -215,8 +215,8 @@ std::string TabuAdjMatrix<T>::toStr() const {
 
 	//populates content
 	//head
-	ret += this->numNodes;
-	ret += ',' + this->numEdges;
+	ret += std::to_string(this->numNodes);
+	ret += ',' + std::to_string(this->numEdges);
 	//populates edges
 	grEdge edge;
 	for (size_t i = 0; i < this->numNodes - 1; i++) {
@@ -224,8 +224,9 @@ std::string TabuAdjMatrix<T>::toStr() const {
 			edge.orig = j;
 			edge.dest = i;
 			if (edgeExists(edge)) {
-				ret += '\n' + edge.dest + ',' + edge.orig + ',' +
-					getEdgeValue(edge);
+				ret += '\n' + std::to_string(edge.dest) + ',' +
+					std::to_string(edge.orig) + ',' +
+					std::to_string(getEdgeValue(edge));
 			}
 		}
 	}
