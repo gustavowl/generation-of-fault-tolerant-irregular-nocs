@@ -53,6 +53,8 @@ public:
 
 	virtual T getEdgeValue(Edge edge) const = 0;
 
+	//TODO: getEdges() const = 0; //returns copy of edges
+
 	virtual size_t getNodeDegree(size_t node) const = 0;
 
 	virtual GraphRepresentation<T>* copy() const = 0;

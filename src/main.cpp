@@ -63,6 +63,14 @@ int main(int argc, char *argv[]) {
 			gr, res, HOP_INF);
 	weighted->print();
 
+	TabuAdjMatrix<bool>* failure;
+	for (double p = 0.1; p < 0.35; p += 0.05) {
+		failure = Benchmark<size_t>::failLinks(res, p);
+		std::cout << "============FAILURE " << p*100 <<
+			"%============"  << std::endl;
+		failure->print();
+	}
+
 	delete gr;
 
 	if (res == NULL) {
