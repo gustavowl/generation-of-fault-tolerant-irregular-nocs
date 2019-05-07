@@ -17,6 +17,7 @@ public:
 		size_t nodeId;
 		T weightSum;
 		size_t hops;
+		std::vector<size_t> shortPath; //shortest path
 	};
 
 	//Dijkstra's Algorithm interface.

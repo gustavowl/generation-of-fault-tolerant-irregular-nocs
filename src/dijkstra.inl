@@ -11,11 +11,15 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 	//initializes priority queue w/ origin node
 	std::vector<Node> minPriority (graph->getNumNodes());
 	for (size_t i = 0; i < graph->getNumNodes(); i++) {
-		minPriority[i] = Node { i, weightInf, HOP_INF };
-		nodes[i] = Node { i, weightInf, HOP_INF };
+		minPriority[i] = Node { i, weightInf, HOP_INF,
+			std::vector<size_t>() };
+		nodes[i] = Node { i, weightInf, HOP_INF,
+			std::vector<size_t>() };
 		wasVisited[i] = false;
 	}
-	minPriority[orig] = Node { orig, 0, 0 };
+	minPriority[orig].weightSum = 0;
+	minPriority[orig].hops = 0;
+	minPriority[orig].shortPath.push_back(orig);
 
 	//custom vars
 	Node selectedNode;
@@ -97,11 +101,16 @@ void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight) {
 	if (dest->weightSum > orig->weightSum + weight) {
 		dest->weightSum = orig->weightSum + weight;
 		dest->hops = orig->hops + 1;
+		dest->shortPath = orig->shortPath;
+		dest->shortPath.push_back(dest->nodeId);
 	}
 }
 
 template <class T>
 void Dijkstra<T>::relaxUnweighted(Node* orig, Node* dest) {
-	if (dest->hops > orig->hops + 1)
+	if (dest->hops > orig->hops + 1) {
 		dest->hops = orig->hops + 1;
+		dest->shortPath = orig->shortPath;
+		dest->shortPath.push_back(dest->nodeId);
+	}
 }
