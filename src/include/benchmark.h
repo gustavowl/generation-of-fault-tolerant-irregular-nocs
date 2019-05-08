@@ -10,6 +10,9 @@
 #include <vector>
 #include "statistics.h"
 #include "file-manager.h"
+#include <sys/stat.h>
+#include <string>
+#include <cstring>
 
 template <class T>
 class Benchmark {
@@ -17,10 +20,16 @@ private:
 	GraphRepresentation<T>* taskGraph;
 	T weightInf;
 	TabuAdjMatrix<bool>* topology;
+	std::string graphName;
+	std::string tabuStatsFilename;
 	//returns a copy of graph after randomly deleting
 	//floor(perc * |E|) links.
 	//perc \in [0, 1]
 	TabuAdjMatrix<bool>* failLinks(double perc);
+
+	void saveGraph(Statistics<T>* stats, std::string outputfile);
+	void saveGraphStats(Statistics<T>* stats, std::string outputfile,
+			std::string suffix);
 
 public:
 	Benchmark();
@@ -29,6 +38,10 @@ public:
 	void setTaskGraph(const GraphRepresentation<T>* tg);
 	void setTopology(const TabuAdjMatrix<bool>* graph);
 	void setWeightInf(const T inf);
+	void setGraphName(std::string gn);
+	void setTabuStatsFilename(std::string tsf);
+	void setUsedTabuArgs(std::string inputGraph, std::string outputfn,
+			size_t eps, size_t tlsize, size_t stopCrit, size_t numite);
 
 	void start();
 };

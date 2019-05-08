@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 			"\t3 - Number of edges in the output graph (epsilon);\n" <<
 			"\t4 - Tabu list size;\n" <<
 			"\t5 - Number of iterations with no improvements " <<
-			"(stop criteria)" << std::endl;
+			"(stop criterion)" << std::endl;
 		return -1;
 	}
 
@@ -64,6 +64,8 @@ int main(int argc, char *argv[]) {
 	bmk.setTaskGraph(gr);
 	bmk.setTopology(res);
 	bmk.setWeightInf(HOP_INF);
+	bmk.setGraphName("gname");
+	bmk.setTabuStatsFilename("tabu-stats.csv");
 	bmk.start();
 
 	delete gr;
