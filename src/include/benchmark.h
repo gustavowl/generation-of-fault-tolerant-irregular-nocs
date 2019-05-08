@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <string>
 #include <cstring>
+#include <algorithm>
 
 template <class T>
 class Benchmark {
@@ -29,6 +30,7 @@ private:
 	size_t tabuListSize;
 	size_t stopCriterion;
 	size_t performedIter;
+	std::string resDir = "res"; //resultDir
 
 	//returns a copy of graph after randomly deleting
 	//floor(perc * |E|) links.

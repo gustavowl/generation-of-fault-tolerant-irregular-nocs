@@ -73,8 +73,13 @@ void Benchmark<T>::setUsedTabuArgs(std::string inputGraph,
 
 template <class T>
 std::string Benchmark<T>::tabuSearchArgsToStr() {
+	std::string igpath = "..";
+	size_t size = std::count(resDir.begin(), resDir.end(), '/');
+	for (size_t i = 0; i < size; i++)
+		igpath += "/..";
+
 	std::string args = "";
-	args += inputGraph + ',';
+	args += igpath + '/' + inputGraph + ',';
 	args += graphName + '/' + outputFilename + ',';
 	args += std::to_string(epsilon) + ',';
 	args += std::to_string(tabuListSize) + ',';
@@ -87,7 +92,7 @@ template <class T>
 void Benchmark<T>::saveGraph(Statistics<T>* stats,
 		std::string outputfile) {
 
-	FileManager::writeFile(outputfile,
+	FileManager::writeFile(resDir + '/' + outputfile,
 			stats->getWeightedGraph());
 }
 
@@ -106,7 +111,7 @@ void Benchmark<T>::saveGraphStats(Statistics<T>* stats,
 	out += std::to_string(stats->getMeanWeight()) + ',';
 	out += std::to_string(stats->getStdDev());
 
-	FileManager::writeLine(outputfile, out);
+	FileManager::writeLine(resDir + '/' + outputfile, out);
 }
 
 template <class T>
@@ -114,14 +119,18 @@ void Benchmark<T>::start() {
 	if (taskGraph == NULL || topology == NULL)
 		return;
 
+	char rd[resDir.length() + 1];
+	strcpy(rd, resDir.c_str());
+	mkdir(rd, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	std::string gext = ".adjl"; //graph extension
 	std::string sext = ".csv"; //stats extension
 
 	Statistics<T> stats;
 
-	char gn[graphName.length() + 1];
-	strcpy(gn, graphName.c_str());
-	mkdir(gn, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	std::string gnPath = resDir + '/' + graphName;
+	char rdgn[gnPath.length() + 1];
+	strcpy(rdgn, gnPath.c_str());
+	mkdir(rdgn, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 
 	stats.computeTopologyStats(taskGraph, topology, weightInf);
 	saveGraph(&stats, graphName + '/' + graphName + gext);
@@ -129,7 +138,7 @@ void Benchmark<T>::start() {
 	saveGraphStats(&stats, tabuStatsFilename, suffix);
 
 	//fault-injection dir path
-	std::string finj = graphName + '/' + "fault-injection";
+	std::string finj = gnPath + '/' + "fault-injection";
 	char arrFinj[finj.length() + 1];
 	strcpy(arrFinj, finj.c_str());
 	mkdir(arrFinj, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -150,7 +159,8 @@ void Benchmark<T>::start() {
 			//stats
 			stats.computeTopologyStats(taskGraph, failTopology,
 					weightInf);
-			saveGraph(&stats, finj + '/' + failName + gext);
+			saveGraph(&stats, graphName + '/' + finj + '/' +
+					failName + gext);
 
 			suffix = finj + '/' + failName + gext + ',';
 			suffix += std::to_string(int(perc*100));
