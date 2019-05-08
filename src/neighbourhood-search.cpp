@@ -205,6 +205,17 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 		}
 
 		neigh->sol->addEdge(edgeToAdd);
+		//checks if valid
+		if (neigh->sol->getNodeDegree(edgeToAdd.orig) > maxDegree ||
+				neigh->sol->getNodeDegree(edgeToAdd.dest) > maxDegree) {
+			//invalid, traceback
+			neigh->sol->delEdge(spinned);
+			neigh->sol->addEdge(edgeToSpin);
+			neigh->sol->delEdge(edgeToAdd);
+			tabuEdgesToAdd.add(spinned);
+		}
+
+
 		neigh->isTabu = tabuList->isTabu(neigh->sol);
 		if (!aspirationCrit && neigh->isTabu) {
 			//if movement is tabu, undo

@@ -503,10 +503,10 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		return NULL;
 
 	TabuList<T> tabuOrigEdges;
-	TabuList<T> tabuSpinnedOrig;
-	for (size_t i = 0; i < tabuList->size(); i++)
-		tabuSpinnedOrig.add(tabuList->at(i));
+	TabuList<T> tabuSpinnedOrig = *tabuList;
+	TabuList<T> tabuTargets;
 	tabuSpinnedOrig.add(deltdEdge);
+	grEdge tabuTarget;
 
 	while (true) {
 		grEdge origEdge = this->selectRandomEdge(targets.orig,
@@ -518,8 +518,18 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		//first edge to spin selected. Spin it
 		size_t fixedNode = (origEdge.orig == targets.orig) ?
 			origEdge.dest : origEdge.orig;
+		tabuTargets = tabuSpinnedOrig;
+		tabuTarget.orig = fixedNode;
+		tabuTarget.dest = targets.orig;
+		nodeIdSwap(&tabuTarget);
+		tabuTargets.add(tabuTarget);
+		tabuTarget.orig = fixedNode;
+		tabuTarget.dest = targets.dest;
+		nodeIdSwap(&tabuTarget);
+		tabuTargets.add(tabuTarget);
+
 		grEdge spinnedOrig = this->spinEdge(origEdge, fixedNode,
-			upperDestDeg, &tabuSpinnedOrig);
+			upperDestDeg, &tabuTargets);
 		if (this->isEdgeInvalid(spinnedOrig)) {
 			tabuOrigEdges.add(origEdge);
 			continue;
@@ -528,9 +538,7 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		//select second edge to spin
 		TabuList<T> tabuDestEdges;
 
-		TabuList<T> tabuSpinnedDest;
-		for (size_t i = 0; i < tabuList->size(); i++)
-			tabuSpinnedDest.add(tabuList->at(i));
+		TabuList<T> tabuSpinnedDest = *tabuList;
 		tabuSpinnedDest.add(deltdEdge);
 		tabuSpinnedDest.add(origEdge);
 
@@ -543,8 +551,18 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 
 			fixedNode = (destEdge.dest == targets.dest) ?
 				destEdge.orig : destEdge.dest;
+			tabuTargets = tabuSpinnedDest;
+			tabuTarget.orig = fixedNode;
+			tabuTarget.dest = targets.orig;
+			nodeIdSwap(&tabuTarget);
+			tabuTargets.add(tabuTarget);
+			tabuTarget.orig = fixedNode;
+			tabuTarget.dest = targets.dest;
+			nodeIdSwap(&tabuTarget);
+			tabuTargets.add(tabuTarget);
+
 			grEdge spinnedDest = this->spinEdge(destEdge, fixedNode,
-				upperDestDeg, &tabuSpinnedDest);
+				upperDestDeg, &tabuTargets);
 			if (this->isEdgeInvalid(spinnedDest)) {
 				tabuDestEdges.add(destEdge);
 				continue;
