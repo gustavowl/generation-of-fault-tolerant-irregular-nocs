@@ -6,6 +6,20 @@
 #include "include/tabu-adj-matrix.h"
 #include "include/tabu-search.h"
 #include "include/benchmark.h"
+#include <sys/time.h>
+
+std::string getTime() {
+	timeval curTime;
+	gettimeofday(&curTime, NULL);
+	int milli = curTime.tv_usec / 1000;
+
+	char buffer [80];
+	strftime(buffer, 80, "%Y-%m-%d %H:%M:%S", localtime(&curTime.tv_sec));
+
+	char currentTime[84] = "";
+	sprintf(currentTime, "%s:%d", buffer, milli);
+	return currentTime;
+}
 
 int main(int argc, char *argv[]) {
 	if (argc != 7) {
@@ -20,7 +34,9 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	std::cout << "Reading \"" << argv[1] << "\" file..." << std::endl;
+	std::string currTime = getTime();
+	std::cout << currTime << "\tReading \"" << argv[1] << "\" file... " <<
+		std::endl;
 
 	GraphRepresentation<size_t>* gr = FileManager::readFile(
 			argv[1], FileManager::FileType::adj_list, argv[2][0]);
@@ -32,13 +48,11 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	std::cout << "Done." << std::endl;
-
 	TabuAdjMatrix<bool> adjm = TabuAdjMatrix<bool>(
 			gr->getNumNodes(), false);
 	GraphConverter::convert(gr, &adjm);
 	
-	std::cout << "Graph read from file:\n" <<
+	/*std::cout << "Graph read from file:\n" <<
 		"==============================" << std::endl;
 	gr->print();
 	std::cout << "==============================" << std::endl;
@@ -48,9 +62,8 @@ int main(int argc, char *argv[]) {
 
 	std::cout << "==============================" << std::endl;
 	std::cout << gr->getNumEdges() << ' ' << adjm.getNumEdges() <<
-		std::endl;
+		std::endl;*/
 
-	std::cout << "Begins Tabu Search..." << std::endl;
 	TabuSearch<size_t> ts;
 	ts.setTaskGraph(gr);
 	ts.setEpsilon(std::stoi(argv[3]));
@@ -59,6 +72,8 @@ int main(int argc, char *argv[]) {
 	ts.setFitnessLimit(std::numeric_limits<size_t>::max());
 	ts.setDegreeLimits(2, 4);
 
+	currTime = getTime();
+	std::cout << currTime << "\tBegins Tabu Search... " << std::endl;
 	TabuAdjMatrix<bool>* res = ts.start();
 	
 	Benchmark<size_t> bmk;
@@ -69,6 +84,11 @@ int main(int argc, char *argv[]) {
 	bmk.setUsedTabuArgs(argv[1], argv[6], std::stoi(argv[3]),
 			std::stoi(argv[4]), std::stoi(argv[5]),
 			ts.getPerformedIterations());
+
+	currTime = getTime();	
+	std::cout << currTime <<
+		"\tBegins resulted topology benchmarking... " <<
+		std::endl;
 	bmk.start();
 
 	delete gr;

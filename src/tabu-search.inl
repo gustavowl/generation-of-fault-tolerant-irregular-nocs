@@ -322,11 +322,10 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
-		currSol->print();
-		//std::cout << currSol->toInt64() << std::endl;
-		std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
-		std::cout << "Fit: " << currFit << '\n';
-		std::cout << count << '/' << stopCriteria << std::endl;
+		//currSol->print();
+		//std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
+		//std::cout << "Fit: " << currFit << '\n';
+		//std::cout << count << '/' << stopCriteria << std::endl;
 
 		//searches neighbourhood
 		//searches first epsilon random neighbours
@@ -389,10 +388,10 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	delete currSol;
 	//TODO: create new matrix from bestSol.
 	//	Compute QAP for each edge, then return
-	std::cout << "\n\nBEST SOLUTION\n";
-	bestSol->print();
-	std::cout << "Fitness: " << bestFit;
-	std::cout << "\nTotal iterations: " << performedIterations << std::endl;
+	//std::cout << "\n\nBEST SOLUTION\n";
+	//bestSol->print();
+	//std::cout << "Fitness: " << bestFit;
+	//std::cout << "\nTotal iterations: " << performedIterations << std::endl;
 
 	//TODO: return solution set
 	return bestSol;
