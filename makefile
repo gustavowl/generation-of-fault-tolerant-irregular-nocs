@@ -19,16 +19,17 @@ INLS = $(patsubst %, $(SRCDIR)/%, $(_INLS))
 
 GCC = g++
 CFLAGS = -std=c++11 -I$(INCDIR) -Wall
+OPTMIZATIONFLAGS = -O3
 DEBUGFLAGS = -g -O0
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS) $(INLS)
-	$(GCC) -c -o $@ $< $(CFLAGS) $(DEBUGFLAGS)
+	$(GCC) -c -o $@ $< $(CFLAGS)
 
 gftinoc: $(OBJS)
-	$(GCC) $^ -o $@ $(CFLAGS)
+	$(GCC) $(OPTMIZATIONFLAGS) $^ -o $@ $(CFLAGS)
 
 debug: $(OBJS)
-	$(GCC)  $^ -o $@ $(CFLAGS) 
+	$(GCC) $(DEBUGFLAGS) $^ -o $@ $(CFLAGS)
 
 clean:
 	rm -f $(OBJDIR)/*.o

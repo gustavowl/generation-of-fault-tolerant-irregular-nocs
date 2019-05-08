@@ -23,7 +23,7 @@ std::string getTime() {
 
 int main(int argc, char *argv[]) {
 	if (argc != 7) {
-		std::cout << "Invalid number of arguments! Five expected:\n" <<
+		std::cout << "Invalid number of arguments! Six expected:\n" <<
 			"\t1 - Path to .adjl file;\n" <<
 			"\t2 - Value separator (',' is the standard);\n" <<
 			"\t3 - Number of edges in the output graph (epsilon);\n" <<
