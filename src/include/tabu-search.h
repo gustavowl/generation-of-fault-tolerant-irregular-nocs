@@ -18,6 +18,7 @@ private:
 	//solutions are computed as boolean graphs
 	TabuList<bool>* tabuList;
 	NeighbourhoodSearch neighSearch;
+	size_t performedIterations;
 
 	//removes/adds edges until |E| = epsilon.
 	//called by generateInitSol.
@@ -101,6 +102,8 @@ public:
 	//technique is used. Epsilon fixes the number of edges in the
 	//solutions and in the neighbours.
 	void setEpsilon(size_t epsilon);
+
+	size_t getPerformedIterations();
 
 	//Computes QAP. The tg nodes are mapped to sol nodes.
 	//QAP = sum_{e_{ij}} sol.hops(i, j) * tg.value(i, j)

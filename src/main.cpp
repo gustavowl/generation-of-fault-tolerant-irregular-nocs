@@ -67,7 +67,8 @@ int main(int argc, char *argv[]) {
 	bmk.setWeightInf(HOP_INF);
 	bmk.setTabuStatsFilename("tabu-stats.csv");
 	bmk.setUsedTabuArgs(argv[1], argv[6], std::stoi(argv[3]),
-			std::stoi(argv[4]), std::stoi(argv[5]), 2112);
+			std::stoi(argv[4]), std::stoi(argv[5]),
+			ts.getPerformedIterations());
 	bmk.start();
 
 	delete gr;

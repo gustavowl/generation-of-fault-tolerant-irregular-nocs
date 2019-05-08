@@ -146,6 +146,4 @@ void Statistics<T>::computeTopologyStats(
 	}
 
 	stdDev = sqrt(stdDev / weightedGraph->getNumEdges());
-
-	weightedGraph->print();
 }

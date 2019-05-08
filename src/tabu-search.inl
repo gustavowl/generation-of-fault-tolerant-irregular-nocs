@@ -294,6 +294,11 @@ bool TabuSearch<T>::generateNeighbourhood(
 }
 
 template <class T>
+size_t TabuSearch<T>::getPerformedIterations() {
+	return this->performedIterations;
+}
+
+template <class T>
 TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 
 	//TODO: print/save seed
@@ -311,7 +316,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	TabuAdjMatrix<bool>* bestSol = currSol->copy(); 
 	T bestFit = currFit;
 	size_t count = 0;
-	size_t totalCount = 0;
+	performedIterations = 0;
 	size_t selectedIndex;
 	bool aspirationCrit = false;
 	
@@ -370,7 +375,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 		neighbours.clear();
 		neighboursFit.clear();
 
-		totalCount++;
+		performedIterations++;
 		if (currFit < bestFit) {
 			count = 0;
 			delete bestSol;
@@ -387,7 +392,7 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	std::cout << "\n\nBEST SOLUTION\n";
 	bestSol->print();
 	std::cout << "Fitness: " << bestFit;
-	std::cout << "\nTotal iterations: " << totalCount << std::endl;
+	std::cout << "\nTotal iterations: " << performedIterations << std::endl;
 
 	//TODO: return solution set
 	return bestSol;

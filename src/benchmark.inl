@@ -75,7 +75,7 @@ template <class T>
 std::string Benchmark<T>::tabuSearchArgsToStr() {
 	std::string args = "";
 	args += inputGraph + ',';
-	args += outputFilename + '/' + outputFilename + ".adjl" + ',';
+	args += graphName + '/' + outputFilename + ',';
 	args += std::to_string(epsilon) + ',';
 	args += std::to_string(tabuListSize) + ',';
 	args += std::to_string(stopCriterion) + ',';
