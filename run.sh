@@ -45,6 +45,16 @@ for sc in ${STOP_CRITERION[*]}; do
 					otpt=$(echo `expr "$graph" : '\(\(\([^/]\)*/\)*\)'`)
 					pos=${#otpt}
 					otpt=${graph:pos}
+					echo $otpt
+					otpt=$(echo `expr "$otpt" : '\(\([^\.]\)*\)'`)
+					otpt=$otpt"-sc"$sc"-tls"$tlsize"-eps"$epsilon"-exec"
+					if [ $i -lt 10 ]; then
+						otpt=$otpt'0'$i
+					else
+						otpt=$otpt$i
+					fi
+					otpt=$otpt".adjl"
+					echo $otpt
 
 					./gftinoc $graph $SEPARATOR $epsilon $tlsize $sc $otpt
 
