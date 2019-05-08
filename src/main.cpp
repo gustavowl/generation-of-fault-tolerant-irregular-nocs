@@ -8,14 +8,15 @@
 #include "include/benchmark.h"
 
 int main(int argc, char *argv[]) {
-	if (argc != 6) {
+	if (argc != 7) {
 		std::cout << "Invalid number of arguments! Five expected:\n" <<
 			"\t1 - Path to .adjl file;\n" <<
 			"\t2 - Value separator (',' is the standard);\n" <<
 			"\t3 - Number of edges in the output graph (epsilon);\n" <<
 			"\t4 - Tabu list size;\n" <<
 			"\t5 - Number of iterations with no improvements " <<
-			"(stop criterion)" << std::endl;
+			"(stop criterion)\n" <<
+		   	"\t6 - Output filename" << std::endl;
 		return -1;
 	}
 
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]) {
 	bmk.setTopology(res);
 	bmk.setWeightInf(HOP_INF);
 	bmk.setTabuStatsFilename("tabu-stats.csv");
-	bmk.setUsedTabuArgs(argv[1], "OUTPUT", std::stoi(argv[3]),
+	bmk.setUsedTabuArgs(argv[1], argv[6], std::stoi(argv[3]),
 			std::stoi(argv[4]), std::stoi(argv[5]), 2112);
 	bmk.start();
 
