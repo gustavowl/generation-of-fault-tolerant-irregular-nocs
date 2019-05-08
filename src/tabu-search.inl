@@ -75,6 +75,7 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 				rankPos++;
 				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
 						false);
+				edgeToAdd.orig = smallest;
 				edgeToAdd.dest = smlNeighbour;
 				initSol->nodeIdSwap(&edgeToAdd);
 			} while(edgeToAdd.equalsTo(edgeToDel, false) || tl.isTabu(edgeToAdd));
@@ -281,6 +282,7 @@ bool TabuSearch<T>::generateNeighbourhood(
 			break;
 
 		assert(isFeasible(neigh.sol));
+		assert(neigh.sol->getNumEdges() == epsilon);
 		if (!isFeasible(neigh.sol))
 			neigh.sol->print();
 
