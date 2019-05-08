@@ -64,8 +64,9 @@ int main(int argc, char *argv[]) {
 	bmk.setTaskGraph(gr);
 	bmk.setTopology(res);
 	bmk.setWeightInf(HOP_INF);
-	bmk.setGraphName("gname");
 	bmk.setTabuStatsFilename("tabu-stats.csv");
+	bmk.setUsedTabuArgs(argv[1], "OUTPUT", std::stoi(argv[3]),
+			std::stoi(argv[4]), std::stoi(argv[5]), 2112);
 	bmk.start();
 
 	delete gr;

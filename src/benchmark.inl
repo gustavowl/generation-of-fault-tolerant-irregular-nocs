@@ -54,24 +54,32 @@ void Benchmark<T>::setWeightInf(const T inf) {
 }
 
 template <class T>
-void Benchmark<T>::setGraphName(std::string gn) {
-	this->graphName = gn;
+void Benchmark<T>::setTabuStatsFilename(std::string tsf) {
+	this->tabuStatsFilename = tsf;
 }
 
 template <class T>
-void Benchmark<T>::setTabuStatsFilename(std::string tsf) {
-	this->tabuStatsFilename = tsf;
+void Benchmark<T>::setUsedTabuArgs(std::string inputGraph,
+		std::string outputfn, size_t eps, size_t tlsize,
+		size_t stopCrit, size_t numite) {
+	this->inputGraph = inputGraph;
+	this->outputFilename = outputfn;
+	this->epsilon = eps;
+	this->tabuListSize = tlsize;
+	this->stopCriterion = stopCrit;
+	this->performedIter = numite;
+	this->graphName = outputfn.substr(0, outputfn.find('.'));
 }
 
 template <class T>
 std::string Benchmark<T>::tabuSearchArgsToStr() {
 	std::string args = "";
 	args += inputGraph + ',';
-	args += outputFilename + ',';
+	args += outputFilename + '/' + outputFilename + ".adjl" + ',';
 	args += std::to_string(epsilon) + ',';
 	args += std::to_string(tabuListSize) + ',';
 	args += std::to_string(stopCriterion) + ',';
-	args += std::to_string(numIterations);
+	args += std::to_string(performedIter);
 	return args;
 }
 
@@ -125,19 +133,29 @@ void Benchmark<T>::start() {
 	char arrFinj[finj.length() + 1];
 	strcpy(arrFinj, finj.c_str());
 	mkdir(arrFinj, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	finj = "fault-injection";
 
 	TabuAdjMatrix<bool>* failTopology;
+	std::string failName = "";
 	for (double perc = 0.1; perc < 0.35; perc += 0.05) {
 		for (unsigned int i = 0; i < 30; i++) {
+			failName = graphName + "-perc" + std::to_string(
+					int(perc*100)) + "-exec";
+			if (i < 10)
+				failName += '0';
+			failName += std::to_string(i);
 
 			failTopology = failLinks(perc);
 			
 			//stats
 			stats.computeTopologyStats(taskGraph, failTopology,
 					weightInf);
-			saveGraph(&stats, finj + '/' + graphName + outputfile + gext);
+			saveGraph(&stats, finj + '/' + failName + gext);
+
+			suffix = finj + '/' + failName + gext + ',';
+			suffix += std::to_string(int(perc*100));
 			saveGraphStats(&stats, graphName + '/' + "fault-stats" +
-					sext);
+					sext, suffix);
 
 			delete failTopology;
 		}

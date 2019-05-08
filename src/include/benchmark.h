@@ -22,11 +22,20 @@ private:
 	TabuAdjMatrix<bool>* topology;
 	std::string graphName;
 	std::string tabuStatsFilename;
+	//tabu search args
+	std::string inputGraph;
+	std::string outputFilename;
+	size_t epsilon;
+	size_t tabuListSize;
+	size_t stopCriterion;
+	size_t performedIter;
+
 	//returns a copy of graph after randomly deleting
 	//floor(perc * |E|) links.
 	//perc \in [0, 1]
 	TabuAdjMatrix<bool>* failLinks(double perc);
 
+	std::string tabuSearchArgsToStr();
 	void saveGraph(Statistics<T>* stats, std::string outputfile);
 	void saveGraphStats(Statistics<T>* stats, std::string outputfile,
 			std::string suffix);
@@ -38,7 +47,6 @@ public:
 	void setTaskGraph(const GraphRepresentation<T>* tg);
 	void setTopology(const TabuAdjMatrix<bool>* graph);
 	void setWeightInf(const T inf);
-	void setGraphName(std::string gn);
 	void setTabuStatsFilename(std::string tsf);
 	void setUsedTabuArgs(std::string inputGraph, std::string outputfn,
 			size_t eps, size_t tlsize, size_t stopCrit, size_t numite);
