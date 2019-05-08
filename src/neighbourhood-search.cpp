@@ -172,14 +172,14 @@ bool NeighbourhoodSearch::spinMinDegree(Neighbour* neigh) {
 
 bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 		boolEdge edgeToAdd) {
+
+	neigh->sol->delEdge(neigh->deltdEdges[0]);
 	//select node with max degree.
 	//It will have one edge spinned randomly.
 	//The centre of the spin is the node adjacent to
 	//the one with max degree./
 	size_t maxDegNode = (neigh->sol->getNodeDegree(edgeToAdd.orig) ==
 			maxDegree) ? edgeToAdd.orig : edgeToAdd.dest;
-
-	neigh->sol->delEdge(neigh->deltdEdges[0]);
 	//select edge incident to spinCentre randomly,
 	//with the exception of the edgeToDel.
 	TabuList<bool> tabuSpins;
@@ -188,6 +188,7 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	TabuList<bool> tabuEdgesToAdd;
 	tabuEdgesToAdd.add(neigh->deltdEdges[0]);
 
+	std::cout << maxDegNode << std::endl;
 	while(tabuSpins.size() < maxDegree) {
 		edgeToSpin = neigh->sol->selectRandomEdge(maxDegNode, &tabuSpins,
 				true);
@@ -214,6 +215,12 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 			continue;
 		}
 
+		std::cout << "edge to spin: " << 
+			edgeToSpin.orig << "-" <<
+			edgeToSpin.dest << std::endl;
+		std::cout << "spinned edge: " << 
+			spinned.orig << "-" <<
+			spinned.dest << std::endl;
 		neigh->deltdEdges.push_back(edgeToSpin);
 		neigh->sol->delEdge(edgeToAdd);
 		neigh->sol->addEdge(neigh->deltdEdges[0]);
@@ -265,6 +272,12 @@ bool NeighbourhoodSearch::doubleSpinMaxDegree( Neighbour* neigh,
 		neigh->sol->delEdge(edgeToAdd);
 		neigh->sol->addEdge(neigh->deltdEdges[0]);
 
+		for (int i = 0; i < 4; i++) {
+			std::cout << "double spinned " << i << ": " << 
+				edgesAdded[i].orig << "-" <<
+				edgesAdded[i].dest << std::endl;
+		}
+
 		neigh->deltdEdges.push_back(edgesAdded[0]);
 		neigh->deltdEdges.push_back(edgesAdded[1]);
 		delete[] edgesAdded;
@@ -279,6 +292,10 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 
 	NeighbourStatus delStatus = predictDelActionStatus(neigh);
 
+	std::cout << "deleted edge: " << 
+		neigh->deltdEdges[0].orig << "-" <<
+		neigh->deltdEdges[0].dest << " (status " <<
+		delStatus << ')' << std::endl;
 	switch (delStatus) {
 		case del2mindeg:
 			return swap(neigh);
@@ -340,6 +357,10 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 			continue;
 		}
 
+		std::cout << "added edge: " << 
+			edgeToAdd.orig << "-" <<
+			edgeToAdd.dest << " (status " <<
+			addStatus << ')' << std::endl;
 		return true;
 	}
 
@@ -370,8 +391,10 @@ NeighbourhoodSearch::generateNeighbour(
 	neigh.deltdEdges.push_back(edgeToDel);
 	neigh.isTabu = false;
 
+	std::cout << std::endl;
 	while (! neighbourhoodStep(&neigh, tabuList, aspirationCrit)) {
 		//delete neighbour; SHOULD NOT BE NECESSARY TODO: DEBUG
+		std::cout << std::endl;
 		delTabuList.add(edgeToDel);
 
 		if (delTabuList.size() == currSol->getNumEdges()) {
@@ -383,6 +406,7 @@ NeighbourhoodSearch::generateNeighbour(
 		edgeToDel = neigh.sol->selectRandomEdge(&delTabuList);
 		neigh.deltdEdges[0] = edgeToDel;
 	}
+	std::cout << "EXIT" << std::endl;
 
 	this->tabuList = NULL;
 

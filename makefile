@@ -23,13 +23,13 @@ OPTMIZATIONFLAGS = -O3
 DEBUGFLAGS = -g -O0
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS) $(INLS)
-	$(GCC) -c -o $@ $< $(CFLAGS)
+	$(GCC) -c -o $@ $< $(CFLAGS) $(DEBUGFLAGS) 
 
 gftinoc: $(OBJS)
 	$(GCC) $(OPTMIZATIONFLAGS) $^ -o $@ $(CFLAGS)
 
 debug: $(OBJS)
-	$(GCC) $(DEBUGFLAGS) $^ -o $@ $(CFLAGS)
+	$(GCC) $^ -o $@ $(CFLAGS)
 
 clean:
 	rm -f $(OBJDIR)/*.o

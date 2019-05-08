@@ -280,6 +280,10 @@ bool TabuSearch<T>::generateNeighbourhood(
 		if (neigh.sol == NULL)
 			break;
 
+		assert(isFeasible(neigh.sol));
+		if (!isFeasible(neigh.sol))
+			neigh.sol->print();
+
 		neighbours->push_back(neigh);
 		//computes neighbours' fitness
 		neighboursFit->push_back(fitness(neigh.sol));
@@ -322,7 +326,8 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
-		//currSol->print();
+		std::cout << "========================CURRSOL=========================" << std::endl;
+		currSol->print();
 		//std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
 		//std::cout << "Fit: " << currFit << '\n';
 		//std::cout << count << '/' << stopCriteria << std::endl;
@@ -348,7 +353,6 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 				//and choose best neighbour
 				if (!generateNeighbourhood(currSol,	&neighbours,
 							&neighboursFit, false)) {
-					currSol->print();
 					std::cout << "Unable to generate non-tabu neighbour" <<
 						"\nReturning best solution found..." << std::endl;
 					break;
@@ -364,6 +368,9 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 		tabuList->add(neighbours[selectedIndex].deltdEdges);
 
 		assert(currSol->getNumEdges() == epsilon);
+		assert(isFeasible(currSol));
+		if (!isFeasible(currSol))
+			currSol->print();
 		if (!aspirationCrit)
 			assert(!neighbours[selectedIndex].isTabu);
 
