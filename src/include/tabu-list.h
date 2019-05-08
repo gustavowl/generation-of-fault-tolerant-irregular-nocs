@@ -18,6 +18,7 @@ public:
 	//TODO: set capacity
 	TabuList();
 	TabuList(size_t maxSize, bool cyclic=true);
+	TabuList(TabuList<T>* tl);
 
 	~TabuList();
 

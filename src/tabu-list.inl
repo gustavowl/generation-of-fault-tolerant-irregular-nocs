@@ -12,6 +12,14 @@ TabuList<T>::TabuList(size_t maxSize, bool cyclic) {
 }
 
 template <class T>
+TabuList<T>::TabuList(TabuList<T>* tl) {
+	index = 0;
+	tabuList.reserve(tl->tabuList.capacity());
+	this->tabuList = tl->tabuList;
+	this->cyclic = tl->cyclic;
+}
+
+template <class T>
 TabuList<T>::~TabuList() {
 }
 
