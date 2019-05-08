@@ -20,6 +20,14 @@ TabuList<T>::TabuList(TabuList<T>* tl) {
 }
 
 template <class T>
+void TabuList<T>::operator=(const TabuList<T> &tl) {
+	this->index = tl.index;
+	this->tabuList.reserver(tl.tabuList.capacity());
+	this->tabuList = tl.tabuList;
+	this->cyclic = tl.cyclic;
+}
+
+template <class T>
 TabuList<T>::~TabuList() {
 }
 

@@ -20,6 +20,8 @@ public:
 	TabuList(size_t maxSize, bool cyclic=true);
 	TabuList(TabuList<T>* tl);
 
+	void operator=(const TabuList<T> &tl);
+
 	~TabuList();
 
 	//verifies is edge is in tabuList. Only the origin
