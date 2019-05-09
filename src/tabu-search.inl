@@ -1,27 +1,29 @@
 template <class T>
 void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 
-	size_t frstIndex, scndIndex;
+	boolEdge edge;
 	while (epsilon < initSol->getNumEdges()) {
 		//removes edges
 		//computes positions of the two nodes with largest degrees
-		frstIndex = initSol->getNodeWithNthDegree(0, true);	
-		scndIndex = initSol->getNeighbourWithNthDegree(0,
-				frstIndex, true);	
+		edge.orig = initSol->getNodeWithNthDegree(0, true);	
+		edge.dest = initSol->getNeighbourWithNthDegree(0,
+				edge.orig, true);	
 
-		initSol->delEdge( boolEdge{
-				.orig=frstIndex, .dest=scndIndex} );
+		initSol->delEdge(edge);
 	}
 
+	edge.value = !initSol->getNullEdgeValue();
 	while (epsilon > initSol->getNumEdges()) {
 		//adds edges
 		//computes positions of the two nodes with smallest degrees
-		frstIndex = initSol->getNodeWithNthDegree(0, false);	
-		scndIndex = initSol->getNodeWithNthDegree(1, false);	
+		edge.orig = initSol->getNodeWithNthDegree(0, false);	
+		size_t scndPos = 0;
+		do {
+			scndPos++;
+			edge.dest = initSol->getNodeWithNthDegree(scndPos, false);
+		} while (initSol->edgeExists(edge));
 
-		initSol->addEdge( boolEdge{
-				.orig=frstIndex, .dest=scndIndex,
-				.value = !initSol->getNullEdgeValue()} );
+		initSol->addEdge(edge);
 	}
 }
 
