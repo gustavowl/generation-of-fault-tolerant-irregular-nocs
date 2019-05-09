@@ -55,7 +55,6 @@ for j in {0..2}; do
 						else
 							otpt=$otpt$mult
 						fi
-						otpt=$otpt$mult
 						otpt=$otpt".adjl"
 						echo $otpt
 
