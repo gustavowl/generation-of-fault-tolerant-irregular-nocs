@@ -281,8 +281,8 @@ bool TabuSearch<T>::generateNeighbourhood(
 		if (neigh.sol == NULL)
 			break;
 
-		assert(isFeasible(neigh.sol));
-		assert(neigh.sol->getNumEdges() == epsilon);
+		//assert(isFeasible(neigh.sol));
+		//assert(neigh.sol->getNumEdges() == epsilon);
 		if (!isFeasible(neigh.sol))
 			neigh.sol->print();
 
@@ -290,10 +290,10 @@ bool TabuSearch<T>::generateNeighbourhood(
 		//computes neighbours' fitness
 		neighboursFit->push_back(fitness(neigh.sol));
 
-		if (!aspirationCrit) {
-			assert(neigh.sol != NULL);
-			assert(!neigh.isTabu);
-		}
+		//if (!aspirationCrit) {
+		//	assert(neigh.sol != NULL);
+		//	assert(!neigh.isTabu);
+		//}
 	}
 
 	return !neighbours->empty() && neighbours->at(0).sol != NULL;
@@ -328,8 +328,8 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 	
 	while(count < stopCriteria) {
 		selectedIndex = 0;
-		std::cout << "========================CURRSOL=========================" << std::endl;
-		currSol->print();
+		//std::cout << "========================CURRSOL=========================" << std::endl;
+		//currSol->print();
 		//std::cout << "Aspiration criteria: " << aspirationCrit << '\n';
 		//std::cout << "Fit: " << currFit << '\n';
 		//std::cout << count << '/' << stopCriteria << std::endl;
@@ -369,12 +369,12 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 		currFit = neighboursFit[selectedIndex];
 		tabuList->add(neighbours[selectedIndex].deltdEdges);
 
-		assert(currSol->getNumEdges() == epsilon);
-		assert(isFeasible(currSol));
+		//assert(currSol->getNumEdges() == epsilon);
+		//assert(isFeasible(currSol));
 		if (!isFeasible(currSol))
 			currSol->print();
-		if (!aspirationCrit)
-			assert(!neighbours[selectedIndex].isTabu);
+		//if (!aspirationCrit)
+		//	assert(!neighbours[selectedIndex].isTabu);
 
 		//deallocates remaining solutions
 		neighbours.erase(neighbours.begin() + selectedIndex);
