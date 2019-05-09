@@ -281,19 +281,14 @@ bool TabuSearch<T>::generateNeighbourhood(
 		if (neigh.sol == NULL)
 			break;
 
-		//assert(isFeasible(neigh.sol));
-		//assert(neigh.sol->getNumEdges() == epsilon);
-		if (!isFeasible(neigh.sol))
-			neigh.sol->print();
+		assert(isFeasible(neigh.sol));
+		assert(neigh.sol->getNumEdges() == epsilon);
+		if (!aspirationCrit)
+			assert(!neigh.isTabu);
 
 		neighbours->push_back(neigh);
 		//computes neighbours' fitness
 		neighboursFit->push_back(fitness(neigh.sol));
-
-		//if (!aspirationCrit) {
-		//	assert(neigh.sol != NULL);
-		//	assert(!neigh.isTabu);
-		//}
 	}
 
 	return !neighbours->empty() && neighbours->at(0).sol != NULL;
@@ -368,13 +363,6 @@ TabuAdjMatrix<bool>* TabuSearch<T>::start() {
 		currSol = neighbours[selectedIndex].sol;
 		currFit = neighboursFit[selectedIndex];
 		tabuList->add(neighbours[selectedIndex].deltdEdges);
-
-		//assert(currSol->getNumEdges() == epsilon);
-		//assert(isFeasible(currSol));
-		if (!isFeasible(currSol))
-			currSol->print();
-		//if (!aspirationCrit)
-		//	assert(!neighbours[selectedIndex].isTabu);
 
 		//deallocates remaining solutions
 		neighbours.erase(neighbours.begin() + selectedIndex);

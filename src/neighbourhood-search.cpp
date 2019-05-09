@@ -300,7 +300,7 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 
 	NeighbourStatus delStatus = predictDelActionStatus(neigh);
 
-	std::cout << "delStatus: " << delStatus << std::endl;
+	//std::cout << "delStatus: " << delStatus << std::endl;
 	switch (delStatus) {
 		case del2mindeg:
 			return swap(neigh);
@@ -362,11 +362,11 @@ bool NeighbourhoodSearch::neighbourhoodStep(
 			continue;
 		}
 
-		std::cout << "addStatus: " << addStatus << std::endl;
+		//std::cout << "addStatus: " << addStatus << std::endl;
 		return true;
 	}
 
-	std::cout << "FAIL neighbourhood step" << std::endl;
+	//std::cout << "FAIL neighbourhood step" << std::endl;
 	return false;
 }
 
@@ -394,9 +394,9 @@ NeighbourhoodSearch::generateNeighbour(
 	neigh.deltdEdges.push_back(edgeToDel);
 	neigh.isTabu = false;
 
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	while (! neighbourhoodStep(&neigh, tabuList, aspirationCrit)) {
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		//delete neighbour; SHOULD NOT BE NECESSARY TODO: DEBUG
 		delTabuList.add(edgeToDel);
 
@@ -410,7 +410,7 @@ NeighbourhoodSearch::generateNeighbour(
 		neigh.deltdEdges[0] = edgeToDel;
 	}
 
-	std::cout << "EXIT" << std::endl;
+	//std::cout << "EXIT" << std::endl;
 	this->tabuList = NULL;
 
 	return neigh;
