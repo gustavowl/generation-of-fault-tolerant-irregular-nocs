@@ -497,7 +497,7 @@ grEdge TabuAdjMatrix<T>::spinEdge(grEdge edge, size_t fixedNode,
 
 template <class T>
 grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
-		size_t upperDestDeg, TabuList<T>* tabuList) {
+		size_t minDeg, size_t upperDestDeg, TabuList<T>* tabuList) {
 
 	if (targets.orig >= this->numNodes || targets.dest >= this->numNodes)
 		return NULL;
@@ -518,6 +518,17 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 		//first edge to spin selected. Spin it
 		size_t fixedNode = (origEdge.orig == targets.orig) ?
 			origEdge.dest : origEdge.orig;
+		size_t fixedDest = (origEdge.orig == targets.orig) ?
+			origEdge.orig : origEdge.dest;
+
+		if (degrees[fixedDest] - 1 < minDeg) {
+			tabuTarget.orig = fixedNode;
+			tabuTarget.dest = fixedDest;
+			nodeIdSwap(&tabuTarget);
+			tabuOrigEdges.add(tabuTarget);
+			continue;
+		}
+
 		tabuTargets = tabuSpinnedOrig;
 		tabuTarget.orig = fixedNode;
 		tabuTarget.dest = targets.orig;
@@ -551,6 +562,17 @@ grEdge* TabuAdjMatrix<T>::doubleSpinEdge(grEdge deltdEdge, grEdge targets,
 
 			fixedNode = (destEdge.dest == targets.dest) ?
 				destEdge.orig : destEdge.dest;
+			fixedDest = (destEdge.dest == targets.dest) ?
+				destEdge.dest : destEdge.orig;
+
+			if (degrees[fixedDest] - 1 < minDeg) {
+				tabuTarget.orig = fixedNode;
+				tabuTarget.dest = fixedDest;
+				nodeIdSwap(&tabuTarget);
+				tabuDestEdges.add(tabuTarget);
+				continue;
+			}
+
 			tabuTargets = tabuSpinnedDest;
 			tabuTarget.orig = fixedNode;
 			tabuTarget.dest = targets.orig;
