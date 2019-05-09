@@ -12,8 +12,7 @@ GRAPHS=("task-graphs/jonathan-graphs-adap/ap1.adjl"\
 STOP_CRITERION=(100 250 500 1000 2000)
 NUM_NODE_MULT=(0.5 1 2 3 4 5)
 
-#task-graphs/adj-lists/descriptions_seed-73_single-start-node_weight-range-1-100_dimension-4x4_in-out-degrees-2-2.adjl
-#descriptions_seed-73_single-start-node_weight-range-1-100_dimension-4x4_in-out-degrees-3-3.adjl
+make
 
 sc_count=1
 for j in {0..2}; do
@@ -36,17 +35,15 @@ for j in {0..2}; do
 				for (( epsilon=$numnodes; epsilon<=$numnodes*2; epsilon++ )); do
 					exec_count=1
 					for i in {1..10}; do
-						echo "===================================================================================="
+						echo "=========================================================================================="
 						echo "Stop Criterion:" $sc '('$sc_count'/'${#STOP_CRITERION[*]}')'
 						echo "Graph: "$graph '('$graph_count'/'${#GRAPHS[*]}')'
 						echo "Tabu List Size:" $tlsize '('$tlsize_count'/'${#TABU_LIST_SIZES[*]}')'
 						echo "Epsilon:" $epsilon '('$epsilon_count'/'$((numnodes+1))')'
-						echo "Execution:" $exec_count '('$exec_count'/'30')'
-						echo "------------------------------------------------------------------------------------"
+						echo "Execution:" $exec_count '('$(($j*10+$exec_count))'/'30')'
 						otpt=$(echo `expr "$graph" : '\(\(\([^/]\)*/\)*\)'`)
 						pos=${#otpt}
 						otpt=${graph:pos}
-						echo $otpt
 						otpt=$(echo `expr "$otpt" : '\(\([^\.]\)*\)'`)
 						otpt=$otpt"-sc"$sc"-tls"$tlsize"-eps"$epsilon"-exec"
 						mult=$(($j*10+$i))
@@ -56,12 +53,13 @@ for j in {0..2}; do
 							otpt=$otpt$mult
 						fi
 						otpt=$otpt".adjl"
-						echo $otpt
+						echo -e  "args:\n  "$graph $SEPARATOR $epsilon $tlsize $sc $otpt
+						echo "------------------------------------------------------------------------------------------"
 
 						./gftinoc $graph $SEPARATOR $epsilon $tlsize $sc $otpt
 
-						echo "===================================================================================="
-						echo -e "\n\n\n"
+						echo "=========================================================================================="
+						echo -e "\n"
 						((exec_count++))
 					done
 					((epsilon_count++))
