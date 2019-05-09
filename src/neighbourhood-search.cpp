@@ -186,7 +186,6 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 	boolEdge edgeToSpin, spinned;
 
 	TabuList<bool> tabuEdgesToAdd;
-	tabuEdgesToAdd.add(neigh->deltdEdges[0]);
 
 	std::cout << maxDegNode << std::endl;
 	while(tabuSpins.size() < maxDegree) {
@@ -195,6 +194,17 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 
 		size_t spinCentre = (edgeToSpin.orig == maxDegNode) ?
 			edgeToSpin.dest : edgeToSpin.orig;
+
+		tabuEdgesToAdd = *tabuList;
+		boolEdge tabuTarget;
+		tabuTarget.orig = edgeToAdd.orig;
+		tabuTarget.dest = spinCentre;
+		neigh->sol->nodeIdSwap(&tabuTarget);
+		tabuEdgesToAdd.add(tabuTarget);
+		tabuTarget.orig = edgeToAdd.dest;
+		tabuTarget.dest = spinCentre;
+		neigh->sol->nodeIdSwap(&tabuTarget);
+		tabuEdgesToAdd.add(tabuTarget);
 
 		spinned = neigh->sol->spinEdge(edgeToSpin, spinCentre,
 					maxDegree, &tabuEdgesToAdd);
@@ -206,14 +216,15 @@ bool NeighbourhoodSearch::spinMaxDegree(Neighbour* neigh,
 
 		neigh->sol->addEdge(edgeToAdd);
 		//checks if valid
-		if (neigh->sol->getNodeDegree(edgeToAdd.orig) > maxDegree ||
+		/*if (neigh->sol->getNodeDegree(edgeToAdd.orig) > maxDegree ||
 				neigh->sol->getNodeDegree(edgeToAdd.dest) > maxDegree) {
 			//invalid, traceback
 			neigh->sol->delEdge(spinned);
 			neigh->sol->addEdge(edgeToSpin);
 			neigh->sol->delEdge(edgeToAdd);
-			tabuEdgesToAdd.add(spinned);
-		}
+			tabuSpins.add(edgeToSpin);
+			continue;
+		}*/
 
 
 		neigh->isTabu = tabuList->isTabu(neigh->sol);
