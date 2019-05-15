@@ -43,7 +43,7 @@ typename Dijkstra<T>::Node Dijkstra<T>::dijkstra (
 							graph->getEdgeValue(grEdge {
 									.orig = selectedNode.nodeId,
 									.dest = neighbour
-								}));
+								}), weightInf);
 				}
 				else {
 					relaxUnweighted(&selectedNode, &nodes[neighbour]);
@@ -97,8 +97,9 @@ typename Dijkstra<T>::Node Dijkstra<T>::extractMin(std::vector<Node>* minPriorit
 }
 
 template <class T>
-void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight) {
-	if (dest->weightSum > orig->weightSum + weight) {
+void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight, T weightInf) {
+	if (orig->weightSum != weightInf &&
+			dest->weightSum > orig->weightSum + weight) {
 		dest->weightSum = orig->weightSum + weight;
 		dest->hops = orig->hops + 1;
 		dest->shortPath = orig->shortPath;
@@ -108,7 +109,7 @@ void Dijkstra<T>::relaxWeighted(Node* orig, Node* dest, T weight) {
 
 template <class T>
 void Dijkstra<T>::relaxUnweighted(Node* orig, Node* dest) {
-	if (dest->hops > orig->hops + 1) {
+	if (orig->hops != HOP_INF && dest->hops > orig->hops + 1) {
 		dest->hops = orig->hops + 1;
 		dest->shortPath = orig->shortPath;
 		dest->shortPath.push_back(dest->nodeId);

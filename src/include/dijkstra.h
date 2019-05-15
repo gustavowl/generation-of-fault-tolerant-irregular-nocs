@@ -41,7 +41,7 @@ public:
 private:
 	static Node extractMin(std::vector<Node>* minPriority, bool isWeighted=true);
 
-	static void relaxWeighted(Node* orig, Node* dest, T weight);
+	static void relaxWeighted(Node* orig, Node* dest, T weight, T weightInf);
 
 	static void relaxUnweighted(Node* orig, Node* dest);
 };
