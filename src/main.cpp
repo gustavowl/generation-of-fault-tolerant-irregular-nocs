@@ -34,6 +34,11 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	//std::cout << "\n";
+	//for (int i = 0; i < 7; i++)
+	//	std::cout << argv[i] << ' ';
+	//std::cout << std::endl;
+
 	std::string currTime = getTime();
 	std::cout << currTime << "\tReading \"" << argv[1] << "\" file... " <<
 		std::endl;

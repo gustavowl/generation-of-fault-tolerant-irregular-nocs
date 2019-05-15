@@ -90,7 +90,8 @@ void Statistics<T>::edgeCommCost(
 				for (size_t i = 1; i < ret.shortPath.size(); i++) {
 					cgEdge.orig = ret.shortPath[i - 1];
 					cgEdge.dest = ret.shortPath[i];
-					cgEdge.value += tg->getEdgeValue(tgEdge);
+					cgEdge.value = weightedGraph->getEdgeValue(cgEdge) +
+						tg->getEdgeValue(tgEdge);
 					weightedGraph->delEdge(cgEdge);
 					weightedGraph->addEdge(cgEdge);
 				}

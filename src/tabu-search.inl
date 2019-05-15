@@ -283,10 +283,10 @@ bool TabuSearch<T>::generateNeighbourhood(
 		if (neigh.sol == NULL)
 			break;
 
-		assert(isFeasible(neigh.sol));
-		assert(neigh.sol->getNumEdges() == epsilon);
-		if (!aspirationCrit)
-			assert(!neigh.isTabu);
+		//assert(isFeasible(neigh.sol));
+		//assert(neigh.sol->getNumEdges() == epsilon);
+		//if (!aspirationCrit)
+		//	assert(!neigh.isTabu);
 
 		neighbours->push_back(neigh);
 		//computes neighbours' fitness
