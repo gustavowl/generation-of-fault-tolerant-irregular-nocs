@@ -31,7 +31,7 @@ private:
 	bool isFeasible(TabuAdjMatrix<bool>* sol);
 
 	//swaps the edges until degree(node) is in [2, 4] range for
-	//all nodes. The algorithm is divided in 3 main steps and works
+	//all nodes. The algorithm is divided in 2 main steps and works
 	//as follows.
 	//	while (not feasible)
 	//		1 - remove edge
@@ -44,12 +44,6 @@ private:
 	//			2.3 - identify second node with smallest degree
 	//				(not in tabuList)
 	//			2.4 - add edge between these two nodes
-	//		3 - check if graph is disconnected
-	//			3.1 - Dijkstra
-	//			3.2 - if disconnected
-	//				3.2.1 - remove edge
-	//				3.2.2 - add target node to a TabuList
-	//				3.2.3 - go back to step 2.3
 	//called by generateInitSol.
 	void makeFeasible(TabuAdjMatrix<bool>* initSol);
 

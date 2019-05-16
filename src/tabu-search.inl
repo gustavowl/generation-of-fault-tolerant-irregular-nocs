@@ -89,21 +89,6 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 			}
 			initSol->addEdge(edgeToAdd);
 
-			//3 - check if graph is disconnected
-			//	3.1 - Dijkstra
-			size_t numHops = Dijkstra<bool>::dijkstra(
-					initSol, largest, lrgNeighbour, true,
-					false).hops;
-			//	3.2 - if disconnected
-			if (numHops == HOP_INF) {
-				//	3.2.1 - remove edge
-				initSol->delEdge(edgeToAdd);
-				//	3.2.2 - add target node to a TabuList
-				tl.add(edgeToAdd);
-				//	3.2.3 - go back to step 2.3
-				continue;
-			}
-
 			break;
 		}
 	}
