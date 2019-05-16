@@ -1,28 +1,20 @@
 template <class T>
 void TabuSearch<T>::fitToEpsilon(TabuAdjMatrix<bool>* initSol) {
 
+	TabuList<bool> empty;
 	boolEdge edge;
 	while (epsilon < initSol->getNumEdges()) {
 		//removes edges
 		//computes positions of the two nodes with largest degrees
-		edge.orig = initSol->getNodeWithNthDegree(0, true);	
-		edge.dest = initSol->getNeighbourWithNthDegree(0,
-				edge.orig, true);	
-
+		edge = initSol->selectRandomEdge(&empty);
 		initSol->delEdge(edge);
 	}
 
-	edge.value = !initSol->getNullEdgeValue();
 	while (epsilon > initSol->getNumEdges()) {
 		//adds edges
 		//computes positions of the two nodes with smallest degrees
-		edge.orig = initSol->getNodeWithNthDegree(0, false);	
-		size_t scndPos = 0;
-		do {
-			scndPos++;
-			edge.dest = initSol->getNodeWithNthDegree(scndPos, false);
-		} while (initSol->edgeExists(edge));
-
+		edge = initSol->selectRandomEdge(&empty, false);
+		edge.value = !initSol->getNullEdgeValue();
 		initSol->addEdge(edge);
 	}
 }
@@ -49,44 +41,41 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
+		initSol->print();
+		std::vector<size_t> tabuNodes;
 		//1 - remove edge
 		//	1.1 - identify node with largest degree
-		size_t largest = initSol->getNodeWithNthDegree(0, true);
+		//size_t largest = initSol->getNodeWithNthDegree(0, true);
+		edgeToDel.orig = initSol->selectRandomNode(true);
 		//	1.2 - identify its neighbour with largest degree
-		size_t lrgNeighbour = initSol->getNeighbourWithNthDegree(
-				0, largest, true);
+		//size_t lrgNeighbour = initSol->getNeighbourWithNthDegree(
+		//		0, largest, true);
+		edgeToDel.dest = initSol->selectRandomNeighbourNode(edgeToDel.orig,
+				true, true, &tabuNodes);
 		//1.3 - remove edge
-		edgeToDel.orig = largest;
-		edgeToDel.dest = lrgNeighbour;
 		initSol->nodeIdSwap(&edgeToDel);
 		initSol->delEdge(edgeToDel);
 		
 		//2 - add edge
 		//	2.1 - identify node with smallest degree
-		size_t smallest = initSol->getNodeWithNthDegree(0, false);
-		//	2.2 - create empty tl of target nodes
-		TabuList<bool> tl = TabuList<bool>(initSol->getNumNodes());
-		edgeToAdd.orig = smallest;
+		size_t smallest = initSol->selectRandomNode(false);
+		size_t smlNeighbour;
 
 		while (true) {
 			//	2.3 - identify second node with smallest degree
 			//		(not in tl)
-			size_t rankPos = 0;
-			size_t smlNeighbour;
-			do {
-				rankPos++;
-				smlNeighbour = initSol->getNodeWithNthDegree(rankPos,
-						false);
-				edgeToAdd.orig = smallest;
-				edgeToAdd.dest = smlNeighbour;
-				initSol->nodeIdSwap(&edgeToAdd);
-			} while(edgeToAdd.equalsTo(edgeToDel, false) || tl.isTabu(edgeToAdd));
-			//	2.4 - add edge between these two nodes
-			if (initSol->edgeExists(edgeToAdd)) {
-				//edge exists, add target node to tl
-				tl.add(edgeToAdd);
+			smlNeighbour = initSol->selectRandomNeighbourNode(smallest,
+					false, false, &tabuNodes);
+			edgeToAdd.orig = smallest;
+			edgeToAdd.dest = smlNeighbour;
+			initSol->nodeIdSwap(&edgeToAdd);
+
+			if (initSol->edgeExists(edgeToAdd) || edgeToAdd.equalsTo(edgeToDel, false)) {
+				tabuNodes.push_back(smlNeighbour);
 				continue;
 			}
+
+			//	2.4 - add edge between these two nodes
 			initSol->addEdge(edgeToAdd);
 
 			break;
@@ -116,7 +105,9 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	GraphConverter::convert(taskGraph, initSol);
 
 	fitToEpsilon(initSol);
+	initSol->print();
 	makeFeasible(initSol);
+	std::cout << "makeFeasible EXIT" << std::endl;
 
 	return initSol;
 }

@@ -366,6 +366,66 @@ grEdge TabuAdjMatrix<T>::selectRandomEdge(size_t incidentNode,
 }
 
 template <class T>
+size_t TabuAdjMatrix<T>::selectRandomNode(bool largest) {
+	size_t degree = degrees[0];
+	for (size_t i = 1; i < this->numNodes; i++) {
+		if ( (largest && degree < degrees[i]) ||
+				(!largest && degree > degrees[i]) ) {
+				degree = degrees[i];
+		}
+	}
+
+	std::vector<size_t> res;
+	for (size_t i = 0; i < this->numNodes; i++) {
+		if (degrees[i] == degree) {
+			res.push_back(i);
+		}
+	}
+
+	return res[rng() % res.size()];
+}
+
+template <class T>
+size_t TabuAdjMatrix<T>::selectRandomNeighbourNode(size_t incidentNode,
+		bool largest, bool edgeExists, std::vector<size_t>* tabuNodes) {
+
+	std::vector<size_t> existentNeighs = this->getNeighbours(incidentNode);
+	std::vector<size_t> neighs;
+	if (edgeExists) {
+		neighs = existentNeighs;
+	}
+	else {
+		for (size_t i = 0; i < this->numNodes; i++) {
+			std::vector<size_t>::iterator it = std::find(
+					existentNeighs.begin(), existentNeighs.end(), i);
+			std::vector<size_t>::iterator itabu = std::find(
+					tabuNodes->begin(), tabuNodes->end(), i);
+			if (i != incidentNode && it == existentNeighs.end() &&
+					itabu == tabuNodes->end()) {
+				neighs.push_back(i);
+			}
+		}
+	}
+
+	size_t degree = degrees[neighs[0]];
+	for (size_t i = 1; i < neighs.size(); i++) {
+		if ( (largest && degree < degrees[neighs[i]]) ||
+				(!largest && degree > degrees[neighs[i]]) ) {
+				degree = degrees[neighs[i]];
+		}
+	}
+
+	std::vector<size_t> res;
+	for (size_t i = 0; i < neighs.size(); i++) {
+		if (degrees[neighs[i]] == degree) {
+			res.push_back(neighs[i]);
+		}
+	}
+	
+	return res[rng() % res.size()];
+}
+
+template <class T>
 void TabuAdjMatrix<T>::swapEdgesNodes(grEdge* edge1, grEdge* edge2,
 		TabuList<T>* tabuList) {
 	//there are two possible swap for edges (1, 2), (3, 4)
@@ -677,20 +737,4 @@ size_t TabuAdjMatrix<T>::getNeighbourWithNthDegree(size_t rankPos,
 	
 	return this->getNodeWithNthDegreeFromList(
 			this->getNeighbours(incidentNode), rankPos, largest);
-}
-
-template <class T>
-size_t TabuAdjMatrix<T>::toInt64() {
-	size_t maxEdges = this->maxNumEdges();
-	if (maxEdges > 64)
-		return 0;
-
-	size_t ret = 0;
-	grEdge edge;
-	for (edge.orig = 1; edge.orig < this->numNodes; edge.orig++) {
-		for (edge.dest = 0; edge.dest < edge.orig; edge.dest++) {
-			ret = ret * 2 + this->edgeExists(edge);
-		}
-	}
-	return ret;
 }

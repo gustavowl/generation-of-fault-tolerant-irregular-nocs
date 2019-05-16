@@ -4,6 +4,8 @@
 #include "graph-representation.h"
 #include "tabu-list.h"
 #include "graph-converter.h"
+#include <vector>
+#include <algorithm>
 
 //class used by the Tabu Search.
 //It stores the graph as a lower triangular adjacency matrix.
@@ -101,6 +103,11 @@ public:
 	grEdge selectRandomEdge(size_t incidentNode, size_t upperDestDeg,
 			TabuList<T>* tabuList, bool existent=true);
 
+	size_t selectRandomNode(bool largest);
+
+	size_t selectRandomNeighbourNode(size_t incidentNode, bool largest,
+			bool edgeExists, std::vector<size_t>* tabuNodes);
+
 	//another random existing edge will be chosen and
 	//The edge's incident nodes will be randomly swaped.
 	//For instance, (1, 2), (3, 4) may be swapped to
@@ -184,8 +191,6 @@ public:
 	//all the nodes, it only considers the neighbours of incidentNode.
 	size_t getNeighbourWithNthDegree(size_t rankPos, size_t incidentNode,
 			bool largest);
-
-	size_t toInt64();
 };
 
 #include "../tabu-adj-matrix.inl"
