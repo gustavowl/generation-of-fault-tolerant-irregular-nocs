@@ -9,8 +9,10 @@ GRAPHS=("task-graphs/jonathan-graphs-adap/ap1.adjl"\
 	"task-graphs/jonathan-graphs-adap/mpeg.adjl"\
 	"task-graphs/jonathan-graphs-adap/mwd.adjl"\
 	"task-graphs/jonathan-graphs-adap/vopd.adjl")
-STOP_CRITERION=(100 250 500 1000 2000)
-NUM_NODE_MULT=(0.5 1 2 3 4 5)
+#STOP_CRITERION=(100 250 500 1000 2000)
+#NUM_NODE_MULT=(0.5 1 2 3 4 5)
+STOP_CRITERION=(100 250)
+NUM_NODE_MULT=(0.5 1)
 
 make
 
@@ -24,7 +26,7 @@ for j in {0..2}; do
 			numnodes=${ghead:0:$nodeindex-1}
 			numedges=${ghead:nodeindex}
 
-			TABU_LIST_SIZES=(1)
+			TABU_LIST_SIZES=(${numnodes})
 			for i in ${NUM_NODE_MULT[*]}; do
 				TABU_LIST_SIZES+=($(echo "scale=0; (${numnodes}*${i})/1" | bc))
 			done
@@ -35,12 +37,12 @@ for j in {0..2}; do
 				for (( epsilon=$numnodes; epsilon<=$numnodes*2; epsilon++ )); do
 					exec_count=1
 					for i in {1..10}; do
-						echo "=========================================================================================="
+						echo "=============================================================================================="
 						echo "Stop Criterion:" $sc '('$sc_count'/'${#STOP_CRITERION[*]}')'
 						echo "Graph: "$graph '('$graph_count'/'${#GRAPHS[*]}')'
 						echo "Tabu List Size:" $tlsize '('$tlsize_count'/'${#TABU_LIST_SIZES[*]}')'
 						echo "Epsilon:" $epsilon '('$epsilon_count'/'$((numnodes+1))')'
-						echo "Execution:" $exec_count '('$(($j*10+$exec_count))'/'30')'
+						echo "Execution:" $exec_count '('$(($j*10+$exec_count))'/'$(($j*10+10))')'
 						otpt=$(echo `expr "$graph" : '\(\(\([^/]\)*/\)*\)'`)
 						pos=${#otpt}
 						otpt=${graph:pos}
@@ -53,12 +55,10 @@ for j in {0..2}; do
 							otpt=$otpt$mult
 						fi
 						otpt=$otpt".adjl"
-						echo -e  "args:\n  "$graph $SEPARATOR $epsilon $tlsize $sc $otpt
-						echo "------------------------------------------------------------------------------------------"
-
+						echo -e  "args: "$graph $SEPARATOR $epsilon $tlsize $sc $otpt
+						echo "----------------------------------------------------------------------------------------------"
 						./gftinoc $graph $SEPARATOR $epsilon $tlsize $sc $otpt
-
-						echo "=========================================================================================="
+						echo "=============================================================================================="
 						echo -e "\n"
 						((exec_count++))
 					done
