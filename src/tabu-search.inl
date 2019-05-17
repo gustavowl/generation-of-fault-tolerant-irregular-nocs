@@ -41,7 +41,6 @@ void TabuSearch<T>::makeFeasible(TabuAdjMatrix<bool>* initSol) {
 
 	//while (not feasible)
 	while (!isFeasible(initSol)) {
-		initSol->print();
 		std::vector<size_t> tabuNodes;
 		//1 - remove edge
 		//	1.1 - identify node with largest degree
@@ -105,9 +104,9 @@ TabuAdjMatrix<bool>* TabuSearch<T>::generateInitSol() {
 	GraphConverter::convert(taskGraph, initSol);
 
 	fitToEpsilon(initSol);
-	initSol->print();
+	//initSol->print();
 	makeFeasible(initSol);
-	std::cout << "makeFeasible EXIT" << std::endl;
+	//std::cout << "makeFeasible EXIT" << std::endl;
 
 	return initSol;
 }
