@@ -116,9 +116,10 @@ def fault_tolerance_box_plot(df):
         plt.savefig(outputfig)
         plt.clf()
 
-        sns.boxplot(fault_stats['perc'],
+        ax = sns.boxplot(fault_stats['perc'],
                 fault_stats['fitness'] / tgraph['fitness'],
                 color='white')
+        ax.axhline(1, ls='--', color='r', alpha=0.7)
         outputfig = os.path.join(fault_boxplt_prop, gname)
         plt.savefig(outputfig)
         plt.clf()
