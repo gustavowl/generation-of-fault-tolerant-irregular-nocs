@@ -48,17 +48,32 @@ ts = pd.read_csv("tabu-stats.csv")
 #    gstats = ts[ts['input-file'].str.match(graph)] 
 #    title = filter_graph_name(graph)
 #    sns.boxplot(gstats['epsilon'], gstats['fitness'],
-#            color='white').set_title(title)
+#            color='white')
+#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
+#    plt.xlabel("Number of Links", fontsize='xx-large')
+#    plt.xticks(fontsize='xx-large')
+#    plt.yticks(fontsize='xx-large')
+#    plt.tight_layout()
 #    plt.savefig("args/epsilon/" + title)
 #    plt.clf()
 #
 #    sns.boxplot(gstats['tabu-list-size'], gstats['fitness'],
-#            color='white').set_title(title)
+#            color='white')
+#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
+#    plt.xlabel("Tabu List Size", fontsize='xx-large')
+#    plt.xticks(fontsize='xx-large')
+#    plt.yticks(fontsize='xx-large')
+#    plt.tight_layout()
 #    plt.savefig("args/tabu-list-size/" + title)
 #    plt.clf()
 #
 #    sns.boxplot(gstats['stop-crit'], gstats['fitness'],
-#            color='white').set_title(title)
+#            color='white')
+#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
+#    plt.xlabel("Termination Criterion", fontsize='xx-large')
+#    plt.xticks(fontsize='xx-large')
+#    plt.yticks(fontsize='xx-large')
+#    plt.tight_layout()
 #    plt.savefig("args/stop-crit/" + title)
 #    plt.clf()
 
@@ -113,6 +128,13 @@ def fault_tolerance_box_plot(df):
         sns.boxplot(fault_stats['perc'], fault_stats['fitness'],
                 color='white')
         outputfig = os.path.join(fault_boxplt_fit, gname)
+
+        plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
+        plt.xlabel("Fault Percentage", fontsize='xx-large')
+        plt.xticks(fontsize='xx-large')
+        plt.yticks(fontsize='xx-large')
+        plt.tight_layout()
+
         plt.savefig(outputfig)
         plt.clf()
 
@@ -121,6 +143,13 @@ def fault_tolerance_box_plot(df):
                 color='white')
         ax.axhline(1, ls='--', color='r', alpha=0.7)
         outputfig = os.path.join(fault_boxplt_prop, gname)
+
+        plt.ylabel("Latency Overhead", fontsize='xx-large')
+        plt.xlabel("Fault Percentage", fontsize='xx-large')
+        plt.xticks(fontsize='xx-large')
+        plt.yticks(fontsize='xx-large')
+        plt.tight_layout()
+
         plt.savefig(outputfig)
         plt.clf()
 
@@ -188,7 +217,7 @@ def fault_fitness_median_graph(selected, proportional, outdir):
         fit_prop['perc'] = fit_prop['perc'].astype(str)
         fit_prop['perc'] += '%'
 
-        sns.lineplot(x='x', y='y', data=fit_prop, hue='perc',
+        sns.barplot(x='x', y='y', data=fit_prop, hue='perc',
                 palette=['r', 'g', 'b'] )
         plt.xlabel("Number of links")
         if (proportional):
@@ -212,7 +241,7 @@ def fault_fitness_median_graph(selected, proportional, outdir):
         plt.savefig(outfname)
         plt.clf()
 
-sns.set(rc={'figure.figsize':(9, 6)})
+#sns.set(rc={'figure.figsize':(9, 6)})
 #fault_fitness_median_graph(selected, True, fault_prop)
 #fault_fitness_median_graph(selected, False, fault_fit)
 
@@ -249,16 +278,17 @@ def fitness_median_graph(flip_cond, threshold, step):
             if (max(y) > ymax):
                 ymax = max(y)
     sns.lineplot(x='x', y='y', data=df, hue='Graph')
-    plt.xlabel("Number of links")
-    plt.ylabel("Fitness")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-    plt.tight_layout()
-    plt.xticks(np.arange(xmin, xmax + 1))
-    plt.yticks(np.arange(ymin, ymax + step, step))
+    plt.xlabel("Number of links", fontsize='large')
+    plt.ylabel("Latency Estimation (Fitness)", fontsize='large')
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
+            fontsize='large')
+    plt.xticks(np.arange(xmin, xmax + 1), fontsize='large')
+    plt.yticks(np.arange(ymin, ymax + step, step), fontsize='large')
     title = ""
     for g in df['Graph'].unique():
         title += g + '-'
     title = title[0 : len(title) - 1]
+    plt.tight_layout()
     plt.savefig(title)
     plt.clf()
 
