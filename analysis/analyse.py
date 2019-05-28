@@ -235,20 +235,20 @@ def fault_fitness_median_graph(selected, proportional, outdir):
                     marker=markers[count],
                     label=str(int(eps)) + " links")
             count += 1
-        ax.legend(shadow=True, fontsize='xx-large',
+        ax.legend(shadow=True, fontsize='x-large',
                 loc='center left', bbox_to_anchor=(1, 0.5))
 
         #sns.lineplot(x='perc', y='y', data=fit_prop, hue='x')
-        plt.xlabel("Number of links", fontsize="xx-large")
+        plt.xlabel("Fault Percentage", fontsize="x-large")
         if (proportional):
-            plt.ylabel("Latency overhead", fontsize="xx-large")
+            plt.ylabel("Latency Overhead", fontsize="x-large")
         else:
             plt.ylabel("Latency Estimation (Fitness)",
-                    fontsize="xx-large")
+                    fontsize="x-large")
 
         #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         #plt.xticks(np.arange(xmin, xmax + 1))
-        plt.xticks(fit_prop['perc'].unique(), fontsize="xx-large")
+        plt.xticks(fit_prop['perc'].unique(), fontsize="x-large")
 
         step = (inf - ymin) / 10
         ytcks = np.arange(ymin, inf + 0.0001*step, step)
@@ -258,7 +258,7 @@ def fault_fitness_median_graph(selected, proportional, outdir):
             ytcks = [int(yt) for yt in ytcks]
         ytcks[-1] = 'Inf'
         plt.yticks(np.arange(ymin, inf + step, step),
-                ytcks, fontsize="xx-large")
+                ytcks, fontsize="x-large")
         plt.grid()
 
         outfname = os.path.join(outdir, filter_graph_name(graph))
