@@ -153,7 +153,7 @@ def fault_tolerance_box_plot(df):
         plt.savefig(outputfig)
         plt.clf()
 
-fault_tolerance_box_plot(selected)
+#fault_tolerance_box_plot(selected)
 
 def median_faults(graph):
     #returns a dict with the respective fitnesses for
@@ -211,23 +211,45 @@ def fault_fitness_median_graph(selected, proportional, outdir):
         ymin = min(fit_prop['y'])
         inf = ymax * 1.1
         fit_prop = fit_prop.fillna(inf)
-        fit_prop = fit_prop[fit_prop['perc'] != 15]
-        fit_prop = fit_prop[fit_prop['perc'] != 25]
+        #fit_prop = fit_prop[fit_prop['perc'] != 15]
+        #fit_prop = fit_prop[fit_prop['perc'] != 25]
         fit_prop['perc'] = fit_prop['perc'].astype(int)
         fit_prop['perc'] = fit_prop['perc'].astype(str)
         fit_prop['perc'] += '%'
 
-        sns.barplot(x='x', y='y', data=fit_prop, hue='perc',
-                palette=['r', 'g', 'b'] )
-        plt.xlabel("Number of links")
+        print(fit_prop)
+        epsilons = np.round(np.arange(xmin, xmax + 1, (xmax - xmin)/4))
+        print(epsilons)
+        print(fit_prop[fit_prop['x'].isin(epsilons)])
+        fit_prop = fit_prop[fit_prop['x'].isin(epsilons)]
+
+        #sns.lineplot(x='perc', y='y', data=fit_prop, hue='num_links')
+        fig, ax = plt.subplots(figsize=(9,6))
+        count = 0
+        colours = ['b', 'm', 'r', 'g', 'k']
+        markers = ['d', 'o', 'v', 's', 'P']
+        for eps in fit_prop['x'].unique():
+            sel_num_links = fit_prop[fit_prop['x'] == eps]
+            ax.plot(sel_num_links['perc'], sel_num_links['y'],
+                    color=colours[count], alpha=0.6,
+                    marker=markers[count],
+                    label=str(int(eps)) + " links")
+            count += 1
+        ax.legend(shadow=True, fontsize='xx-large',
+                loc='center left', bbox_to_anchor=(1, 0.5))
+
+        #sns.lineplot(x='perc', y='y', data=fit_prop, hue='x')
+        plt.xlabel("Number of links", fontsize="xx-large")
         if (proportional):
-            plt.ylabel("Latency overhead")
+            plt.ylabel("Latency overhead", fontsize="xx-large")
         else:
-            plt.ylabel("Latency")
+            plt.ylabel("Latency Estimation (Fitness)",
+                    fontsize="xx-large")
 
         #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-        plt.tight_layout()
-        plt.xticks(np.arange(xmin, xmax + 1))
+        #plt.xticks(np.arange(xmin, xmax + 1))
+        plt.xticks(fit_prop['perc'].unique(), fontsize="xx-large")
+
         step = (inf - ymin) / 10
         ytcks = np.arange(ymin, inf + 0.0001*step, step)
         if (proportional):
@@ -236,13 +258,16 @@ def fault_fitness_median_graph(selected, proportional, outdir):
             ytcks = [int(yt) for yt in ytcks]
         ytcks[-1] = 'Inf'
         plt.yticks(np.arange(ymin, inf + step, step),
-                ytcks)
+                ytcks, fontsize="xx-large")
+        plt.grid()
+
         outfname = os.path.join(outdir, filter_graph_name(graph))
+        plt.tight_layout()
         plt.savefig(outfname)
         plt.clf()
 
 #sns.set(rc={'figure.figsize':(9, 6)})
-#fault_fitness_median_graph(selected, True, fault_prop)
+fault_fitness_median_graph(selected, True, fault_prop)
 #fault_fitness_median_graph(selected, False, fault_fit)
 
 #all median
