@@ -48,32 +48,17 @@ ts = pd.read_csv("tabu-stats.csv")
 #    gstats = ts[ts['input-file'].str.match(graph)] 
 #    title = filter_graph_name(graph)
 #    sns.boxplot(gstats['epsilon'], gstats['fitness'],
-#            color='white')
-#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
-#    plt.xlabel("Number of Links", fontsize='xx-large')
-#    plt.xticks(fontsize='xx-large')
-#    plt.yticks(fontsize='xx-large')
-#    plt.tight_layout()
+#            color='white').set_title(title)
 #    plt.savefig("args/epsilon/" + title)
 #    plt.clf()
 #
 #    sns.boxplot(gstats['tabu-list-size'], gstats['fitness'],
-#            color='white')
-#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
-#    plt.xlabel("Tabu List Size", fontsize='xx-large')
-#    plt.xticks(fontsize='xx-large')
-#    plt.yticks(fontsize='xx-large')
-#    plt.tight_layout()
+#            color='white').set_title(title)
 #    plt.savefig("args/tabu-list-size/" + title)
 #    plt.clf()
 #
 #    sns.boxplot(gstats['stop-crit'], gstats['fitness'],
-#            color='white')
-#    plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
-#    plt.xlabel("Termination Criterion", fontsize='xx-large')
-#    plt.xticks(fontsize='xx-large')
-#    plt.yticks(fontsize='xx-large')
-#    plt.tight_layout()
+#            color='white').set_title(title)
 #    plt.savefig("args/stop-crit/" + title)
 #    plt.clf()
 
@@ -89,6 +74,11 @@ for graph in ts['input-file'].unique():
         index = math.floor(np.median(np.arange(0, rows)))
 
         selected = selected.append(t.iloc[index], ignore_index=True)
+
+        print(t.iloc[index]['output-file'])
+        print(t.iloc[index]['epsilon'])
+        print(t.iloc[index]['fitness'] - t.iloc[0]['fitness'])
+        print()
 
 def get_graph_dir(graph):
     #expected directory hierarchy:
@@ -128,28 +118,13 @@ def fault_tolerance_box_plot(df):
         sns.boxplot(fault_stats['perc'], fault_stats['fitness'],
                 color='white')
         outputfig = os.path.join(fault_boxplt_fit, gname)
-
-        plt.ylabel("Latency Estimation (Fitness)", fontsize='xx-large')
-        plt.xlabel("Fault Percentage", fontsize='xx-large')
-        plt.xticks(fontsize='xx-large')
-        plt.yticks(fontsize='xx-large')
-        plt.tight_layout()
-
         plt.savefig(outputfig)
         plt.clf()
 
-        ax = sns.boxplot(fault_stats['perc'],
+        sns.boxplot(fault_stats['perc'],
                 fault_stats['fitness'] / tgraph['fitness'],
                 color='white')
-        ax.axhline(1, ls='--', color='r', alpha=0.7)
         outputfig = os.path.join(fault_boxplt_prop, gname)
-
-        plt.ylabel("Latency Overhead", fontsize='xx-large')
-        plt.xlabel("Fault Percentage", fontsize='xx-large')
-        plt.xticks(fontsize='xx-large')
-        plt.yticks(fontsize='xx-large')
-        plt.tight_layout()
-
         plt.savefig(outputfig)
         plt.clf()
 
@@ -211,45 +186,23 @@ def fault_fitness_median_graph(selected, proportional, outdir):
         ymin = min(fit_prop['y'])
         inf = ymax * 1.1
         fit_prop = fit_prop.fillna(inf)
-        #fit_prop = fit_prop[fit_prop['perc'] != 15]
-        #fit_prop = fit_prop[fit_prop['perc'] != 25]
+        fit_prop = fit_prop[fit_prop['perc'] != 15]
+        fit_prop = fit_prop[fit_prop['perc'] != 25]
         fit_prop['perc'] = fit_prop['perc'].astype(int)
         fit_prop['perc'] = fit_prop['perc'].astype(str)
         fit_prop['perc'] += '%'
 
-        print(fit_prop)
-        epsilons = np.round(np.arange(xmin, xmax + 1, (xmax - xmin)/4))
-        print(epsilons)
-        print(fit_prop[fit_prop['x'].isin(epsilons)])
-        fit_prop = fit_prop[fit_prop['x'].isin(epsilons)]
-
-        #sns.lineplot(x='perc', y='y', data=fit_prop, hue='num_links')
-        fig, ax = plt.subplots(figsize=(9,6))
-        count = 0
-        colours = ['b', 'm', 'r', 'g', 'k']
-        markers = ['d', 'o', 'v', 's', 'P']
-        for eps in fit_prop['x'].unique():
-            sel_num_links = fit_prop[fit_prop['x'] == eps]
-            ax.plot(sel_num_links['perc'], sel_num_links['y'],
-                    color=colours[count], alpha=0.6,
-                    marker=markers[count],
-                    label=str(int(eps)) + " links")
-            count += 1
-        ax.legend(shadow=True, fontsize='x-large',
-                loc='center left', bbox_to_anchor=(1, 0.5))
-
-        #sns.lineplot(x='perc', y='y', data=fit_prop, hue='x')
-        plt.xlabel("Fault Percentage", fontsize="x-large")
+        sns.lineplot(x='x', y='y', data=fit_prop, hue='perc',
+                palette=['r', 'g', 'b'] )
+        plt.xlabel("Number of links")
         if (proportional):
-            plt.ylabel("Latency Overhead", fontsize="x-large")
+            plt.ylabel("Latency overhead")
         else:
-            plt.ylabel("Latency Estimation (Fitness)",
-                    fontsize="x-large")
+            plt.ylabel("Latency")
 
         #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-        #plt.xticks(np.arange(xmin, xmax + 1))
-        plt.xticks(fit_prop['perc'].unique(), fontsize="x-large")
-
+        plt.tight_layout()
+        plt.xticks(np.arange(xmin, xmax + 1))
         step = (inf - ymin) / 10
         ytcks = np.arange(ymin, inf + 0.0001*step, step)
         if (proportional):
@@ -258,17 +211,16 @@ def fault_fitness_median_graph(selected, proportional, outdir):
             ytcks = [int(yt) for yt in ytcks]
         ytcks[-1] = 'Inf'
         plt.yticks(np.arange(ymin, inf + step, step),
-                ytcks, fontsize="x-large")
-        plt.grid()
-
+                ytcks)
         outfname = os.path.join(outdir, filter_graph_name(graph))
-        plt.tight_layout()
         plt.savefig(outfname)
         plt.clf()
 
 #sns.set(rc={'figure.figsize':(9, 6)})
-fault_fitness_median_graph(selected, True, fault_prop)
+#fault_fitness_median_graph(selected, True, fault_prop)
 #fault_fitness_median_graph(selected, False, fault_fit)
+
+optimal_cost = {'ap1': 4604, 'ap2': 1158, 'ap3': 2310, 'ap4': 7907, 'integral': 9018, 'mpeg': 1925, 'mwd': 4137, 'vopd': 3405}
 
 #all median
 def fitness_median_graph(flip_cond, threshold, step):
@@ -281,17 +233,27 @@ def fitness_median_graph(flip_cond, threshold, step):
         gstats = ts[ts['input-file'].str.match(graph)]
         x = gstats['epsilon'].unique()
         y = []
+        z = []
         for eps in x:
             median_eps = gstats[gstats['epsilon'] == eps]
+            #print(median_eps['fitness'].median() - median_eps['fitness'].min())
             y.append(median_eps['fitness'].median())
+            z.append(float(median_eps['fitness'].min()))
+
+            #y.append(median_eps['fitness'].min())
         
+        #print(y)
+        #print(z)
+        #print(len(y) - len(z))
+        #print()
         condition = any(fitness > threshold for fitness in y)
         if (flip_cond):
             condition = not condition
+        graphname = filter_graph_name(graph)
         if (condition):
             for i in range(len(x)):
-                df = df.append({'x': x[i], 'y': y[i],
-                    'Graph': filter_graph_name(graph)},
+                df = df.append({'x': x[i], 'y': y[i] / optimal_cost[graphname],
+                    'Graph': graphname},
                     ignore_index=True)
             #sns.lineplot(x, y, hue="graph")
             if (min(x) < xmin):
@@ -302,21 +264,32 @@ def fitness_median_graph(flip_cond, threshold, step):
                 ymin = min(y)
             if (max(y) > ymax):
                 ymax = max(y)
-    sns.lineplot(x='x', y='y', data=df, hue='Graph')
-    plt.xlabel("Number of links", fontsize='large')
-    plt.ylabel("Latency Estimation (Fitness)", fontsize='large')
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
-            fontsize='large')
-    plt.xticks(np.arange(xmin, xmax + 1), fontsize='large')
-    plt.yticks(np.arange(ymin, ymax + step, step), fontsize='large')
+    print(df)
+    print(df.dtypes)
+    print(len(df))
+    sns.lineplot(x='x', y='y', data=df, hue='Graph', alpha=0.73, style="Graph", dashes=False,
+            markers=True, linewidth=5, markersize=12)
+    #['o', 'v', '^', 's', 'p', 'X', "D", '|'])
+    plt.xlabel("Number of links", fontsize=20)
+    plt.ylabel("Fitness / Ground Truth", fontsize=20)
+    #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., fontsize=18)
+    plt.tight_layout()
+    leg = plt.legend(loc='upper right', fontsize=15, markerscale=1.5)
+    for l in leg.legendHandles:
+        l.set_linewidth(5)
+        #l.set_markerscale(20)
+    plt.xticks(np.arange(xmin, xmax + 1), fontsize=15)
+    step = 0.05
+    plt.yticks(np.arange(1, df['y'].max() + step, step), fontsize=15)
+    #plt.yticks(np.arange(ymin, ymax + step, step))
     title = ""
     for g in df['Graph'].unique():
         title += g + '-'
     title = title[0 : len(title) - 1]
-    plt.tight_layout()
-    plt.savefig(title)
+    plt.savefig(title, bbox_inches='tight', pad_inches=0)
     plt.clf()
 
-#sns.set(rc={'figure.figsize':(9, 6)})
+sns.set(rc={'figure.figsize':(9, 6)})
 #fitness_median_graph(False, 6000, 750)
 #fitness_median_graph(True, 6000, 250)
+fitness_median_graph(True, 732112, 250)
